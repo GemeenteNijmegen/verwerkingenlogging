@@ -68,6 +68,11 @@
       "type": "build"
     },
     {
+      "name": "standard-version",
+      "version": "^9",
+      "type": "build"
+    },
+    {
       "name": "ts-jest",
       "type": "build"
     },
@@ -83,6 +88,11 @@
     {
       "name": "aws-cdk-lib",
       "version": "^2.1.0",
+      "type": "runtime"
+    },
+    {
+      "name": "cdk-nag",
+      "version": "ˆ2.0.0",
       "type": "runtime"
     },
     {

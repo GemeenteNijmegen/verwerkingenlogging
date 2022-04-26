@@ -3,6 +3,26 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   cdkVersion: '2.1.0',
   defaultReleaseBranch: 'main',
   name: 'verwerkingenlogging',
+  release: true,
+  defaultReleaseBranch: 'production',
+  majorVersion: 0,
+  depsUpgradeOptions: {
+    workflowOptions: {
+      branches: ['development'],
+    },
+  },
+  scripts: {
+    lint: 'cfn-lint cdk.out/**/*.template.json -i W3005 W2001',
+  },
+  deps: [
+    'cdk-nag@ˆ2.0.0',
+  ],
+  gitignore: [
+    'test/__snapshots__/*',
+    '.env',
+    '.vscode',
+    '.DS_Store',
+  ],
 
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
