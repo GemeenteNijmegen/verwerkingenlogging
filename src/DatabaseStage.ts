@@ -9,7 +9,7 @@ export interface DynamoStageProps extends StageProps {
 /**
  * Stage responsible for the DynamoDB Table.
  */
-export class DynamoStage extends Stage {
+export class DatabaseStage extends Stage {
   constructor(scope: Construct, id: string, props: DynamoStageProps) {
     super(scope, id, props);
 
