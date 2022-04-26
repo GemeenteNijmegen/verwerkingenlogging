@@ -34,7 +34,7 @@ if ('BRANCH_NAME' in process.env == false || process.env.BRANCH_NAME == 'develop
       deployToEnvironment: sandboxEnvironment,
     },
   );
-// } else if (process.env.BRANCH_NAME == 'acceptance') {
+// } else if (process.env.BRANCH_NAME == 'acceptance') { !! voordat je deployed, in env moet staan welke branch je wil hebben, acceptance in dit geval
 //   new PipelineStackAcceptance(app, 'verwerkingenlogging-pipeline-acceptance',
 //     {
 //       env: deploymentEnvironment,
@@ -42,7 +42,7 @@ if ('BRANCH_NAME' in process.env == false || process.env.BRANCH_NAME == 'develop
 //       deployToEnvironment: acceptanceEnvironment,
 //     },
 //   );
-// } else if (process.env.BRANCH_NAME == 'production') {
+// } else if (process.env.BRANCH_NAME == 'production') { !! voordat je deployed, in env moet staan welke branch je wil hebben, production in dit geval
 //   new PipelineStackProduction(app, 'verwerkingenlogging-pipeline-production',
 //     {
 //       env: deploymentEnvironment,
