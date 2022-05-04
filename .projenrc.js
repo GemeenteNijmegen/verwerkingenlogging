@@ -7,6 +7,7 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   defaultReleaseBranch: 'production',
   majorVersion: 0,
   depsUpgradeOptions: {
+    workflow: true,
     workflowOptions: {
       branches: ['development'],
     },
