@@ -8,7 +8,7 @@ from boto3.dynamodb.conditions import Key, Attr
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['DYNAMO_TABLE_NAME'])
 
-def lambda_handler(event, context):
+def handler(event, context):
     
     print(event)
     
