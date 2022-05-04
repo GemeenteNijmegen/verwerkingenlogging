@@ -2,7 +2,6 @@ import {
   Stack,
   aws_apigateway as ApiGateway,
   aws_lambda as Lambda,
-  aws_iam as IAM,
 } from 'aws-cdk-lib';
 import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
