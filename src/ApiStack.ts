@@ -41,6 +41,9 @@ export class ApiStack extends Stack {
       code: Lambda.Code.fromAsset('src/VerwerkingenLambdaFunction'),
       handler: 'index.handler',
       runtime: Lambda.Runtime.PYTHON_3_9,
+      environment: {
+        DYNAMO_TABLE_NAME: Statics.verwerkingenTableName,
+      },
     });
     this.verwerkingenLambdaFunction.grantInvoke(new ServicePrincipal('apigateway.amazonaws.com'));
 

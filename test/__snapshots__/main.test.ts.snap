@@ -49,7 +49,7 @@ Object {
     },
     \\"build\\": {
       \\"commands\\": [
-        \\"cdk-assets --path \\\\\\"assembly-test-ApiStage/testApiStageapistack441C69F1.assets.json\\\\\\" --verbose publish \\\\\\"b67157782a48705774cee918be9e2e36e944137b02cc678cb880c621ac756af8:test-eu-west-1\\\\\\"\\"
+        \\"cdk-assets --path \\\\\\"assembly-test-ApiStage/testApiStageapistack441C69F1.assets.json\\\\\\" --verbose publish \\\\\\"497d03c7dfce3dc889c8d3b56161e44fe323de0245e6d75b9754c5bc44679f80:test-eu-west-1\\\\\\"\\"
       ]
     }
   }
