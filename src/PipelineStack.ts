@@ -1,6 +1,7 @@
 
 import { Stack, StackProps, Tags, pipelines, Environment } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { ApiStage } from './ApiStage';
 import { DatabaseStage } from './DatabaseStage';
 import { ParameterStage } from './ParameterStage';
 import { Statics } from './statics';
@@ -20,6 +21,7 @@ export class PipelineStack extends Stack {
     const pipeline = this.pipeline();
     pipeline.addStage(new ParameterStage(this, 'ParametersStage', { env: props.deployToEnvironment }));
     pipeline.addStage(new DatabaseStage(this, 'DatabaseStage', { env: props.deployToEnvironment }));
+    pipeline.addStage(new ApiStage(this, 'ApiStage', { env: props.deployToEnvironment }));
   }
 
   pipeline(): pipelines.CodePipeline {
