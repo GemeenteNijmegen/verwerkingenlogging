@@ -16,7 +16,7 @@ def handler(event, context):
     ## GET /verwerkingsacties ##
     ############################
     
-    if (event['routeKey'] == 'GET /verwerkingsacties'):
+    if (event['httpMethod'] == 'GET' and event['resource'] == '/verwerkingsacties'):
 
         # ONLY verwerkingsactiviteitId
         if (event['queryStringParameters'].get('verwerkingsactiviteitId') != None and event['queryStringParameters'].get('vertrouwelijkheid') == None):
@@ -60,7 +60,7 @@ def handler(event, context):
     ## POST /verwerkingsacties ##
     #############################
     
-    if (event['routeKey'] == 'POST /verwerkingsacties'):
+    if (event['httpMethod'] == 'POST' and event['resource'] == '/verwerkingsacties'):
         # Generate UUID for actieId.
         actieId = str(uuid.uuid1()) # V1 Timestamp
         
@@ -108,7 +108,7 @@ def handler(event, context):
     ## PATCH /verwerkingsacties ##
     ##############################
     
-    if (event['routeKey'] == 'PATCH /verwerkingsacties'):
+    if (event['httpMethod'] == 'PATCH' and event['resource'] == '/verwerkingsacties'):
         requestJSON = json.loads(event['body'])
         verwerkingen = table.query(
             IndexName='verwerkingId-index',
@@ -138,7 +138,7 @@ def handler(event, context):
     ## GET /verwerkingsacties/{actieId} ##
     ######################################
         
-    if (event['routeKey'] == 'GET /verwerkingsacties/{actieId}'):
+    if (event['httpMethod'] == 'GET' and event['resource'] == '/verwerkingsacties/{actieId}'):
         response = table.query(
             KeyConditionExpression=Key('actieId').eq(event['queryStringParameters']['actieId'])
         )
@@ -153,7 +153,7 @@ def handler(event, context):
     ## PUT /verwerkingsacties/{actieId} ##
     ######################################
         
-    if (event['routeKey'] == 'PUT /verwerkingsacties/{actieId}'):
+    if (event['httpMethod'] == 'PUT' and event['resource'] == '/verwerkingsacties/{actieId}'):
         requestJSON = json.loads(event['body'])
         item ={
                 'url': "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + event['queryStringParameters']['actieId'],
@@ -193,7 +193,7 @@ def handler(event, context):
     ## DELETE /verwerkingsacties/{actieId} ##
     #########################################
     
-    if (event['routeKey'] == 'DELETE /verwerkingsacties/{actieId}'):
+    if (event['httpMethod'] == 'DELETE' and event['resource'] == '/verwerkingsacties/{actieId}'):
         response = table.delete_item(
             Key={
                 'actieId': event['queryStringParameters']['actieId'],
