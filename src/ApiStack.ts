@@ -35,7 +35,7 @@ export class ApiStack extends Stack {
     this.verwerkingenAPI = new ApiGateway.RestApi(this, 'verwerkingen-api', {
       restApiName: Statics.verwerkingenApiName,
       description: 'Verwerkingen API Gateway (REST)',
-      apiKeySourceType: ApiKeySourceType.HEADER
+      apiKeySourceType: ApiKeySourceType.HEADER,
     });
 
     // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
@@ -65,17 +65,17 @@ export class ApiStack extends Stack {
     actieIdRoute.addMethod('GET', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
 
     this.addUsagePlan();
-    
+
   }
 
   private addUsagePlan() {
     const plan = this.verwerkingenAPI.addUsagePlan('UsagePlan', {
       throttle: {
         rateLimit: 10,
-        burstLimit: 10
-      }
+        burstLimit: 10,
+      },
     });
-    
+
     const key = this.verwerkingenAPI.addApiKey('ApiKey');
     plan.addApiKey(key);
 
