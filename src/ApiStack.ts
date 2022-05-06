@@ -3,6 +3,7 @@ import {
   aws_apigateway as ApiGateway,
   aws_lambda as Lambda,
 } from 'aws-cdk-lib';
+import { ApiKeySourceType } from 'aws-cdk-lib/aws-apigateway';
 import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
@@ -34,6 +35,7 @@ export class ApiStack extends Stack {
     this.verwerkingenAPI = new ApiGateway.RestApi(this, 'verwerkingen-api', {
       restApiName: Statics.verwerkingenApiName,
       description: 'Verwerkingen API Gateway (REST)',
+      apiKeySourceType: ApiKeySourceType.HEADER
     });
 
     // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
@@ -52,14 +54,33 @@ export class ApiStack extends Stack {
 
     // Route: /verwerkingsacties
     const verwerkingsactiesRoute = this.verwerkingenAPI.root.addResource('verwerkingsacties');
-    verwerkingsactiesRoute.addMethod('POST', this.verwerkingenLambdaIntegration);
-    verwerkingsactiesRoute.addMethod('GET', this.verwerkingenLambdaIntegration);
-    verwerkingsactiesRoute.addMethod('PATCH', this.verwerkingenLambdaIntegration);
+    verwerkingsactiesRoute.addMethod('POST', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
+    verwerkingsactiesRoute.addMethod('GET', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
+    verwerkingsactiesRoute.addMethod('PATCH', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
 
     // Route: /verwerkingsacties/{actieId}
     const actieIdRoute = verwerkingsactiesRoute.addResource('{actieId}');
-    actieIdRoute.addMethod('DELETE', this.verwerkingenLambdaIntegration);
-    actieIdRoute.addMethod('PUT', this.verwerkingenLambdaIntegration);
-    actieIdRoute.addMethod('GET', this.verwerkingenLambdaIntegration);
+    actieIdRoute.addMethod('DELETE', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
+    actieIdRoute.addMethod('PUT', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
+    actieIdRoute.addMethod('GET', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
+
+    this.addUsagePlan();
+    
+  }
+
+  private addUsagePlan() {
+    const plan = this.verwerkingenAPI.addUsagePlan('UsagePlan', {
+      throttle: {
+        rateLimit: 10,
+        burstLimit: 10
+      }
+    });
+    
+    const key = this.verwerkingenAPI.addApiKey('ApiKey');
+    plan.addApiKey(key);
+
+    plan.addApiStage({
+      stage: this.verwerkingenAPI.deploymentStage,
+    });
   }
 }
