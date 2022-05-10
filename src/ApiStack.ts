@@ -68,6 +68,11 @@ export class ApiStack extends Stack {
 
   }
 
+  /**
+   * Add a usage plan (a container for api keys/limits per user of the api)
+   * to the API. (https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html)
+   * API Keys and limits are attached to a usage plan.
+   */
   private addUsagePlan() {
     const plan = this.verwerkingenAPI.addUsagePlan('UsagePlan', {
       throttle: {
