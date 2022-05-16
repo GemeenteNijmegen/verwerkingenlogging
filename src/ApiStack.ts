@@ -3,7 +3,6 @@ import {
   aws_apigateway as ApiGateway,
   aws_lambda as Lambda,
   aws_iam as IAM,
-  aws_ssm as SSM,
 } from 'aws-cdk-lib';
 import { ApiKeySourceType } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
@@ -59,7 +58,7 @@ export class ApiStack extends Stack {
         'dynamodb:UpdateItem',
       ],
       resources: [
-        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenTableArn),
+        `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName,
       ],
     }));
 
