@@ -64,6 +64,7 @@ export class ApiStack extends Stack {
     actieIdRoute.addMethod('PUT', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
     actieIdRoute.addMethod('GET', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
 
+    // Create API Key and add a new usage plan
     this.addUsagePlan();
 
   }
@@ -74,16 +75,18 @@ export class ApiStack extends Stack {
    * API Keys and limits are attached to a usage plan.
    */
   private addUsagePlan() {
-    const plan = this.verwerkingenAPI.addUsagePlan('UsagePlan', {
+    const plan = this.verwerkingenAPI.addUsagePlan('verwerkingen-usage-plan-throttle', {
       throttle: {
         rateLimit: 10,
         burstLimit: 10,
       },
     });
 
-    const key = this.verwerkingenAPI.addApiKey('ApiKey');
+    // Create new API Key
+    const key = this.verwerkingenAPI.addApiKey('verwerkingen-api-key');
     plan.addApiKey(key);
 
+    // Add Stage to Plan
     plan.addApiStage({
       stage: this.verwerkingenAPI.deploymentStage,
     });
