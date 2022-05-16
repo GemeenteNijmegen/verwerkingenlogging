@@ -2,9 +2,10 @@ import {
   Stack,
   aws_apigateway as ApiGateway,
   aws_lambda as Lambda,
+  aws_iam as IAM,
+  aws_ssm as SSM,
 } from 'aws-cdk-lib';
 import { ApiKeySourceType } from 'aws-cdk-lib/aws-apigateway';
-import { ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
 
@@ -47,7 +48,20 @@ export class ApiStack extends Stack {
         DYNAMO_TABLE_NAME: Statics.verwerkingenTableName,
       },
     });
-    this.verwerkingenLambdaFunction.grantInvoke(new ServicePrincipal('apigateway.amazonaws.com'));
+    this.verwerkingenLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
+    this.verwerkingenLambdaFunction.addToRolePolicy(new IAM.PolicyStatement({
+      effect: IAM.Effect.ALLOW,
+      actions: [
+        'dynamodb:PutItem',
+        'dynamodb:DeleteItem',
+        'dynamodb:GetItem',
+        'dynamodb:Scan',
+        'dynamodb:UpdateItem',
+      ],
+      resources: [
+        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenTableArn),
+      ],
+    }));
 
     // Create Integration & Attach Lambda to API Gateway routes.
     this.verwerkingenLambdaIntegration = new ApiGateway.LambdaIntegration(this.verwerkingenLambdaFunction);

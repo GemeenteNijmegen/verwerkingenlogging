@@ -19,6 +19,11 @@ export class PipelineStack extends Stack {
     Tags.of(this).add('Project', Statics.projectName);
     this.branchName = props.branchName;
     const pipeline = this.pipeline();
+
+    // **Stages**
+    // API Stage depends on the Database Stage.
+    // Reason: The DynamoDB table needs to be available to give access permissions to
+    // the Api Gateway and Lambda.
     pipeline.addStage(new ParameterStage(this, 'ParametersStage', { env: props.deployToEnvironment }));
     pipeline.addStage(new DatabaseStage(this, 'DatabaseStage', { env: props.deployToEnvironment }));
     pipeline.addStage(new ApiStage(this, 'ApiStage', { env: props.deployToEnvironment }));

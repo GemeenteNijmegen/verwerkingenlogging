@@ -1,4 +1,4 @@
-import { aws_dynamodb as DynamoDB, RemovalPolicy, Stack } from 'aws-cdk-lib';
+import { aws_dynamodb as DynamoDB, aws_ssm as SSM, RemovalPolicy, Stack } from 'aws-cdk-lib';
 import { TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
@@ -24,6 +24,12 @@ export class DatabaseStack extends Stack {
       timeToLiveAttribute: 'ttl',
       removalPolicy: RemovalPolicy.RETAIN,
       encryption: TableEncryption.AWS_MANAGED,
+    });
+
+    // Add DynamoDB table to parameter store.
+    new SSM.StringParameter(this, 'ssm_verwerkingen-table-arn', {
+      stringValue: this.verwerkingenTable.tableArn,
+      parameterName: Statics.ssmName_verwerkingenTableArn,
     });
 
     // Add Global Secondary Indexes to the verwerkingen table.
