@@ -60,6 +60,8 @@ export class ApiStack extends Stack {
       ],
       resources: [
         `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName,
+        `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName + 'index/' + Statics.verwerkingenTableIndex_ObjecttypesoortObjectIdobjectId,
+        `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName + 'index/' + Statics.verwerkingenTableIndex_verwerkingId,
       ],
     }));
 
