@@ -56,6 +56,7 @@ export class ApiStack extends Stack {
         'dynamodb:GetItem',
         'dynamodb:Scan',
         'dynamodb:UpdateItem',
+        'dynamodb:Query',
       ],
       resources: [
         `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName,
