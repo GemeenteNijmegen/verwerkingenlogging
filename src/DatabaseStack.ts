@@ -34,12 +34,12 @@ export class DatabaseStack extends Stack {
 
     // Add Global Secondary Indexes to the verwerkingen table.
     this.verwerkingenTable.addGlobalSecondaryIndex({
-      indexName: 'objecttypesoortObjectIdobjectId-index',
+      indexName: Statics.verwerkingenTableIndex_ObjecttypesoortObjectIdobjectId,
       partitionKey: { name: 'objecttypesoortObjectIdobjectId', type: DynamoDB.AttributeType.STRING },
     });
 
     this.verwerkingenTable.addGlobalSecondaryIndex({
-      indexName: 'verwerkingId-index',
+      indexName: Statics.verwerkingenTableIndex_verwerkingId,
       partitionKey: { name: 'verwerkingId', type: DynamoDB.AttributeType.STRING },
     });
 
