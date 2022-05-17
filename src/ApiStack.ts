@@ -36,6 +36,9 @@ export class ApiStack extends Stack {
       restApiName: Statics.verwerkingenApiName,
       description: 'Verwerkingen API Gateway (REST)',
       apiKeySourceType: ApiKeySourceType.HEADER,
+      deployOptions: {
+        stageName: 'dev', //TODO make stageName dynamic.
+      },
     });
 
     // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
