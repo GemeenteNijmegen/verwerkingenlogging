@@ -18,16 +18,28 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   deps: [
     'cdk-nag@ˆ2.0.0',
   ],
+  devDeps: [
+    '@playwright/test',
+    'dotenv',
+  ],
   gitignore: [
     'test/__snapshots__/*',
     '.env',
     '.vscode',
     '.DS_Store',
+    'test/playwright/report',
+    'test/playwright/screenshots',
   ],
+  jestOptions: {
+    jestConfig: {
+      testPathIgnorePatterns: ['/node_modules/', '/cdk.out', '/test/playwright'],
+    },
+  },
 
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
 });
+
 project.synth();
