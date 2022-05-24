@@ -27,7 +27,8 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     '.env',
     '.vscode',
     '.DS_Store',
-    'test/playwright/report'
+    'test/playwright/report',
+    'test/playwright/screenshots'
   ],
 
   // deps: [],                /* Runtime dependencies of this module. */
@@ -35,4 +36,5 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   // devDeps: [],             /* Build dependencies for this module. */
   // packageName: undefined,  /* The "name" in package.json. */
 });
+
 project.synth();
