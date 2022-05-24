@@ -24,7 +24,7 @@ test('Get verwerkingsacties for specific BSN in time range', async ({}) => {
 });
 
 test('Get specific verwerkings actie actie-id', async ({}) => {
-    const results = await apiContext.get('https://g423bazyr0.execute-api.eu-west-1.amazonaws.com/dev/verwerkingsacties/492fd26f-da73-11ec-b65e-abbf437284a9?actieId=492fd26f-da73-11ec-b65e-abbf437284a9')
+    const results = await apiContext.get('verwerkingsacties/492fd26f-da73-11ec-b65e-abbf437284a9?actieId=492fd26f-da73-11ec-b65e-abbf437284a9')
     const json = await results.json();
     expect(json).toEqual(expect.objectContaining({
         actieId: '492fd26f-da73-11ec-b65e-abbf437284a9',
