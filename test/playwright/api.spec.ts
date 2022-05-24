@@ -5,7 +5,7 @@ test.beforeAll(async ({ playwright }) => {
     require('dotenv').config()
     apiContext = await playwright.request.newContext({
       // All requests we send go to this API endpoint.
-      baseURL: 'https://g423bazyr0.execute-api.eu-west-1.amazonaws.com/dev/',
+      baseURL: process.env.BASE_URL,
       extraHTTPHeaders: {
         // Add authorization token to all requests.
         // Assuming personal access token available in the environment.
