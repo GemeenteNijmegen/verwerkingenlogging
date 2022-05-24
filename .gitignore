@@ -35,6 +35,7 @@ test/__snapshots__/*
 .vscode
 .DS_Store
 test/playwright/report
+test/playwright/screenshots
 !/.projenrc.js
 /test-reports/
 junit.xml

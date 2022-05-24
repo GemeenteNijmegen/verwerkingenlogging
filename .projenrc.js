@@ -28,8 +28,13 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     '.vscode',
     '.DS_Store',
     'test/playwright/report',
-    'test/playwright/screenshots'
+    'test/playwright/screenshots',
   ],
+  jestOptions: {
+    jestConfig: {
+      testPathIgnorePatterns: ['/node_modules/', '/cdk.out', '/test/playwright'],
+    },
+  },
 
   // deps: [],                /* Runtime dependencies of this module. */
   // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
