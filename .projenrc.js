@@ -18,11 +18,16 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   deps: [
     'cdk-nag@ˆ2.0.0',
   ],
+  devDeps: [
+    '@playwright/test',
+    'dotenv',
+  ],
   gitignore: [
     'test/__snapshots__/*',
     '.env',
     '.vscode',
     '.DS_Store',
+    'test/playwright/report'
   ],
 
   // deps: [],                /* Runtime dependencies of this module. */
