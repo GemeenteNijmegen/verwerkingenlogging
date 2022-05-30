@@ -11,12 +11,17 @@ table = dynamodb.Table(os.environ['DYNAMO_TABLE_NAME'])
 def handler(event, context):
     
     print(event)
+
+    # Validate if queryStringParameters exists
+    boolQueryParam = True
+    if (event.get('queryStringParameters') == None):
+        boolQueryParam = False
     
     ############################
     ## GET /verwerkingsacties ##
     ############################
     
-    if (event['httpMethod'] == 'GET' and event['resource'] == '/verwerkingsacties'):
+    if (event['httpMethod'] == 'GET' and event['resource'] == '/verwerkingsacties' and boolQueryParam):
 
         # ONLY verwerkingsactiviteitId
         if (event['queryStringParameters'].get('verwerkingsactiviteitId') != None and event['queryStringParameters'].get('vertrouwelijkheid') == None):
@@ -108,7 +113,7 @@ def handler(event, context):
     ## PATCH /verwerkingsacties ##
     ##############################
     
-    if (event['httpMethod'] == 'PATCH' and event['resource'] == '/verwerkingsacties'):
+    if (event['httpMethod'] == 'PATCH' and event['resource'] == '/verwerkingsacties' and boolQueryParam):
         requestJSON = json.loads(event['body'])
         verwerkingen = table.query(
             IndexName='verwerkingId-index',
@@ -138,22 +143,30 @@ def handler(event, context):
     ## GET /verwerkingsacties/{actieId} ##
     ######################################
         
-    if (event['httpMethod'] == 'GET' and event['resource'] == '/verwerkingsacties/{actieId}'):
+    if (event['httpMethod'] == 'GET' and event['resource'] == '/verwerkingsacties/{actieId}' and boolQueryParam):
         response = table.query(
             KeyConditionExpression=Key('actieId').eq(event['queryStringParameters']['actieId'])
         )
-
-        return {
-            'statusCode': 200,
-            'body': json.dumps(response.get('Items')[0]),
-            'headers': { "Content-Type": "application/json" },
-        }
+        
+        # Check if requested record is found. If not, the list of items is empty (0).
+        if ( len(response.get('Items')) == 0 ):
+            return {
+                'statusCode': 400,
+                'body': 'Record not found',
+                'headers': { "Content-Type": "text/plain" },
+            }
+        else:
+            return {
+                'statusCode': 200,
+                'body': json.dumps(response.get('Items')[0]),
+                'headers': { "Content-Type": "application/json" },
+            }
         
     ######################################
     ## PUT /verwerkingsacties/{actieId} ##
     ######################################
         
-    if (event['httpMethod'] == 'PUT' and event['resource'] == '/verwerkingsacties/{actieId}'):
+    if (event['httpMethod'] == 'PUT' and event['resource'] == '/verwerkingsacties/{actieId}' and boolQueryParam):
         requestJSON = json.loads(event['body'])
         item ={
                 'url': "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + event['queryStringParameters']['actieId'],
@@ -193,7 +206,7 @@ def handler(event, context):
     ## DELETE /verwerkingsacties/{actieId} ##
     #########################################
     
-    if (event['httpMethod'] == 'DELETE' and event['resource'] == '/verwerkingsacties/{actieId}'):
+    if (event['httpMethod'] == 'DELETE' and event['resource'] == '/verwerkingsacties/{actieId}' and boolQueryParam):
         response = table.delete_item(
             Key={
                 'actieId': event['queryStringParameters']['actieId'],
@@ -205,3 +218,9 @@ def handler(event, context):
             'body': json.dumps(response),
             'headers': { "Content-Type": "application/json" }
         }
+
+    return {
+            'statusCode': 400,
+            'body': '400 Bad Request',
+            'headers': { "Content-Type": "text/plain" }
+    }
