@@ -19,8 +19,8 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     'cdk-nag@ˆ2.0.0',
   ],
   devDeps: [
-    '@playwright/test',
     'dotenv',
+    'axios',
   ],
   gitignore: [
     'test/__snapshots__/*',
@@ -32,7 +32,7 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   ],
   jestOptions: {
     jestConfig: {
-      testPathIgnorePatterns: ['/node_modules/', '/cdk.out', '/test/playwright'],
+      testPathIgnorePatterns: ['/node_modules/', '/cdk.out', '/test/validation'],
     },
   },
 

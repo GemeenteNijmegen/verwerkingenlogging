@@ -1,0 +1,22 @@
+{
+    "testMatch": [
+        "<rootDir>test/validation/**/*.ts?(x)"
+    ],
+    "clearMocks": true,
+    "collectCoverage": false,
+    "reporters": [
+        "default",
+        [
+            "jest-junit",
+            {
+                "outputDirectory": "test-reports"
+            }
+        ]
+    ],
+    "preset": "ts-jest",
+    "globals": {
+        "ts-jest": {
+            "tsconfig": "tsconfig.dev.json"
+        }
+    }
+}
