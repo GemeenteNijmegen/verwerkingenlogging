@@ -29,12 +29,12 @@
     "projen": "npx projen"
   },
   "devDependencies": {
-    "@playwright/test": "^1.22.2",
     "@types/jest": "^27.4.1",
     "@types/node": "^12",
     "@typescript-eslint/eslint-plugin": "^5",
     "@typescript-eslint/parser": "^5",
     "aws-cdk": "^2.1.0",
+    "axios": "^0.27.2",
     "dotenv": "^16.0.1",
     "esbuild": "^0.14.38",
     "eslint": "^8",
@@ -62,7 +62,7 @@
     "testPathIgnorePatterns": [
       "/node_modules/",
       "/cdk.out",
-      "/test/playwright"
+      "/test/validation"
     ],
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.ts?(x)",
@@ -81,7 +81,7 @@
     "coveragePathIgnorePatterns": [
       "/node_modules/",
       "/cdk.out",
-      "/test/playwright"
+      "/test/validation"
     ],
     "watchPathIgnorePatterns": [
       "/node_modules/"
