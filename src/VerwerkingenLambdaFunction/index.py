@@ -8,6 +8,10 @@ from boto3.dynamodb.conditions import Key, Attr
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['DYNAMO_TABLE_NAME'])
 
+s3 = boto3.resource('s3')
+bucket = s3.Bucket(os.environ['S3_BACKUP_BUCKET_NAME'])
+
+
 def handler(event, context):
     
     print(event)
@@ -16,6 +20,7 @@ def handler(event, context):
     boolQueryParam = True
     if (event.get('queryStringParameters') == None):
         boolQueryParam = False
+        
     
     ############################
     ## GET /verwerkingsacties ##
@@ -101,6 +106,15 @@ def handler(event, context):
         print(requestJSON['verwerkteObjecten'])
         response = table.put_item(
             Item=item
+        )
+        
+        # Store (backup) verwerking item in S3 Backup Bucket
+        path = datetime.now().isoformat(timespec='seconds') + "_" + actieId
+        data = bytes(json.dumps(item).encode('UTF-8'))
+        bucket.put_object(
+            ContentType='application/json',
+            Key=path,
+            Body=data,
         )
 
         return {
@@ -194,6 +208,15 @@ def handler(event, context):
             }
         response = table.put_item(
             Item=item
+        )
+        
+        # Store (backup) verwerking item in S3 Backup Bucket
+        path = datetime.now().isoformat(timespec='seconds') + "_" + event['queryStringParameters']['actieId']
+        data = bytes(json.dumps(item).encode('UTF-8'))
+        bucket.put_object(
+            ContentType='application/json',
+            Key=path,
+            Body=data,
         )
 
         return {

@@ -11,7 +11,7 @@ export abstract class Statics {
   static readonly verwerkingenTableName: string = 'verwerkingen-table';
 
   /**
-   * DynamoDB table arn.
+   * DynamoDB table arn (parameter).
    */
   static readonly ssmName_verwerkingenTableArn: string = '/cdk/verwerkingenlogging/verwerkingen-table-arn';
 
@@ -24,6 +24,16 @@ export abstract class Statics {
    * DynamoDB index name for verwerkingId.
    */
   static readonly verwerkingenTableIndex_verwerkingId: string = 'verwerkingId-index';
+
+  /**
+   * S3 Backup Bucket name for verwerkingen.
+   */
+  static readonly verwerkingenS3BackupBucketName: string = 'verwerkingen-backup-bucket';
+
+  /**
+   * S3 Backup Bucket arn (parameter).
+   */
+  static readonly ssmName_verwerkingenS3BackupBucketArn: string = '/cdk/verwerkingenlogging/verwerkingen-s3-backup-bucket-arn';
 
   /**
    * Codestar connection ARN to connect to GitHub.
