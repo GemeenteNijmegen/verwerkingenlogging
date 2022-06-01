@@ -3,6 +3,7 @@ import {
   aws_apigateway as ApiGateway,
   aws_lambda as Lambda,
   aws_iam as IAM,
+  aws_ssm as SSM,
 } from 'aws-cdk-lib';
 import { ApiKeySourceType } from 'aws-cdk-lib/aws-apigateway';
 import { Construct } from 'constructs';
@@ -48,6 +49,7 @@ export class ApiStack extends Stack {
       runtime: Lambda.Runtime.PYTHON_3_9,
       environment: {
         DYNAMO_TABLE_NAME: Statics.verwerkingenTableName,
+        S3_BACKUP_BUCKET_NAME: Statics.verwerkingenS3BackupBucketName,
       },
     });
     this.verwerkingenLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
@@ -60,11 +62,14 @@ export class ApiStack extends Stack {
         'dynamodb:Scan',
         'dynamodb:UpdateItem',
         'dynamodb:Query',
+        's3:PutObject',
       ],
       resources: [
         `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName,
         `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName + '/index/' + Statics.verwerkingenTableIndex_ObjecttypesoortObjectIdobjectId,
         `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
+        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn),
+        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn) + '/*',
       ],
     }));
 
