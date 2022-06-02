@@ -34,30 +34,8 @@ def get_verwerkings_acties(event, table):
         attrs &= Attr("verwerkingsactiviteitId").eq(event['queryStringParameters'].get('verwerkingsactiviteitId'))
     if(event['queryStringParameters'].get('vertrouwelijkheid') != None):
         attrs &= Attr("vertrouwelijkheid").eq(event['queryStringParameters'].get('vertrouwelijkheid'))
-
-    if (event['queryStringParameters'].get('verwerkingsactiviteitId') != None and event['queryStringParameters'].get('vertrouwelijkheid') == None):
-        response = table.query(
-            IndexName='objecttypesoortObjectIdobjectId-index',
-            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key),
-            FilterExpression=attrs)
     
-    # ONLY vertrouwelijkheid
-    if (event['queryStringParameters'].get('verwerkingsactiviteitId') == None and event['queryStringParameters'].get('vertrouwelijkheid') != None):
-        response = table.query(
-            IndexName='objecttypesoortObjectIdobjectId-index',
-            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key),
-            FilterExpression=attrs)
-        
-    # BOTH verwerkingsactiviteitId & vertrouwelijkheid
-    if (event['queryStringParameters'].get('verwerkingsactiviteitId') != None and event['queryStringParameters'].get('vertrouwelijkheid') != None):
-        response = table.query(
-            IndexName='objecttypesoortObjectIdobjectId-index',
-            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key),
-            FilterExpression=attrs)
-        
-    # NONE verwerkingsactiviteitId & vertrouwelijkheid
-    if (event['queryStringParameters'].get('verwerkingsactiviteitId') == None and event['queryStringParameters'].get('vertrouwelijkheid') == None):
-        response = table.query(
+    response = table.query(
             IndexName='objecttypesoortObjectIdobjectId-index',
             KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key),
             FilterExpression=attrs)
