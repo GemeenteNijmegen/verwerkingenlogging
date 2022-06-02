@@ -102,7 +102,6 @@ def post_verwerkings_acties(event, table):
                 'objecttypesoortObjectIdobjectId': requestJSON['verwerkteObjecten'][0]['objecttype'] + "_" + requestJSON['verwerkteObjecten'][0]['soortObjectId'] + "_" + requestJSON['verwerkteObjecten'][0]['objectId'],
             }
         
-        print(requestJSON['verwerkteObjecten'])
         response = table.put_item(
             Item=item
         )
@@ -113,6 +112,33 @@ def post_verwerkings_acties(event, table):
             'headers': { "Content-Type": "application/json" }
         }
 
+def patch_verwerkings_acties(event, table):
+    ##############################
+    ## PATCH /verwerkingsacties ##
+    ##############################
+    requestJSON = json.loads(event['body'])
+    verwerkingen = table.query(
+        IndexName='verwerkingId-index',
+        KeyConditionExpression=Key('verwerkingId').eq(event['queryStringParameters']['verwerkingId'])
+    )
+    response = []
+    for item in verwerkingen.get('Items'):
+        response.append(table.update_item(
+            Key={ 
+                'actieId': item.get('actieId') 
+            },
+            UpdateExpression="SET vertrouwelijkheid= :var1, bewaartermijn= :var2",
+            ExpressionAttributeValues={
+                ':var1': requestJSON['vertrouwelijkheid'],
+                ':var2': requestJSON['bewaartermijn']
+            }
+        ))
+    return {
+        'statusCode': 200,
+        'body': json.dumps(response),
+        'headers': { "Content-Type": "application/json" },
+    }
+
 def store_item_in_s3(item_json, bucket):
     # Store (backup) verwerking item in S3 Backup Bucket
     path = datetime.now().isoformat(timespec='seconds') + "_" + json.loads(item_json)['actieId']
@@ -122,6 +148,7 @@ def store_item_in_s3(item_json, bucket):
         Key=path,
         Body=data,
     )
+
 
 def handle_request(event, table, bucket):
 
@@ -134,39 +161,15 @@ def handle_request(event, table, bucket):
         store_item_in_s3(result['body'], bucket)
         return result
 
+    if(params['method'] == 'PATCH' and params['resource'] =='/verwerkingsacties'):
+        return patch_verwerkings_acties(event, table)
+
+
     # Validate if queryStringParameters exists
     boolQueryParam = True
     if (event.get('queryStringParameters') == None):
         boolQueryParam = False
     
-    
-    ##############################
-    ## PATCH /verwerkingsacties ##
-    ##############################
-    
-    if (event['httpMethod'] == 'PATCH' and event['resource'] == '/verwerkingsacties' and boolQueryParam):
-        requestJSON = json.loads(event['body'])
-        verwerkingen = table.query(
-            IndexName='verwerkingId-index',
-            KeyConditionExpression=Key('verwerkingId').eq(event['queryStringParameters']['verwerkingId'])
-        )
-        response = []
-        for item in verwerkingen.get('Items'):
-            response.append(table.update_item(
-                Key={ 
-                    'actieId': item.get('actieId') 
-                },
-                UpdateExpression="SET vertrouwelijkheid= :var1, bewaartermijn= :var2",
-                ExpressionAttributeValues={
-                    ':var1': requestJSON['vertrouwelijkheid'],
-                    ':var2': requestJSON['bewaartermijn']
-                }
-            ))
-        return {
-            'statusCode': 200,
-            'body': json.dumps(response),
-            'headers': { "Content-Type": "application/json" },
-        }
         
     ######################################
     ## GET /verwerkingsacties/{actieId} ##
