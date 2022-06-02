@@ -18,23 +18,11 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)),"../../
 
 from handler import handle_request, parse_event
 
-def test_parse_event():
+def test_parse_event(get_event):
     """Test parsing and validation of events
     """
-    event = {
-        'queryStringParameters': { 
-            'verwerkingsactiviteitId': '123', 
-            'objecttype': 'test',
-            'soortObjectId': 'test',
-            'objectId': 'test',
-            'beginDatum': '123',
-            'eindDatum': '123',
 
-        },
-        'httpMethod': 'GET',
-        'resource': '/verwerkingsacties'
-    }
-    params = parse_event(event)
+    params = parse_event(get_event)
     assert params['method'] == 'GET'
 
     event = {
@@ -46,11 +34,10 @@ def test_parse_event():
 
 @mock_s3
 @mock_dynamodb
-def test_post_verwerkingsactie():
+def test_post_verwerkingsactie(post_event):
     table = mock_table()
     bucket = mock_s3_bucket()
-    event = post_event()
-    response = handle_request(event, table, bucket)
+    response = handle_request(post_event, table, bucket)
     assert response['statusCode'] == 201
     result = json.loads(response['body'])
     assert len(result['actieId']) > 0
@@ -58,112 +45,75 @@ def test_post_verwerkingsactie():
 
 @mock_s3
 @mock_dynamodb
-def test_get_verwerkingsactie_empty():
+def test_get_verwerkingsactie_empty(get_event):
     table = mock_table()
     bucket = mock_s3_bucket()
 
     """
     Testing an empty payload event to the Lambda
     """
-    
-    event = {
-        'queryStringParameters': { 
-            'verwerkingsactiviteitId': '123', 
-            'objecttype': 'test',
-            'soortObjectId': 'test',
-            'objectId': 'test',
-            'beginDatum': '123',
-            'eindDatum': '123',
-
-        },
-        'httpMethod': 'GET',
-        'resource': '/verwerkingsacties'
-    }
-
-    response = handle_request(event, table, bucket)
+    response = handle_request(get_event, table, bucket)
     assert response['statusCode'] == 200
     result = json.loads(response['body'])
     assert len(result['Items']) == 0
 
 @mock_s3
 @mock_dynamodb
-def test_get_verwerkingsactie_non_empty():
+def test_get_verwerkingsactie_non_empty(get_event, post_event):
     table = mock_table()
     bucket = mock_s3_bucket()
 
      # First post so there's something to get
-    event = post_event() 
-    response = handle_request(event, table, bucket)
+    response = handle_request(post_event, table, bucket)
 
     """
     Testing getting an action from the API
     """
-    event = {
-        'queryStringParameters': { 
-            'verwerkingsactiviteitId': '5f0bef4c-f66f-4311-84a5-19e8bf359eaf', 
-            'objecttype': 'persoon',
-            'soortObjectId': 'BSN',
-            'objectId': '1234567',
-            'beginDatum': '2022-04-05T14:35:42+01:00',
-            'eindDatum': '2025-04-05T14:35:42+01:00',
 
-        },
-        'httpMethod': 'GET',
-        'resource': '/verwerkingsacties'
-    }
-
-    response = handle_request(event, table, bucket)
+    response = handle_request(get_event, table, bucket)
     assert response['statusCode'] == 200
     result = json.loads(response['body'])
     assert len(result['Items']) == 1
 
 @mock_s3
 @mock_dynamodb
-def test_get_verwerkingsactie_all():
+def test_get_verwerkingsactie_all(get_event, post_event):
     table = mock_table()
     bucket = mock_s3_bucket()
 
      # First post so there's something to get
-    event = post_event() 
-    response = handle_request(event, table, bucket)
+    response = handle_request(post_event, table, bucket)
 
     """
     Testing getting an action from the API
     """
-    event = {
-        'queryStringParameters': { 
-            'objecttype': 'persoon',
-            'soortObjectId': 'BSN',
-            'objectId': '1234567',
-            'beginDatum': '2022-04-05T14:35:42+01:00',
-            'eindDatum': '2025-04-05T14:35:42+01:00',
-
-        },
-        'httpMethod': 'GET',
-        'resource': '/verwerkingsacties'
-    }
-
-    response = handle_request(event, table, bucket)
+    response = handle_request(get_event, table, bucket)
     assert response['statusCode'] == 200
     result = json.loads(response['body'])
     assert len(result['Items']) == 1
 
 @mock_s3
 @mock_dynamodb
-def test_patch_verwerkingsactie():
+def test_patch_verwerkingsactie(post_event, patch_event, get_event):
     table = mock_table()
     bucket = mock_s3_bucket()
+
      # First post so there's something to patch
-    event = post_event() 
-    response = handle_request(event, table, bucket)
+    response = handle_request(post_event, table, bucket)
 
-    event = patch_event()
-    response = handle_request(event, table, bucket)
+    # patch the posted event
+    response = handle_request(patch_event, table, bucket)
     assert response['statusCode'] == 200
     result = json.loads(response['body'])
     assert len(result) == 1
-    assert result[0]['objectId'] == '1234567'
+    
+    # Get the modified record and check for changes
+    response = handle_request(get_event, table, bucket)
+    assert response['statusCode'] == 200
+    result = json.loads(response['body'])
+    assert result['Items'][0]['bewaartermijn'] == 'P1Y';
 
+@pytest.fixture
 def post_event():
     event = {
         'httpMethod': 'POST',
@@ -204,7 +154,24 @@ def post_event():
     }
     return event
 
+@pytest.fixture
+def get_event():
+    event = {
+        'queryStringParameters': { 
+            'verwerkingsactiviteitId': '5f0bef4c-f66f-4311-84a5-19e8bf359eaf', 
+            'objecttype': 'persoon',
+            'soortObjectId': 'BSN',
+            'objectId': '1234567',
+            'beginDatum': '2022-04-05T14:35:42+01:00',
+            'eindDatum': '2025-04-05T14:35:42+01:00',
 
+        },
+        'httpMethod': 'GET',
+        'resource': '/verwerkingsacties'
+    }
+    return event
+
+@pytest.fixture
 def patch_event():
     event = {
         'httpMethod': 'PATCH',
