@@ -3,11 +3,12 @@ import uuid
 from datetime import datetime
 from boto3.dynamodb.conditions import Key, Attr
 
-def handleRequest(event, table):
+def handleRequest(event, table, bucket):
     # Validate if queryStringParameters exists
     boolQueryParam = True
     if (event.get('queryStringParameters') == None):
         boolQueryParam = False
+        
     
     ############################
     ## GET /verwerkingsacties ##
@@ -46,6 +47,7 @@ def handleRequest(event, table):
                 KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(event['queryStringParameters']['objecttype'] + "_" + event['queryStringParameters']['soortObjectId'] + "_" + event['queryStringParameters']['objectId']),
                 FilterExpression=Attr("tijdstip").between(event['queryStringParameters']['beginDatum'], event['queryStringParameters']['eindDatum'])
             )
+        
         return {
             'statusCode': 200,
             'body': json.dumps(response),
@@ -93,6 +95,16 @@ def handleRequest(event, table):
         response = table.put_item(
             Item=item
         )
+        
+        # Store (backup) verwerking item in S3 Backup Bucket
+        path = datetime.now().isoformat(timespec='seconds') + "_" + actieId
+        data = bytes(json.dumps(item).encode('UTF-8'))
+        bucket.put_object(
+            ContentType='application/json',
+            Key=path,
+            Body=data,
+        )
+
         return {
             'statusCode': 201,
             'body': json.dumps(item),
@@ -184,6 +196,15 @@ def handleRequest(event, table):
             }
         response = table.put_item(
             Item=item
+        )
+        
+        # Store (backup) verwerking item in S3 Backup Bucket
+        path = datetime.now().isoformat(timespec='seconds') + "_" + event['queryStringParameters']['actieId']
+        data = bytes(json.dumps(item).encode('UTF-8'))
+        bucket.put_object(
+            ContentType='application/json',
+            Key=path,
+            Body=data,
         )
 
         return {
