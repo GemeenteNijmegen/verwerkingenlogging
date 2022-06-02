@@ -176,6 +176,59 @@ def test_patch_verwerkingsactie(post_event, patch_event, get_event):
     result = json.loads(response['body'])
     assert result['Items'][0]['bewaartermijn'] == 'P1Y';
 
+
+@mock_s3
+@mock_dynamodb
+def test_get_put_verwerkingsactie(post_event, patch_body):
+    """PUTTING a specific actieId
+    First we POST, then we check the acton with the ActieId
+    Then we PUT, and check the new actieId contents
+    """
+    table = mock_table()
+    bucket = mock_s3_bucket()
+
+     # First post so there's something to get
+    response = handle_request(post_event, table, bucket)
+
+    assert response['statusCode'] == 201
+    result = json.loads(response['body'])
+    
+    event = {
+        'queryStringParameters': { 
+            'actieId': result['actieId']
+        },
+        'httpMethod': 'GET',
+        'resource': '/verwerkingsacties/{actieId}'
+    }
+    response = handle_request(event, table, bucket)
+    assert response['statusCode'] == 200
+    get_result = json.loads(response['body'])
+    assert get_result['actieNaam'] == 'Zoeken personen'
+
+    event = {
+        'queryStringParameters': { 
+            'actieId': result['actieId']
+        },
+        'httpMethod': 'PUT',
+        'resource': '/verwerkingsacties/{actieId}',
+        'body': patch_body
+    }
+    response = handle_request(event, table, bucket)
+    get_result = json.loads(response['body'])
+    assert response['statusCode'] == 200
+    
+    event = {
+        'queryStringParameters': { 
+            'actieId': result['actieId']
+        },
+        'httpMethod': 'GET',
+        'resource': '/verwerkingsacties/{actieId}'
+    }
+    response = handle_request(event, table, bucket)
+    assert response['statusCode'] == 200
+    get_result = json.loads(response['body'])
+    assert get_result['actieNaam'] == 'Appels kopen'
+
 @pytest.fixture
 def post_event():
     event = {
@@ -301,6 +354,42 @@ def patch_event():
         }
     }
     return event
+
+@pytest.fixture
+def patch_body():
+    return json.dumps({
+        "actieNaam": "Appels kopen",
+        "handelingNaam": "Intake",
+        "verwerkingNaam": "Huwelijk",
+        "verwerkingId": "48086bf2-11b7-4603-9526-67d7c3bb6587",
+        "verwerkingsactiviteitId": "5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+        "verwerkingsactiviteitUrl": "https://verwerkingsactiviteiten-api.vng.cloud/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+        "vertrouwelijkheid": "normaal",
+        "bewaartermijn": "P10Y",
+        "uitvoerder": "00000001821002193000",
+        "systeem": "FooBarApp v2.1",
+        "gebruiker": "123456789",
+        "gegevensbron": "FooBar Database Publiekszaken",
+        "soortAfnemerId": "OIN",
+        "afnemerId": "00000001821002193000",
+        "verwerkingsactiviteitIdAfnemer": "c5b9f4e7-8c79-41b9-91e2-6268419cb167",
+        "verwerkingsactiviteitUrlAfnemer": "https://www.amsterdam.nl/var/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+        "verwerkingIdAfnemer": "4b698de3-ffba-45e7-8697-a283ec863db2",
+        "tijdstip": "2024-04-05T14:35:42+01:00",
+        "verwerkteObjecten": [
+            {
+                "objecttype": "persoon",
+                "soortObjectId": "BSN",
+                "objectId": "1234567",
+                "betrokkenheid": "Getuige",
+                "verwerkteSoortenGegevens": [
+                    {
+                        "soortGegeven": "BSN"
+                    }
+                ]
+            }
+        ]
+    })
 
 @mock_s3
 def mock_s3_bucket():

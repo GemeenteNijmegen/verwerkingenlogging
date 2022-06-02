@@ -143,6 +143,28 @@ def patch_verwerkings_acties(event, table):
         'headers': { "Content-Type": "application/json" },
     }
 
+def get_verwerkingsacties_actieid(event, table):
+    ######################################
+    ## GET /verwerkingsacties/{actieId} ##
+    ######################################
+    response = table.query(
+            KeyConditionExpression=Key('actieId').eq(event['queryStringParameters']['actieId'])
+    )
+    
+    # Check if requested record is found. If not, the list of items is empty (0).
+    if ( len(response.get('Items')) == 0 ):
+        return {
+            'statusCode': 400,
+            'body': 'Record not found',
+            'headers': { "Content-Type": "text/plain" },
+        }
+    else:
+        return {
+            'statusCode': 200,
+            'body': json.dumps(response.get('Items')[0]),
+            'headers': { "Content-Type": "application/json" },
+        }
+
 def store_item_in_s3(item_json, bucket):
     # Store (backup) verwerking item in S3 Backup Bucket
     path = datetime.now().isoformat(timespec='seconds') + "_" + json.loads(item_json)['actieId']
@@ -152,7 +174,6 @@ def store_item_in_s3(item_json, bucket):
         Key=path,
         Body=data,
     )
-
 
 def handle_request(event, table, bucket):
     params = parse_event(event)
@@ -167,35 +188,13 @@ def handle_request(event, table, bucket):
     if(params['method'] == 'PATCH' and params['resource'] =='/verwerkingsacties'):
         return patch_verwerkings_acties(event, table)
 
+    if(params['method'] == 'GET' and params['resource'] == '/verwerkingsacties/{actieId}'):
+        return get_verwerkingsacties_actieid(event, table)
 
     # Validate if queryStringParameters exists
     boolQueryParam = True
     if (event.get('queryStringParameters') == None):
         boolQueryParam = False
-    
-        
-    ######################################
-    ## GET /verwerkingsacties/{actieId} ##
-    ######################################
-        
-    if (event['httpMethod'] == 'GET' and event['resource'] == '/verwerkingsacties/{actieId}' and boolQueryParam):
-        response = table.query(
-            KeyConditionExpression=Key('actieId').eq(event['queryStringParameters']['actieId'])
-        )
-        
-        # Check if requested record is found. If not, the list of items is empty (0).
-        if ( len(response.get('Items')) == 0 ):
-            return {
-                'statusCode': 400,
-                'body': 'Record not found',
-                'headers': { "Content-Type": "text/plain" },
-            }
-        else:
-            return {
-                'statusCode': 200,
-                'body': json.dumps(response.get('Items')[0]),
-                'headers': { "Content-Type": "application/json" },
-            }
         
     ######################################
     ## PUT /verwerkingsacties/{actieId} ##
