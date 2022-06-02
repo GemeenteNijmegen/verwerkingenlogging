@@ -27,36 +27,40 @@ def get_verwerkings_acties(event, table):
     ## GET /verwerkingsacties ##
     ############################
     # ONLY verwerkingsactiviteitId
+    object_key = event['queryStringParameters']['objecttype'] + "_" + event['queryStringParameters']['soortObjectId'] + "_" + event['queryStringParameters']['objectId']
+
+    attrs = Attr("tijdstip").between(event['queryStringParameters']['beginDatum'], event['queryStringParameters']['eindDatum'])
+    if (event['queryStringParameters'].get('verwerkingsactiviteitId') != None):
+        attrs &= Attr("verwerkingsactiviteitId").eq(event['queryStringParameters'].get('verwerkingsactiviteitId'))
+    if(event['queryStringParameters'].get('vertrouwelijkheid') != None):
+        attrs &= Attr("vertrouwelijkheid").eq(event['queryStringParameters'].get('vertrouwelijkheid'))
+
     if (event['queryStringParameters'].get('verwerkingsactiviteitId') != None and event['queryStringParameters'].get('vertrouwelijkheid') == None):
         response = table.query(
             IndexName='objecttypesoortObjectIdobjectId-index',
-            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(event['queryStringParameters']['objecttype'] + "_" + event['queryStringParameters']['soortObjectId'] + "_" + event['queryStringParameters']['objectId']),
-            FilterExpression=Attr("verwerkingsactiviteitId").eq(event['queryStringParameters'].get('verwerkingsactiviteitId')) & Attr("tijdstip").between(event['queryStringParameters']['beginDatum'], event['queryStringParameters']['eindDatum'])
-        )
+            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key),
+            FilterExpression=attrs)
     
     # ONLY vertrouwelijkheid
     if (event['queryStringParameters'].get('verwerkingsactiviteitId') == None and event['queryStringParameters'].get('vertrouwelijkheid') != None):
         response = table.query(
             IndexName='objecttypesoortObjectIdobjectId-index',
-            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(event['queryStringParameters']['objecttype'] + "_" + event['queryStringParameters']['soortObjectId'] + "_" + event['queryStringParameters']['objectId']),
-            FilterExpression=Attr("vertrouwelijkheid").eq(event['queryStringParameters'].get('vertrouwelijkheid')) & Attr("tijdstip").between(event['queryStringParameters']['beginDatum'], event['queryStringParameters']['eindDatum'])
-        )
+            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key),
+            FilterExpression=attrs)
         
     # BOTH verwerkingsactiviteitId & vertrouwelijkheid
     if (event['queryStringParameters'].get('verwerkingsactiviteitId') != None and event['queryStringParameters'].get('vertrouwelijkheid') != None):
         response = table.query(
             IndexName='objecttypesoortObjectIdobjectId-index',
-            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(event['queryStringParameters']['objecttype'] + "_" + event['queryStringParameters']['soortObjectId'] + "_" + event['queryStringParameters']['objectId']),
-            FilterExpression=Attr("vertrouwelijkheid").eq(event['queryStringParameters'].get('vertrouwelijkheid')) & Attr("verwerkingsactiviteitId").eq(event['queryStringParameters'].get('verwerkingsactiviteitId')) & Attr("tijdstip").between(event['queryStringParameters']['beginDatum'], event['queryStringParameters']['eindDatum'])
-        )
+            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key),
+            FilterExpression=attrs)
         
     # NONE verwerkingsactiviteitId & vertrouwelijkheid
     if (event['queryStringParameters'].get('verwerkingsactiviteitId') == None and event['queryStringParameters'].get('vertrouwelijkheid') == None):
         response = table.query(
             IndexName='objecttypesoortObjectIdobjectId-index',
-            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(event['queryStringParameters']['objecttype'] + "_" + event['queryStringParameters']['soortObjectId'] + "_" + event['queryStringParameters']['objectId']),
-            FilterExpression=Attr("tijdstip").between(event['queryStringParameters']['beginDatum'], event['queryStringParameters']['eindDatum'])
-        )
+            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key),
+            FilterExpression=attrs)
         
     return {
         'statusCode': 200,
@@ -151,7 +155,6 @@ def store_item_in_s3(item_json, bucket):
 
 
 def handle_request(event, table, bucket):
-
     params = parse_event(event)
     if(params['method'] == 'GET' and params['resource'] == '/verwerkingsacties'):
         return get_verwerkings_acties(event, table)

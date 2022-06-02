@@ -35,6 +35,8 @@ def test_parse_event(get_event):
 @mock_s3
 @mock_dynamodb
 def test_post_verwerkingsactie(post_event):
+    """Posting a new action to the API
+    """
     table = mock_table()
     bucket = mock_s3_bucket()
     response = handle_request(post_event, table, bucket)
@@ -46,12 +48,11 @@ def test_post_verwerkingsactie(post_event):
 @mock_s3
 @mock_dynamodb
 def test_get_verwerkingsactie_empty(get_event):
+    """Testing getting an action from the API when there are no contents
+    """
     table = mock_table()
     bucket = mock_s3_bucket()
 
-    """
-    Testing an empty payload event to the Lambda
-    """
     response = handle_request(get_event, table, bucket)
     assert response['statusCode'] == 200
     result = json.loads(response['body'])
@@ -60,15 +61,14 @@ def test_get_verwerkingsactie_empty(get_event):
 @mock_s3
 @mock_dynamodb
 def test_get_verwerkingsactie_non_empty(get_event, post_event):
+    """Testing getting an action from the API when there are contents in the log
+    """
     table = mock_table()
     bucket = mock_s3_bucket()
 
      # First post so there's something to get
     response = handle_request(post_event, table, bucket)
 
-    """
-    Testing getting an action from the API
-    """
 
     response = handle_request(get_event, table, bucket)
     assert response['statusCode'] == 200
@@ -77,17 +77,50 @@ def test_get_verwerkingsactie_non_empty(get_event, post_event):
 
 @mock_s3
 @mock_dynamodb
-def test_get_verwerkingsactie_all(get_event, post_event):
+def test_get_verwerkingsactie_vertrouwelijk(get_event_vertrouwelijk, post_event):
+    """Testing getting an action from the API when there are contents in the log
+    """
     table = mock_table()
     bucket = mock_s3_bucket()
 
      # First post so there's something to get
     response = handle_request(post_event, table, bucket)
 
+    response = handle_request(get_event_vertrouwelijk, table, bucket)
+    assert response['statusCode'] == 200
+    result = json.loads(response['body'])
+    assert len(result['Items']) == 0
+
+@mock_s3
+@mock_dynamodb
+def test_get_verwerkingsactie_time_only(get_event_time_only, post_event):
+    """Testing getting an action from the API when there are contents in the log
     """
-    Testing getting an action from the API
+    table = mock_table()
+    bucket = mock_s3_bucket()
+
+     # First post so there's something to get
+    response = handle_request(post_event, table, bucket)
+
+
+    response = handle_request(get_event_time_only, table, bucket)
+    assert response['statusCode'] == 200
+    result = json.loads(response['body'])
+    assert len(result['Items']) == 1
+
+
+@mock_s3
+@mock_dynamodb
+def test_get_specific_verwerkingsactie(get_specific_event, post_event):
+    """Getting a specific action from the API
     """
-    response = handle_request(get_event, table, bucket)
+    table = mock_table()
+    bucket = mock_s3_bucket()
+
+     # First post so there's something to get
+    response = handle_request(post_event, table, bucket)
+
+    response = handle_request(get_specific_event, table, bucket)
     assert response['statusCode'] == 200
     result = json.loads(response['body'])
     assert len(result['Items']) == 1
@@ -95,6 +128,8 @@ def test_get_verwerkingsactie_all(get_event, post_event):
 @mock_s3
 @mock_dynamodb
 def test_patch_verwerkingsactie(post_event, patch_event, get_event):
+    """Patching a specific action from the API and getting resulting item
+    """
     table = mock_table()
     bucket = mock_s3_bucket()
 
@@ -156,6 +191,59 @@ def post_event():
 
 @pytest.fixture
 def get_event():
+    event = {
+        'queryStringParameters': { 
+            'verwerkingsactiviteitId': '5f0bef4c-f66f-4311-84a5-19e8bf359eaf', 
+            'objecttype': 'persoon',
+            'soortObjectId': 'BSN',
+            'objectId': '1234567',
+            'beginDatum': '2022-04-05T14:35:42+01:00',
+            'eindDatum': '2025-04-05T14:35:42+01:00',
+
+        },
+        'httpMethod': 'GET',
+        'resource': '/verwerkingsacties'
+    }
+    return event
+
+@pytest.fixture
+def get_event_vertrouwelijk():
+    event = {
+        'queryStringParameters': { 
+            'verwerkingsactiviteitId': '5f0bef4c-f66f-4311-84a5-19e8bf359eaf', 
+            'objecttype': 'persoon',
+            'soortObjectId': 'BSN',
+            'objectId': '1234567',
+            'beginDatum': '2022-04-05T14:35:42+01:00',
+            'eindDatum': '2025-04-05T14:35:42+01:00',
+            'vertrouwelijkheid': 'hoog'
+
+        },
+        'httpMethod': 'GET',
+        'resource': '/verwerkingsacties'
+    }
+    return event
+
+
+@pytest.fixture
+def get_event_time_only():
+    event = {
+        'queryStringParameters': { 
+            'objecttype': 'persoon',
+            'soortObjectId': 'BSN',
+            'objectId': '1234567',
+            'beginDatum': '2022-04-05T14:35:42+01:00',
+            'eindDatum': '2025-04-05T14:35:42+01:00',
+
+        },
+        'httpMethod': 'GET',
+        'resource': '/verwerkingsacties'
+    }
+    return event
+
+
+@pytest.fixture
+def get_specific_event():
     event = {
         'queryStringParameters': { 
             'verwerkingsactiviteitId': '5f0bef4c-f66f-4311-84a5-19e8bf359eaf', 
