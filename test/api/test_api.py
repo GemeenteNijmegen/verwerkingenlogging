@@ -229,6 +229,43 @@ def test_get_put_verwerkingsactie(post_event, patch_body):
     get_result = json.loads(response['body'])
     assert get_result['actieNaam'] == 'Appels kopen'
 
+
+@mock_s3
+@mock_dynamodb
+def test_delete_specific_verwerkingsactie(post_event):
+    """Getting a specific action from the API
+    """
+    table = mock_table()
+    bucket = mock_s3_bucket()
+
+     # First post so there's something to get
+    response = handle_request(post_event, table, bucket)
+
+    assert response['statusCode'] == 201
+    result = json.loads(response['body'])
+
+    event = {
+        'queryStringParameters': { 
+            'actieId': result['actieId']
+        },
+        'httpMethod': 'DELETE',
+        'resource': '/verwerkingsacties/{actieId}'
+    }
+    response = handle_request(event, table, bucket)
+    assert response['statusCode'] == 200
+
+    # Check if actie is deleted
+    event = {
+        'queryStringParameters': { 
+            'actieId': result['actieId']
+        },
+        'httpMethod': 'GET',
+        'resource': '/verwerkingsacties/{actieId}'
+    }
+    response = handle_request(event, table, bucket)
+    assert response['statusCode'] == 400
+
+
 @pytest.fixture
 def post_event():
     event = {
