@@ -165,6 +165,45 @@ def get_verwerkingsacties_actieid(event, table):
             'headers': { "Content-Type": "application/json" },
         }
 
+def put_verwerkingsacties_actieid(event, table):
+    ######################################
+    ## PUT /verwerkingsacties/{actieId} ##
+    ######################################
+    requestJSON = json.loads(event['body'])
+    item ={
+            'url': "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + event['queryStringParameters']['actieId'],
+            'actieId': event['queryStringParameters']['actieId'],
+            'actieNaam': requestJSON['actieNaam'],
+            'handelingNaam': requestJSON['handelingNaam'],
+            'verwerkingId': requestJSON['verwerkingId'],
+            'verwerkingsactiviteitId': requestJSON['verwerkingsactiviteitId'],
+            'verwerkingsactiviteitUrl': requestJSON['verwerkingsactiviteitUrl'],
+            'vertrouwelijkheid': requestJSON['vertrouwelijkheid'],
+            'bewaartermijn': requestJSON['bewaartermijn'],
+            'uitvoerder': requestJSON['uitvoerder'],
+            'systeem': requestJSON['systeem'],
+            'gebruiker': requestJSON['gebruiker'],
+            'gegevensbron': requestJSON['gegevensbron'],
+            'soortAfnemerId': requestJSON['soortAfnemerId'],
+            'afnemerId': requestJSON['afnemerId'],
+            'verwerkingsactiviteitIdAfnemer': requestJSON['verwerkingsactiviteitIdAfnemer'],
+            'verwerkingsactiviteitUrlAfnemer': requestJSON['verwerkingsactiviteitUrlAfnemer'],
+            'verwerkingIdAfnemer': requestJSON['verwerkingIdAfnemer'],
+            'tijdstip': requestJSON['tijdstip'],
+            'tijdstipRegistratie': "2024-04-05T14:36:42+01:00",
+            'verwerkteObjecten': requestJSON['verwerkteObjecten'],
+            'objecttypesoortObjectIdobjectId': requestJSON['verwerkteObjecten'][0]['objecttype'] + "_" + requestJSON['verwerkteObjecten'][0]['soortObjectId'] + "_" + requestJSON['verwerkteObjecten'][0]['objectId'],
+        }
+    response = table.put_item(
+        Item=item
+    )
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps(item),
+        'headers': { "Content-Type": "application/json" }
+    }
+
 def store_item_in_s3(item_json, bucket):
     # Store (backup) verwerking item in S3 Backup Bucket
     path = datetime.now().isoformat(timespec='seconds') + "_" + json.loads(item_json)['actieId']
@@ -191,59 +230,15 @@ def handle_request(event, table, bucket):
     if(params['method'] == 'GET' and params['resource'] == '/verwerkingsacties/{actieId}'):
         return get_verwerkingsacties_actieid(event, table)
 
+    if(params['method'] == 'PUT' and params['resource'] == '/verwerkingsacties/{actieId}'):
+        result = put_verwerkingsacties_actieid(event, table)
+        store_item_in_s3(result['body'], bucket)
+        return result
+        
     # Validate if queryStringParameters exists
     boolQueryParam = True
     if (event.get('queryStringParameters') == None):
         boolQueryParam = False
-        
-    ######################################
-    ## PUT /verwerkingsacties/{actieId} ##
-    ######################################
-        
-    if (event['httpMethod'] == 'PUT' and event['resource'] == '/verwerkingsacties/{actieId}' and boolQueryParam):
-        requestJSON = json.loads(event['body'])
-        item ={
-                'url': "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + event['queryStringParameters']['actieId'],
-                'actieId': event['queryStringParameters']['actieId'],
-                'actieNaam': requestJSON['actieNaam'],
-                'handelingNaam': requestJSON['handelingNaam'],
-                'verwerkingId': requestJSON['verwerkingId'],
-                'verwerkingsactiviteitId': requestJSON['verwerkingsactiviteitId'],
-                'verwerkingsactiviteitUrl': requestJSON['verwerkingsactiviteitUrl'],
-                'vertrouwelijkheid': requestJSON['vertrouwelijkheid'],
-                'bewaartermijn': requestJSON['bewaartermijn'],
-                'uitvoerder': requestJSON['uitvoerder'],
-                'systeem': requestJSON['systeem'],
-                'gebruiker': requestJSON['gebruiker'],
-                'gegevensbron': requestJSON['gegevensbron'],
-                'soortAfnemerId': requestJSON['soortAfnemerId'],
-                'afnemerId': requestJSON['afnemerId'],
-                'verwerkingsactiviteitIdAfnemer': requestJSON['verwerkingsactiviteitIdAfnemer'],
-                'verwerkingsactiviteitUrlAfnemer': requestJSON['verwerkingsactiviteitUrlAfnemer'],
-                'verwerkingIdAfnemer': requestJSON['verwerkingIdAfnemer'],
-                'tijdstip': requestJSON['tijdstip'],
-                'tijdstipRegistratie': "2024-04-05T14:36:42+01:00",
-                'verwerkteObjecten': requestJSON['verwerkteObjecten'],
-                'objecttypesoortObjectIdobjectId': requestJSON['verwerkteObjecten'][0]['objecttype'] + "_" + requestJSON['verwerkteObjecten'][0]['soortObjectId'] + "_" + requestJSON['verwerkteObjecten'][0]['objectId'],
-            }
-        response = table.put_item(
-            Item=item
-        )
-        
-        # Store (backup) verwerking item in S3 Backup Bucket
-        path = datetime.now().isoformat(timespec='seconds') + "_" + event['queryStringParameters']['actieId']
-        data = bytes(json.dumps(item).encode('UTF-8'))
-        bucket.put_object(
-            ContentType='application/json',
-            Key=path,
-            Body=data,
-        )
-
-        return {
-            'statusCode': 200,
-            'body': json.dumps(item),
-            'headers': { "Content-Type": "application/json" }
-        }
     
     #########################################
     ## DELETE /verwerkingsacties/{actieId} ##
