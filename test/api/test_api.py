@@ -111,7 +111,7 @@ def test_get_verwerkingsactie_time_only(get_event_time_only, post_event):
 
 @mock_s3
 @mock_dynamodb
-def test_get_specific_verwerkingsactie(get_specific_event, post_event):
+def test_get_specific_verwerking(get_specific_event, post_event):
     """Getting a specific action from the API
     """
     table = mock_table()
@@ -124,6 +124,34 @@ def test_get_specific_verwerkingsactie(get_specific_event, post_event):
     assert response['statusCode'] == 200
     result = json.loads(response['body'])
     assert len(result['Items']) == 1
+
+
+@mock_s3
+@mock_dynamodb
+def test_get_specific_verwerkingsactie(post_event):
+    """Getting a specific action from the API
+    """
+    table = mock_table()
+    bucket = mock_s3_bucket()
+
+     # First post so there's something to get
+    response = handle_request(post_event, table, bucket)
+
+    assert response['statusCode'] == 201
+    result = json.loads(response['body'])
+    print(result)
+
+    event = {
+        'queryStringParameters': { 
+            'actieId': result['actieId']
+        },
+        'httpMethod': 'GET',
+        'resource': '/verwerkingsacties/{actieId}'
+    }
+    response = handle_request(event, table, bucket)
+    assert response['statusCode'] == 200
+    get_result = json.loads(response['body'])
+    assert get_result['actieNaam'] == 'Zoeken personen'
 
 @mock_s3
 @mock_dynamodb
