@@ -117,6 +117,53 @@ def test_get_verwerkingsactie_non_empty():
     result = json.loads(response['body'])
     assert len(result['Items']) == 1
 
+@mock_s3
+@mock_dynamodb
+def test_get_verwerkingsactie_all():
+    table = mock_table()
+    bucket = mock_s3_bucket()
+
+     # First post so there's something to get
+    event = post_event() 
+    response = handle_request(event, table, bucket)
+
+    """
+    Testing getting an action from the API
+    """
+    event = {
+        'queryStringParameters': { 
+            'objecttype': 'persoon',
+            'soortObjectId': 'BSN',
+            'objectId': '1234567',
+            'beginDatum': '2022-04-05T14:35:42+01:00',
+            'eindDatum': '2025-04-05T14:35:42+01:00',
+
+        },
+        'httpMethod': 'GET',
+        'resource': '/verwerkingsacties'
+    }
+
+    response = handle_request(event, table, bucket)
+    assert response['statusCode'] == 200
+    result = json.loads(response['body'])
+    assert len(result['Items']) == 1
+
+@mock_s3
+@mock_dynamodb
+def test_patch_verwerkingsactie():
+    table = mock_table()
+    bucket = mock_s3_bucket()
+     # First post so there's something to patch
+    event = post_event() 
+    response = handle_request(event, table, bucket)
+
+    event = patch_event()
+    response = handle_request(event, table, bucket)
+    assert response['statusCode'] == 200
+    result = json.loads(response['body'])
+    assert len(result) == 1
+    assert result[0]['objectId'] == '1234567'
+
 def post_event():
     event = {
         'httpMethod': 'POST',
@@ -157,6 +204,21 @@ def post_event():
     }
     return event
 
+
+def patch_event():
+    event = {
+        'httpMethod': 'PATCH',
+        'resource': '/verwerkingsacties',
+        "body": json.dumps({
+            "vertrouwelijkheid": "hoog",
+            "bewaartermijn": "P1Y"
+        }),
+        'queryStringParameters': {
+            'verwerkingId': '48086bf2-11b7-4603-9526-67d7c3bb6587'
+        }
+    }
+    return event
+
 @mock_s3
 def mock_s3_bucket():
     conn = boto3.resource('s3', region_name='us-east-1')
@@ -179,14 +241,33 @@ def mock_table():
         },
         {
             "AttributeName": "objecttypesoortObjectIdobjectId", "AttributeType": "S"
+        },
+        {
+            "AttributeName": "verwerkingId", "AttributeType": "S"
         }
     ],
     GlobalSecondaryIndexes=[
-    {
+        {
             'IndexName': 'objecttypesoortObjectIdobjectId-index',
             'KeySchema': [
             {
                 'AttributeName': 'objecttypesoortObjectIdobjectId',
+                'KeyType': 'HASH'
+            }
+            ],
+            'Projection': {
+            'ProjectionType': 'ALL'
+            },
+            'ProvisionedThroughput': {
+                'ReadCapacityUnits': 1,
+                'WriteCapacityUnits': 1
+            }
+        },
+         {
+            'IndexName': 'verwerkingId-index',
+            'KeySchema': [
+            {
+                'AttributeName': 'verwerkingId',
                 'KeyType': 'HASH'
             }
             ],
