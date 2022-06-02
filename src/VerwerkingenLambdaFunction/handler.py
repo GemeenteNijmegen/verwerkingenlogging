@@ -22,6 +22,32 @@ def validate_params(params):
             raise Exception("GET and PUT requests to /verwerkingsacties should have query parameters")
     return params
 
+def filled_item(requestJSON, actieId, tijdstipRegistratie):
+    return {
+        'url': "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + actieId,
+        'actieId': actieId,
+        'actieNaam': requestJSON['actieNaam'],
+        'handelingNaam': requestJSON['handelingNaam'],
+        'verwerkingId': requestJSON['verwerkingId'],
+        'verwerkingsactiviteitId': requestJSON['verwerkingsactiviteitId'],
+        'verwerkingsactiviteitUrl': requestJSON['verwerkingsactiviteitUrl'],
+        'vertrouwelijkheid': requestJSON['vertrouwelijkheid'],
+        'bewaartermijn': requestJSON['bewaartermijn'],
+        'uitvoerder': requestJSON['uitvoerder'],
+        'systeem': requestJSON['systeem'],
+        'gebruiker': requestJSON['gebruiker'],
+        'gegevensbron': requestJSON['gegevensbron'],
+        'soortAfnemerId': requestJSON['soortAfnemerId'],
+        'afnemerId': requestJSON['afnemerId'],
+        'verwerkingsactiviteitIdAfnemer': requestJSON['verwerkingsactiviteitIdAfnemer'],
+        'verwerkingsactiviteitUrlAfnemer': requestJSON['verwerkingsactiviteitUrlAfnemer'],
+        'verwerkingIdAfnemer': requestJSON['verwerkingIdAfnemer'],
+        'tijdstip': requestJSON['tijdstip'],
+        'tijdstipRegistratie': tijdstipRegistratie,
+        'verwerkteObjecten': requestJSON['verwerkteObjecten'],
+        'objecttypesoortObjectIdobjectId': requestJSON['verwerkteObjecten'][0]['objecttype'] + "_" + requestJSON['verwerkteObjecten'][0]['soortObjectId'] + "_" + requestJSON['verwerkteObjecten'][0]['objectId'],
+    }
+
 def get_verwerkings_acties(event, table):
     ############################
     ## GET /verwerkingsacties ##
@@ -59,32 +85,9 @@ def post_verwerkings_acties(event, table):
         tijdstipRegistratie = datetime.now().isoformat(timespec='seconds')
         
         requestJSON = json.loads(event['body'])
-        item={
-                'url': "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + actieId,
-                'actieId': actieId,
-                'actieNaam': requestJSON['actieNaam'],
-                'handelingNaam': requestJSON['handelingNaam'],
-                'verwerkingId': requestJSON['verwerkingId'],
-                'verwerkingsactiviteitId': requestJSON['verwerkingsactiviteitId'],
-                'verwerkingsactiviteitUrl': requestJSON['verwerkingsactiviteitUrl'],
-                'vertrouwelijkheid': requestJSON['vertrouwelijkheid'],
-                'bewaartermijn': requestJSON['bewaartermijn'],
-                'uitvoerder': requestJSON['uitvoerder'],
-                'systeem': requestJSON['systeem'],
-                'gebruiker': requestJSON['gebruiker'],
-                'gegevensbron': requestJSON['gegevensbron'],
-                'soortAfnemerId': requestJSON['soortAfnemerId'],
-                'afnemerId': requestJSON['afnemerId'],
-                'verwerkingsactiviteitIdAfnemer': requestJSON['verwerkingsactiviteitIdAfnemer'],
-                'verwerkingsactiviteitUrlAfnemer': requestJSON['verwerkingsactiviteitUrlAfnemer'],
-                'verwerkingIdAfnemer': requestJSON['verwerkingIdAfnemer'],
-                'tijdstip': requestJSON['tijdstip'],
-                'tijdstipRegistratie': tijdstipRegistratie,
-                'verwerkteObjecten': requestJSON['verwerkteObjecten'],
-                'objecttypesoortObjectIdobjectId': requestJSON['verwerkteObjecten'][0]['objecttype'] + "_" + requestJSON['verwerkteObjecten'][0]['soortObjectId'] + "_" + requestJSON['verwerkteObjecten'][0]['objectId'],
-            }
+        item=filled_item(requestJSON, actieId, tijdstipRegistratie)
         
-        response = table.put_item(
+        table.put_item(
             Item=item
         )
 
@@ -148,31 +151,10 @@ def put_verwerkingsacties_actieid(event, table):
     ## PUT /verwerkingsacties/{actieId} ##
     ######################################
     requestJSON = json.loads(event['body'])
-    item ={
-            'url': "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + event['queryStringParameters']['actieId'],
-            'actieId': event['queryStringParameters']['actieId'],
-            'actieNaam': requestJSON['actieNaam'],
-            'handelingNaam': requestJSON['handelingNaam'],
-            'verwerkingId': requestJSON['verwerkingId'],
-            'verwerkingsactiviteitId': requestJSON['verwerkingsactiviteitId'],
-            'verwerkingsactiviteitUrl': requestJSON['verwerkingsactiviteitUrl'],
-            'vertrouwelijkheid': requestJSON['vertrouwelijkheid'],
-            'bewaartermijn': requestJSON['bewaartermijn'],
-            'uitvoerder': requestJSON['uitvoerder'],
-            'systeem': requestJSON['systeem'],
-            'gebruiker': requestJSON['gebruiker'],
-            'gegevensbron': requestJSON['gegevensbron'],
-            'soortAfnemerId': requestJSON['soortAfnemerId'],
-            'afnemerId': requestJSON['afnemerId'],
-            'verwerkingsactiviteitIdAfnemer': requestJSON['verwerkingsactiviteitIdAfnemer'],
-            'verwerkingsactiviteitUrlAfnemer': requestJSON['verwerkingsactiviteitUrlAfnemer'],
-            'verwerkingIdAfnemer': requestJSON['verwerkingIdAfnemer'],
-            'tijdstip': requestJSON['tijdstip'],
-            'tijdstipRegistratie': "2024-04-05T14:36:42+01:00",
-            'verwerkteObjecten': requestJSON['verwerkteObjecten'],
-            'objecttypesoortObjectIdobjectId': requestJSON['verwerkteObjecten'][0]['objecttype'] + "_" + requestJSON['verwerkteObjecten'][0]['soortObjectId'] + "_" + requestJSON['verwerkteObjecten'][0]['objectId'],
-        }
-    response = table.put_item(
+    actieId = event['queryStringParameters']['actieId']
+    item = filled_item(requestJSON, actieId, "2024-04-05T14:36:42+01:00")
+
+    table.put_item(
         Item=item
     )
 
