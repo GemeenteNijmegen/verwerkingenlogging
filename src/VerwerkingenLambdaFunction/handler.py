@@ -204,6 +204,22 @@ def put_verwerkingsacties_actieid(event, table):
         'headers': { "Content-Type": "application/json" }
     }
 
+def delete_verwerkingsacties_actieid(event, table):
+    #########################################
+    ## DELETE /verwerkingsacties/{actieId} ##
+    #########################################
+    response = table.delete_item(
+        Key={
+            'actieId': event['queryStringParameters']['actieId'],
+        }
+    )
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps(response),
+        'headers': { "Content-Type": "application/json" }
+    }
+
 def store_item_in_s3(item_json, bucket):
     # Store (backup) verwerking item in S3 Backup Bucket
     path = datetime.now().isoformat(timespec='seconds') + "_" + json.loads(item_json)['actieId']
@@ -234,29 +250,11 @@ def handle_request(event, table, bucket):
         result = put_verwerkingsacties_actieid(event, table)
         store_item_in_s3(result['body'], bucket)
         return result
-        
-    # Validate if queryStringParameters exists
-    boolQueryParam = True
-    if (event.get('queryStringParameters') == None):
-        boolQueryParam = False
-    
-    #########################################
-    ## DELETE /verwerkingsacties/{actieId} ##
-    #########################################
-    
-    if (event['httpMethod'] == 'DELETE' and event['resource'] == '/verwerkingsacties/{actieId}' and boolQueryParam):
-        response = table.delete_item(
-            Key={
-                'actieId': event['queryStringParameters']['actieId'],
-            }
-        )
 
-        return {
-            'statusCode': 200,
-            'body': json.dumps(response),
-            'headers': { "Content-Type": "application/json" }
-        }
+    if(params['method'] == 'DELETE' and params['resource'] == '/verwerkingsacties/{actieId}'):
+        return delete_verwerkingsacties_actieid(event, table)
 
+    # if no matches were found, handle this as a malformed request
     return {
             'statusCode': 400,
             'body': '400 Bad Request',
