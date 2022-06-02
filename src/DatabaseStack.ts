@@ -1,5 +1,11 @@
-import { aws_dynamodb as DynamoDB, aws_ssm as SSM, RemovalPolicy, Stack } from 'aws-cdk-lib';
-import { TableEncryption } from 'aws-cdk-lib/aws-dynamodb';
+import {
+  RemovalPolicy,
+  Stack,
+  Duration,
+  aws_dynamodb as DynamoDB,
+  aws_ssm as SSM,
+  aws_s3 as S3,
+} from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
 
@@ -13,6 +19,11 @@ export class DatabaseStack extends Stack {
      */
   verwerkingenTable: DynamoDB.Table;
 
+  /**
+   * S3 Backup Bucket to store (backup) any incoming verwerkingenlog.
+   */
+  verwerkingenS3BackupBucket: S3.Bucket;
+
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
@@ -23,10 +34,10 @@ export class DatabaseStack extends Stack {
       tableName: Statics.verwerkingenTableName,
       timeToLiveAttribute: 'ttl',
       removalPolicy: RemovalPolicy.RETAIN,
-      encryption: TableEncryption.AWS_MANAGED,
+      encryption: DynamoDB.TableEncryption.AWS_MANAGED,
     });
 
-    // Add DynamoDB table to parameter store.
+    // Add DynamoDB table ARN to parameter store.
     new SSM.StringParameter(this, 'ssm_verwerkingen-table-arn', {
       stringValue: this.verwerkingenTable.tableArn,
       parameterName: Statics.ssmName_verwerkingenTableArn,
@@ -41,6 +52,26 @@ export class DatabaseStack extends Stack {
     this.verwerkingenTable.addGlobalSecondaryIndex({
       indexName: Statics.verwerkingenTableIndex_verwerkingId,
       partitionKey: { name: 'verwerkingId', type: DynamoDB.AttributeType.STRING },
+    });
+
+
+    // Create S3 Backup Bucket
+    this.verwerkingenS3BackupBucket = new S3.Bucket(this, 'verwerkingen-s3-backup-bucket', {
+      bucketName: Statics.verwerkingenS3BackupBucketName,
+      blockPublicAccess: S3.BlockPublicAccess.BLOCK_ALL,
+      encryption: S3.BucketEncryption.S3_MANAGED,
+      lifecycleRules: [
+        {
+          enabled: true,
+          expiration: Duration.days(90),
+        },
+      ],
+    });
+
+    // Add S3 Backup Bucket ARN to parameter store.
+    new SSM.StringParameter(this, 'ssm_verwerkingen-s3-backup-bucket-arn', {
+      stringValue: this.verwerkingenS3BackupBucket.bucketArn,
+      parameterName: Statics.ssmName_verwerkingenS3BackupBucketArn,
     });
 
   }
