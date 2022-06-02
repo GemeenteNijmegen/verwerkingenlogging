@@ -1,4 +1,5 @@
 import os
+import boto3
 from handler import handleRequest
 
 dynamodb = boto3.resource('dynamodb')

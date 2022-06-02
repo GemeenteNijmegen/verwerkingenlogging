@@ -1,14 +1,31 @@
 import json
 import uuid
 from datetime import datetime
+
 from boto3.dynamodb.conditions import Key, Attr
 
-def handleRequest(event, table, bucket):
+def parse_event(event):
+    """Parse the event object and extract relevant information.
+    After extraction, validates the object for valid parameter combinations.
+    """
+    params = {
+        'method': event['httpMethod'],
+        'resource': event['resource'],
+        'parameters': event.get('queryStringParameters')
+    }
+    return validate_params(params)
+
+def validate_params(params):
+    if('/verwerkingsacties' in params['resource'] and params['method'] != 'POST'):
+        if(params['parameters'] == None):
+            raise Exception("GET and PUT requests to /verwerkingsacties should have query parameters")
+    return params
+
+def handle_request(event, table, bucket):
     # Validate if queryStringParameters exists
     boolQueryParam = True
     if (event.get('queryStringParameters') == None):
         boolQueryParam = False
-        
     
     ############################
     ## GET /verwerkingsacties ##
