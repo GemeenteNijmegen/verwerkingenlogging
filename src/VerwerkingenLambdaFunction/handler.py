@@ -49,9 +49,8 @@ def filled_item(requestJSON, actieId, tijdstipRegistratie):
     }
 
 def get_verwerkings_acties(event, table):
-    ############################
-    ## GET /verwerkingsacties ##
-    ############################
+    """GET /verwerkingsacties
+    """
     # ONLY verwerkingsactiviteitId
     object_key = event['queryStringParameters']['objecttype'] + "_" + event['queryStringParameters']['soortObjectId'] + "_" + event['queryStringParameters']['objectId']
 
@@ -181,7 +180,8 @@ def delete_verwerkingsacties_actieid(event, table):
     }
 
 def store_item_in_s3(item_json, bucket):
-    # Store (backup) verwerking item in S3 Backup Bucket
+    """Store (backup) verwerking item in S3 Backup Bucket
+    """
     path = datetime.now().isoformat(timespec='seconds') + "_" + json.loads(item_json)['actieId']
     data = bytes(item_json.encode('UTF-8'))
     bucket.put_object(
@@ -191,6 +191,8 @@ def store_item_in_s3(item_json, bucket):
     )
 
 def handle_request(event, table, bucket):
+    """Receives the event object and routes it to the correct function
+    """
     params = parse_event(event)
     if(params['method'] == 'GET' and params['resource'] == '/verwerkingsacties'):
         return get_verwerkings_acties(event, table)
