@@ -23,13 +23,13 @@ jobs:
         run: yarn install --check-files
       - name: build
         run: npx projen build
-      - - name: Install dependencies
-          run:
-            - pip install pipenv
-        - name: Run tests
-          run:
-            - pipenv install --dev
-            - pipenv run pytest
+      - name: Install dependencies
+        run:
+          - pip install pipenv
+      - name: Run tests
+        run:
+          - pipenv install --dev
+          - pipenv run pytest
       - id: self_mutation
         name: Find mutations
         run: |-
