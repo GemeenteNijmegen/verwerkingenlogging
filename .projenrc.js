@@ -42,4 +42,20 @@ const project = new awscdk.AwsCdkTypeScriptApp({
   // packageName: undefined,  /* The "name" in package.json. */
 });
 
+project.buildWorkflow.addPostBuildSteps([
+  {
+    name: 'Install dependencies',
+    run: [
+      'pip install pipenv'
+    ]
+  },
+  {
+    name: 'Run tests',
+    run: [
+      'pipenv install --dev',
+      'pipenv run pytest'
+    ]
+  }
+]);
+
 project.synth();
