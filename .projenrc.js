@@ -44,7 +44,14 @@ const project = new awscdk.AwsCdkTypeScriptApp({
 
 project.buildWorkflow.addPostBuildSteps(
   {
-    name: 'Install dependencies',
+    name: 'Install Python 3.9',
+    uses: 'actions/setup-python@v3.1.2',
+    with: {
+      'python-version': 3.9
+    }
+  },
+  {
+    name: 'Install python dependencies',
     run: 'pip install pipenv'
   },
   {
