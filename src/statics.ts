@@ -44,4 +44,14 @@ export abstract class Statics {
    * API Gateway name for verwerkingen.
    */
   static readonly verwerkingenApiName: 'verwerkingen-api';
+
+  /**
+   * IAM Account ID.
+   */
+  static readonly iamAccountId: string = '098799052470';
+
+  /**
+   * IAM Read Only Role arn (parameter).
+   */
+  static readonly ssmName_verwerkingenReadOnlyRoleArn: string = '/cdk/verwerkingenlogging/verwerkingen-read-only-role-arn';
 }

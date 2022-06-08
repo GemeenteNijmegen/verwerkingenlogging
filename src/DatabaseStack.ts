@@ -5,6 +5,7 @@ import {
   aws_dynamodb as DynamoDB,
   aws_ssm as SSM,
   aws_s3 as S3,
+  aws_iam as IAM,
 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
@@ -23,6 +24,11 @@ export class DatabaseStack extends Stack {
    * S3 Backup Bucket to store (backup) any incoming verwerkingenlog.
    */
   verwerkingenS3BackupBucket: S3.Bucket;
+
+  /**
+   * IAM Read Only Role to view DynamoDB table, S3 Bucket, and CloudWatch logging.
+   */
+  verwerkingenReadOnlyRole: IAM.Role;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -74,5 +80,30 @@ export class DatabaseStack extends Stack {
       parameterName: Statics.ssmName_verwerkingenS3BackupBucketArn,
     });
 
+
+    // Assumable read only role to view DynamoDB table, S3 Bucket and CloudWatch logging.
+    this.verwerkingenReadOnlyRole = new IAM.Role(this, 'verwerkingen-read-only-role', {
+      roleName: 'verwerkingen-full-read',
+      description: 'Read-only role for Verwerkingenlogging with access to DynamoDB, S3 and CloudWatch.',
+      assumedBy: new IAM.PrincipalWithConditions(
+        new IAM.AccountPrincipal(Statics.iamAccountId), //IAM account
+        {
+          Bool: {
+            'aws:MultiFactorAuthPresent': true,
+          },
+        },
+      ),
+      managedPolicies: [
+        IAM.ManagedPolicy.fromAwsManagedPolicyName('AmazonDynamoDBReadOnlyAccess'),
+        IAM.ManagedPolicy.fromAwsManagedPolicyName('AmazonS3ReadOnlyAccess'),
+        IAM.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchReadOnlyAccess'),
+      ],
+    });
+
+    // Add Read Only Role ARN to parameter store.
+    new SSM.StringParameter(this, 'ssm_verwerkingen-read-only-role-arn', {
+      stringValue: this.verwerkingenReadOnlyRole.roleArn,
+      parameterName: Statics.ssmName_verwerkingenReadOnlyRoleArn,
+    });
   }
 }
