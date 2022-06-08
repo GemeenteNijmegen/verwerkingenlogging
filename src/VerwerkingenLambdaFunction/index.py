@@ -1,6 +1,6 @@
 import os
 import boto3
-from handler import handleRequest
+from handler import handle_request
 
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['DYNAMO_TABLE_NAME'])
@@ -10,4 +10,4 @@ bucket = s3.Bucket(os.environ['S3_BACKUP_BUCKET_NAME'])
 
 def handler(event, context):
     print(event)
-    handleRequest(event, table, bucket)
+    handle_request(event, table, bucket)
