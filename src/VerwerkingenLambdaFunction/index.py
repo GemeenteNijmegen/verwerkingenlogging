@@ -10,4 +10,4 @@ bucket = s3.Bucket(os.environ['S3_BACKUP_BUCKET_NAME'])
 
 def handler(event, context):
     print(event)
-    handle_request(event, table, bucket)
+    return handle_request(event, table, bucket)
