@@ -4,11 +4,9 @@ from datetime import datetime
 
 from boto3.dynamodb.conditions import Key, Attr
 
-
+# Parse the event object and extract relevant information.
+# After extraction, validates the object for valid parameter combinations.
 def parse_event(event):
-    """Parse the event object and extract relevant information.
-    After extraction, validates the object for valid parameter combinations.
-    """
     params = {
         'method': event['httpMethod'],
         'resource': event['resource'],
@@ -16,6 +14,7 @@ def parse_event(event):
     }
     return validate_params(params)
 
+# Validate parameters before request is processed.
 def validate_params(params):
     if('/verwerkingsacties' in params['resource'] and params['method'] != 'POST'):
         if(params['parameters'] == None):
@@ -48,22 +47,36 @@ def filled_item(requestJSON, actieId, tijdstipRegistratie):
         'objecttypesoortObjectIdobjectId': requestJSON['verwerkteObjecten'][0]['objecttype'] + "_" + requestJSON['verwerkteObjecten'][0]['soortObjectId'] + "_" + requestJSON['verwerkteObjecten'][0]['objectId'],
     }
 
+############################
+## GET /verwerkingsacties ##
+############################
 def get_verwerkings_acties(event, table):
-    """GET /verwerkingsacties
-    """
     # ONLY verwerkingsactiviteitId
     object_key = event['queryStringParameters']['objecttype'] + "_" + event['queryStringParameters']['soortObjectId'] + "_" + event['queryStringParameters']['objectId']
-
-    attrs = Attr("tijdstip").between(event['queryStringParameters']['beginDatum'], event['queryStringParameters']['eindDatum'])
-    if (event['queryStringParameters'].get('verwerkingsactiviteitId') != None):
-        attrs &= Attr("verwerkingsactiviteitId").eq(event['queryStringParameters'].get('verwerkingsactiviteitId'))
-    if(event['queryStringParameters'].get('vertrouwelijkheid') != None):
-        attrs &= Attr("vertrouwelijkheid").eq(event['queryStringParameters'].get('vertrouwelijkheid'))
     
-    response = table.query(
-            IndexName='objecttypesoortObjectIdobjectId-index',
-            KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key),
-            FilterExpression=attrs)
+    attrs = None
+    if (event['queryStringParameters'].get('beginDatum') != None or event['queryStringParameters'].get('eindDatum') != None):
+        attrs = Attr("tijdstip").between(event['queryStringParameters'].get('beginDatum'), event['queryStringParameters'].get('eindDatum'))
+    if (event['queryStringParameters'].get('verwerkingsactiviteitId') != None):
+        if (attrs != None):
+            attrs &= Attr("verwerkingsactiviteitId").eq(event['queryStringParameters'].get('verwerkingsactiviteitId'))
+        else:
+            attrs = Attr("verwerkingsactiviteitId").eq(event['queryStringParameters'].get('verwerkingsactiviteitId'))
+    if(event['queryStringParameters'].get('vertrouwelijkheid') != None):
+        if (attrs != None):
+            attrs &= Attr("vertrouwelijkheid").eq(event['queryStringParameters'].get('vertrouwelijkheid'))
+        else:
+            attrs = Attr("vertrouwelijkheid").eq(event['queryStringParameters'].get('vertrouwelijkheid'))
+    
+    if (attrs != None):
+        response = table.query(
+                IndexName='objecttypesoortObjectIdobjectId-index',
+                KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key),
+                FilterExpression=attrs)
+    else:
+        response = table.query(
+                IndexName='objecttypesoortObjectIdobjectId-index',
+                KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key))
         
     return {
         'statusCode': 200,
@@ -71,11 +84,10 @@ def get_verwerkings_acties(event, table):
         'headers': { "Content-Type": "application/json" },
     }
 
+#############################
+## POST /verwerkingsacties ##
+#############################
 def post_verwerkings_acties(event, table):
-    #############################
-    ## POST /verwerkingsacties ##
-    #############################
-    
     if (event['httpMethod'] == 'POST' and event['resource'] == '/verwerkingsacties'):
         # Generate UUID for actieId.
         actieId = str(uuid.uuid1()) # V1 Timestamp
@@ -96,10 +108,10 @@ def post_verwerkings_acties(event, table):
             'headers': { "Content-Type": "application/json" }
         }
 
+##############################
+## PATCH /verwerkingsacties ##
+##############################
 def patch_verwerkings_acties(event, table):
-    ##############################
-    ## PATCH /verwerkingsacties ##
-    ##############################
     requestJSON = json.loads(event['body'])
     verwerkingen = table.query(
         IndexName='verwerkingId-index',
@@ -107,26 +119,55 @@ def patch_verwerkings_acties(event, table):
     )
     response = []
     for item in verwerkingen.get('Items'):
-        response.append(table.update_item(
-            Key={ 
-                'actieId': item.get('actieId') 
-            },
-            UpdateExpression="SET vertrouwelijkheid= :var1, bewaartermijn= :var2",
-            ExpressionAttributeValues={
-                ':var1': requestJSON['vertrouwelijkheid'],
-                ':var2': requestJSON['bewaartermijn']
+        if (requestJSON.get('vertrouwelijkheid') != None and requestJSON.get('bewaartermijn') == None):
+            response.append(table.update_item(
+                Key={ 
+                    'actieId': item.get('actieId') 
+                },
+                UpdateExpression="SET vertrouwelijkheid= :var1",
+                ExpressionAttributeValues={
+                    ':var1': requestJSON['vertrouwelijkheid']
+                }
+            ))
+        if (requestJSON.get('vertrouwelijkheid') == None and requestJSON.get('bewaartermijn') != None):
+            response.append(table.update_item(
+                Key={ 
+                    'actieId': item.get('actieId') 
+                },
+                UpdateExpression="SET bewaartermijn= :var1",
+                ExpressionAttributeValues={
+                    ':var1': requestJSON['bewaartermijn']
+                }
+            ))
+        if (requestJSON.get('vertrouwelijkheid') != None and requestJSON.get('bewaartermijn') != None):
+            response.append(table.update_item(
+                Key={ 
+                    'actieId': item.get('actieId') 
+                },
+                UpdateExpression="SET vertrouwelijkheid= :var1, bewaartermijn= :var2",
+                ExpressionAttributeValues={
+                    ':var1': requestJSON['vertrouwelijkheid'],
+                    ':var2': requestJSON['bewaartermijn']
+                }
+            ))
+        
+    if (response == []):
+        return {
+            'statusCode': 400,
+            'body': 'verwerkingId not found!',
+            'headers': { "Content-Type": "text/plain" },
             }
-        ))
-    return {
-        'statusCode': 200,
-        'body': json.dumps(response),
-        'headers': { "Content-Type": "application/json" },
-    }
+    else:
+        return {
+            'statusCode': 200,
+            'body': json.dumps(response),
+            'headers': { "Content-Type": "application/json" },
+        }
 
+######################################
+## GET /verwerkingsacties/{actieId} ##
+######################################
 def get_verwerkingsacties_actieid(event, table):
-    ######################################
-    ## GET /verwerkingsacties/{actieId} ##
-    ######################################
     response = table.query(
             KeyConditionExpression=Key('actieId').eq(event['queryStringParameters']['actieId'])
     )
@@ -145,10 +186,10 @@ def get_verwerkingsacties_actieid(event, table):
             'headers': { "Content-Type": "application/json" },
         }
 
+######################################
+## PUT /verwerkingsacties/{actieId} ##
+######################################
 def put_verwerkingsacties_actieid(event, table):
-    ######################################
-    ## PUT /verwerkingsacties/{actieId} ##
-    ######################################
     requestJSON = json.loads(event['body'])
     actieId = event['queryStringParameters']['actieId']
     item = filled_item(requestJSON, actieId, "2024-04-05T14:36:42+01:00")
@@ -163,10 +204,10 @@ def put_verwerkingsacties_actieid(event, table):
         'headers': { "Content-Type": "application/json" }
     }
 
+#########################################
+## DELETE /verwerkingsacties/{actieId} ##
+#########################################
 def delete_verwerkingsacties_actieid(event, table):
-    #########################################
-    ## DELETE /verwerkingsacties/{actieId} ##
-    #########################################
     response = table.delete_item(
         Key={
             'actieId': event['queryStringParameters']['actieId'],
@@ -179,9 +220,8 @@ def delete_verwerkingsacties_actieid(event, table):
         'headers': { "Content-Type": "application/json" }
     }
 
+# Store (backup) verwerking item in S3 Backup Bucket
 def store_item_in_s3(item_json, bucket):
-    """Store (backup) verwerking item in S3 Backup Bucket
-    """
     path = datetime.now().isoformat(timespec='seconds') + "_" + json.loads(item_json)['actieId']
     data = bytes(item_json.encode('UTF-8'))
     bucket.put_object(
@@ -190,9 +230,8 @@ def store_item_in_s3(item_json, bucket):
         Body=data,
     )
 
+#Receives the event object and routes it to the correct function
 def handle_request(event, table, bucket):
-    """Receives the event object and routes it to the correct function
-    """
     params = parse_event(event)
     if(params['method'] == 'GET' and params['resource'] == '/verwerkingsacties'):
         return get_verwerkings_acties(event, table)
