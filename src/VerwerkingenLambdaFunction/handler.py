@@ -28,6 +28,7 @@ def filled_item(requestJSON, actieId, tijdstipRegistratie):
         'actieNaam': requestJSON['actieNaam'],
         'handelingNaam': requestJSON['handelingNaam'],
         'verwerkingId': requestJSON['verwerkingId'],
+        'verwerkingNaam': requestJSON['verwerkingNaam'],
         'verwerkingsactiviteitId': requestJSON['verwerkingsactiviteitId'],
         'verwerkingsactiviteitUrl': requestJSON['verwerkingsactiviteitUrl'],
         'vertrouwelijkheid': requestJSON['vertrouwelijkheid'],
