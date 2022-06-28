@@ -65,6 +65,8 @@ export class DatabaseStack extends Stack {
     this.verwerkingenS3BackupBucket = new S3.Bucket(this, 'verwerkingen-s3-backup-bucket', {
       bucketName: Statics.verwerkingenS3BackupBucketName,
       blockPublicAccess: S3.BlockPublicAccess.BLOCK_ALL,
+      enforceSSL: true,
+      eventBridgeEnabled: true,
       encryption: S3.BucketEncryption.S3_MANAGED,
       lifecycleRules: [
         {
