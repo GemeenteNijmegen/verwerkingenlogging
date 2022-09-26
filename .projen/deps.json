@@ -6,7 +6,7 @@
     },
     {
       "name": "@types/node",
-      "version": "^12",
+      "version": "^14",
       "type": "build"
     },
     {
@@ -68,7 +68,7 @@
     },
     {
       "name": "npm-check-updates",
-      "version": "^12",
+      "version": "^15",
       "type": "build"
     },
     {
@@ -86,7 +86,6 @@
     },
     {
       "name": "ts-node",
-      "version": "^9",
       "type": "build"
     },
     {
@@ -100,7 +99,7 @@
     },
     {
       "name": "cdk-nag",
-      "version": "ˆ2.0.0",
+      "version": "^2.0.0",
       "type": "runtime"
     },
     {
