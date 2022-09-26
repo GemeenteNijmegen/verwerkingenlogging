@@ -16,7 +16,7 @@ const project = new awscdk.AwsCdkTypeScriptApp({
     lint: 'cfn-lint cdk.out/**/*.template.json -i W3005 W2001',
   },
   deps: [
-    'cdk-nag@ˆ2.0.0',
+    'cdk-nag@^2.0.0',
   ],
   devDeps: [
     'dotenv',
