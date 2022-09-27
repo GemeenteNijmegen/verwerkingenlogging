@@ -1,0 +1,380 @@
+{
+    "Items": [
+        {
+            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "vertrouwelijkheid": "normaal",
+            "verwerkteObjecten": [
+                {
+                    "objecttype": "persoon",
+                    "soortObjectId": "BSN",
+                    "verwerkteSoortenGegevens": [
+                        {
+                            "soortGegeven": "BSN"
+                        }
+                    ],
+                    "objectId": "1234567",
+                    "betrokkenheid": "Getuige"
+                }
+            ],
+            "verwerkingsactiviteitIdAfnemer": "c5b9f4e7-8c79-41b9-91e2-6268419cb167",
+            "gebruiker": "123456789",
+            "soortAfnemerId": "OIN",
+            "handelingNaam": "Intake",
+            "verwerkingIdAfnemer": "4b698de3-ffba-45e7-8697-a283ec863db2",
+            "verwerkingId": "48086bf2-11b7-4603-9526-67d7c3bb6587",
+            "tijdstipRegistratie": "2022-06-02T11:57:34",
+            "verwerkingsactiviteitUrlAfnemer": "https://www.amsterdam.nl/var/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "actieId": "30bd3a7c-e26b-11ec-ad15-bdf8ff09d60c",
+            "tijdstip": "2024-04-05T14:35:42+01:00",
+            "url": "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/30bd3a7c-e26b-11ec-ad15-bdf8ff09d60c",
+            "verwerkingsactiviteitUrl": "https://verwerkingsactiviteiten-api.vng.cloud/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "uitvoerder": "00000001821002193000",
+            "actieNaam": "Zoeken personen",
+            "systeem": "FooBarApp v2.1",
+            "verwerkingsactiviteitId": "5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "gegevensbron": "FooBar Database Publiekszaken",
+            "bewaartermijn": "P10Y",
+            "afnemerId": "00000001821002193000"
+        },
+        {
+            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "vertrouwelijkheid": "normaal",
+            "verwerkteObjecten": [
+                {
+                    "objecttype": "persoon",
+                    "soortObjectId": "BSN",
+                    "verwerkteSoortenGegevens": [
+                        {
+                            "soortGegeven": "BSN"
+                        }
+                    ],
+                    "objectId": "1234567",
+                    "betrokkenheid": "Getuige"
+                }
+            ],
+            "verwerkingsactiviteitIdAfnemer": "c5b9f4e7-8c79-41b9-91e2-6268419cb167",
+            "gebruiker": "123456789",
+            "soortAfnemerId": "OIN",
+            "handelingNaam": "Intake",
+            "verwerkingIdAfnemer": "4b698de3-ffba-45e7-8697-a283ec863db2",
+            "verwerkingId": "48086bf2-11b7-4603-9526-67d7c3bb6587",
+            "tijdstipRegistratie": "2022-05-23T08:35:22",
+            "verwerkingsactiviteitUrlAfnemer": "https://www.amsterdam.nl/var/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "actieId": "492fd26f-da73-11ec-b65e-abbf437284a9",
+            "tijdstip": "2024-04-05T14:35:42+01:00",
+            "url": "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/492fd26f-da73-11ec-b65e-abbf437284a9",
+            "verwerkingsactiviteitUrl": "https://verwerkingsactiviteiten-api.vng.cloud/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "uitvoerder": "00000001821002193000",
+            "actieNaam": "Zoeken personen",
+            "systeem": "FooBarApp v2.1",
+            "verwerkingsactiviteitId": "5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "gegevensbron": "FooBar Database Publiekszaken",
+            "bewaartermijn": "P10Y",
+            "afnemerId": "00000001821002193000"
+        },
+        {
+            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "vertrouwelijkheid": "normaal",
+            "verwerkteObjecten": [
+                {
+                    "objecttype": "persoon",
+                    "soortObjectId": "BSN",
+                    "verwerkteSoortenGegevens": [
+                        {
+                            "soortGegeven": "BSN"
+                        }
+                    ],
+                    "objectId": "1234567",
+                    "betrokkenheid": "Getuige"
+                }
+            ],
+            "verwerkingsactiviteitIdAfnemer": "c5b9f4e7-8c79-41b9-91e2-6268419cb167",
+            "gebruiker": "123456789",
+            "soortAfnemerId": "OIN",
+            "handelingNaam": "Intake",
+            "verwerkingIdAfnemer": "4b698de3-ffba-45e7-8697-a283ec863db2",
+            "verwerkingId": "48086bf2-11b7-4603-9526-67d7c3bb6587",
+            "tijdstipRegistratie": "2022-05-31T15:23:16",
+            "verwerkingsactiviteitUrlAfnemer": "https://www.amsterdam.nl/var/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "actieId": "9862f7e2-e0f5-11ec-9fe5-795a77764c21",
+            "tijdstip": "2024-04-05T14:35:42+01:00",
+            "url": "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/9862f7e2-e0f5-11ec-9fe5-795a77764c21",
+            "verwerkingsactiviteitUrl": "https://verwerkingsactiviteiten-api.vng.cloud/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "uitvoerder": "00000001821002193000",
+            "actieNaam": "Zoeken personen",
+            "systeem": "FooBarApp v2.1",
+            "verwerkingsactiviteitId": "5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "gegevensbron": "FooBar Database Publiekszaken",
+            "bewaartermijn": "P10Y",
+            "afnemerId": "00000001821002193000"
+        },
+        {
+            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "vertrouwelijkheid": "normaal",
+            "verwerkteObjecten": [
+                {
+                    "objecttype": "persoon",
+                    "soortObjectId": "BSN",
+                    "verwerkteSoortenGegevens": [
+                        {
+                            "soortGegeven": "BSN"
+                        }
+                    ],
+                    "objectId": "1234567",
+                    "betrokkenheid": "Getuige"
+                }
+            ],
+            "verwerkingsactiviteitIdAfnemer": "c5b9f4e7-8c79-41b9-91e2-6268419cb167",
+            "gebruiker": "123456789",
+            "soortAfnemerId": "OIN",
+            "handelingNaam": "Intake",
+            "verwerkingIdAfnemer": "4b698de3-ffba-45e7-8697-a283ec863db2",
+            "verwerkingId": "48086bf2-11b7-4603-9526-67d7c3bb6587",
+            "tijdstipRegistratie": "2022-05-31T15:15:22",
+            "verwerkingsactiviteitUrlAfnemer": "https://www.amsterdam.nl/var/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "actieId": "7da34289-e0f4-11ec-b2a0-ef8f4be506d1",
+            "tijdstip": "2024-04-05T14:35:42+01:00",
+            "url": "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/7da34289-e0f4-11ec-b2a0-ef8f4be506d1",
+            "verwerkingsactiviteitUrl": "https://verwerkingsactiviteiten-api.vng.cloud/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "uitvoerder": "00000001821002193000",
+            "actieNaam": "Zoeken personen",
+            "systeem": "FooBarApp v2.1",
+            "verwerkingsactiviteitId": "5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "gegevensbron": "FooBar Database Publiekszaken",
+            "bewaartermijn": "P10Y",
+            "afnemerId": "00000001821002193000"
+        },
+        {
+            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "vertrouwelijkheid": "normaal",
+            "verwerkteObjecten": [
+                {
+                    "objecttype": "persoon",
+                    "soortObjectId": "BSN",
+                    "verwerkteSoortenGegevens": [
+                        {
+                            "soortGegeven": "BSN"
+                        }
+                    ],
+                    "objectId": "1234567",
+                    "betrokkenheid": "Getuige"
+                }
+            ],
+            "verwerkingsactiviteitIdAfnemer": "c5b9f4e7-8c79-41b9-91e2-6268419cb167",
+            "gebruiker": "123456789",
+            "soortAfnemerId": "OIN",
+            "handelingNaam": "Intake",
+            "verwerkingIdAfnemer": "4b698de3-ffba-45e7-8697-a283ec863db2",
+            "verwerkingId": "48086bf2-11b7-4603-9526-67d7c3bb6587",
+            "tijdstipRegistratie": "2022-05-31T15:17:47",
+            "verwerkingsactiviteitUrlAfnemer": "https://www.amsterdam.nl/var/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "actieId": "d3e8895c-e0f4-11ec-8ebd-ef8f4be506d1",
+            "tijdstip": "2024-04-05T14:35:42+01:00",
+            "url": "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/d3e8895c-e0f4-11ec-8ebd-ef8f4be506d1",
+            "verwerkingsactiviteitUrl": "https://verwerkingsactiviteiten-api.vng.cloud/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "uitvoerder": "00000001821002193000",
+            "actieNaam": "Zoeken personen",
+            "systeem": "FooBarApp v2.1",
+            "verwerkingsactiviteitId": "5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "gegevensbron": "FooBar Database Publiekszaken",
+            "bewaartermijn": "P10Y",
+            "afnemerId": "00000001821002193000"
+        },
+        {
+            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "vertrouwelijkheid": "normaal",
+            "verwerkteObjecten": [
+                {
+                    "objecttype": "persoon",
+                    "soortObjectId": "BSN",
+                    "verwerkteSoortenGegevens": [
+                        {
+                            "soortGegeven": "BSN"
+                        }
+                    ],
+                    "objectId": "1234567",
+                    "betrokkenheid": "Getuige"
+                }
+            ],
+            "verwerkingsactiviteitIdAfnemer": "c5b9f4e7-8c79-41b9-91e2-6268419cb167",
+            "gebruiker": "123456789",
+            "soortAfnemerId": "OIN",
+            "handelingNaam": "Intake",
+            "verwerkingIdAfnemer": "4b698de3-ffba-45e7-8697-a283ec863db2",
+            "verwerkingId": "48086bf2-11b7-4603-9526-67d7c3bb6587",
+            "tijdstipRegistratie": "2022-05-31T15:14:47",
+            "verwerkingsactiviteitUrlAfnemer": "https://www.amsterdam.nl/var/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "actieId": "6873964e-e0f4-11ec-ab9f-69d78d6614de",
+            "tijdstip": "2024-04-05T14:35:42+01:00",
+            "url": "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/6873964e-e0f4-11ec-ab9f-69d78d6614de",
+            "verwerkingsactiviteitUrl": "https://verwerkingsactiviteiten-api.vng.cloud/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "uitvoerder": "00000001821002193000",
+            "actieNaam": "Zoeken personen",
+            "systeem": "FooBarApp v2.1",
+            "verwerkingsactiviteitId": "5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "gegevensbron": "FooBar Database Publiekszaken",
+            "bewaartermijn": "P10Y",
+            "afnemerId": "00000001821002193000"
+        },
+        {
+            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "vertrouwelijkheid": "normaal",
+            "verwerkteObjecten": [
+                {
+                    "objecttype": "persoon",
+                    "soortObjectId": "BSN",
+                    "verwerkteSoortenGegevens": [
+                        {
+                            "soortGegeven": "BSN"
+                        }
+                    ],
+                    "objectId": "1234567",
+                    "betrokkenheid": "Getuige"
+                }
+            ],
+            "verwerkingsactiviteitIdAfnemer": "c5b9f4e7-8c79-41b9-91e2-6268419cb167",
+            "gebruiker": "123456789",
+            "soortAfnemerId": "OIN",
+            "handelingNaam": "Intake",
+            "verwerkingIdAfnemer": "4b698de3-ffba-45e7-8697-a283ec863db2",
+            "verwerkingId": "48086bf2-11b7-4603-9526-67d7c3bb6587",
+            "tijdstipRegistratie": "2022-05-24T14:15:09",
+            "verwerkingsactiviteitUrlAfnemer": "https://www.amsterdam.nl/var/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "actieId": "eb13d00a-db6b-11ec-91e6-d99aaf75f171",
+            "tijdstip": "2024-04-05T14:35:42+01:00",
+            "url": "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/eb13d00a-db6b-11ec-91e6-d99aaf75f171",
+            "verwerkingsactiviteitUrl": "https://verwerkingsactiviteiten-api.vng.cloud/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "uitvoerder": "00000001821002193000",
+            "actieNaam": "Zoeken personen",
+            "systeem": "FooBarApp v2.1",
+            "verwerkingsactiviteitId": "5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "gegevensbron": "FooBar Database Publiekszaken",
+            "bewaartermijn": "P10Y",
+            "afnemerId": "00000001821002193000"
+        },
+        {
+            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "vertrouwelijkheid": "normaal",
+            "verwerkteObjecten": [
+                {
+                    "objecttype": "persoon",
+                    "soortObjectId": "BSN",
+                    "verwerkteSoortenGegevens": [
+                        {
+                            "soortGegeven": "BSN"
+                        }
+                    ],
+                    "objectId": "1234567",
+                    "betrokkenheid": "Getuige"
+                }
+            ],
+            "verwerkingsactiviteitIdAfnemer": "c5b9f4e7-8c79-41b9-91e2-6268419cb167",
+            "gebruiker": "123456789",
+            "soortAfnemerId": "OIN",
+            "handelingNaam": "Intake",
+            "verwerkingIdAfnemer": "4b698de3-ffba-45e7-8697-a283ec863db2",
+            "verwerkingId": "48086bf2-11b7-4603-9526-67d7c3bb6587",
+            "tijdstipRegistratie": "2024-04-05T14:36:42+01:00",
+            "verwerkingsactiviteitUrlAfnemer": "https://www.amsterdam.nl/var/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "actieId": "7a22eb38-bca6-463f-9955-54ab040287cb",
+            "tijdstip": "2024-04-05T14:35:42+01:00",
+            "url": "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/7a22eb38-bca6-463f-9955-54ab040287cb",
+            "verwerkingsactiviteitUrl": "https://verwerkingsactiviteiten-api.vng.cloud/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "uitvoerder": "00000001821002193000",
+            "actieNaam": "Zoeken personen",
+            "systeem": "FooBarApp v2.1",
+            "verwerkingsactiviteitId": "5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "gegevensbron": "FooBar Database Publiekszaken",
+            "bewaartermijn": "P10Y",
+            "afnemerId": "00000001821002193000"
+        },
+        {
+            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "vertrouwelijkheid": "normaal",
+            "verwerkteObjecten": [
+                {
+                    "objecttype": "persoon",
+                    "soortObjectId": "BSN",
+                    "verwerkteSoortenGegevens": [
+                        {
+                            "soortGegeven": "BSN"
+                        }
+                    ],
+                    "objectId": "1234567",
+                    "betrokkenheid": "Getuige"
+                }
+            ],
+            "verwerkingsactiviteitIdAfnemer": "c5b9f4e7-8c79-41b9-91e2-6268419cb167",
+            "gebruiker": "123456789",
+            "soortAfnemerId": "OIN",
+            "handelingNaam": "Intake",
+            "verwerkingIdAfnemer": "4b698de3-ffba-45e7-8697-a283ec863db2",
+            "verwerkingId": "48086bf2-11b7-4603-9526-67d7c3bb6587",
+            "tijdstipRegistratie": "2022-05-31T15:14:05",
+            "verwerkingsactiviteitUrlAfnemer": "https://www.amsterdam.nl/var/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "actieId": "4ff64c28-e0f4-11ec-852c-231df3f59f96",
+            "tijdstip": "2024-04-05T14:35:42+01:00",
+            "url": "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/4ff64c28-e0f4-11ec-852c-231df3f59f96",
+            "verwerkingsactiviteitUrl": "https://verwerkingsactiviteiten-api.vng.cloud/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "uitvoerder": "00000001821002193000",
+            "actieNaam": "Zoeken personen",
+            "systeem": "FooBarApp v2.1",
+            "verwerkingsactiviteitId": "5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "gegevensbron": "FooBar Database Publiekszaken",
+            "bewaartermijn": "P10Y",
+            "afnemerId": "00000001821002193000"
+        },
+        {
+            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "vertrouwelijkheid": "normaal",
+            "verwerkteObjecten": [
+                {
+                    "objecttype": "persoon",
+                    "soortObjectId": "BSN",
+                    "verwerkteSoortenGegevens": [
+                        {
+                            "soortGegeven": "BSN"
+                        }
+                    ],
+                    "objectId": "1234567",
+                    "betrokkenheid": "Getuige"
+                }
+            ],
+            "verwerkingsactiviteitIdAfnemer": "c5b9f4e7-8c79-41b9-91e2-6268419cb167",
+            "gebruiker": "123456789",
+            "soortAfnemerId": "OIN",
+            "handelingNaam": "Intake",
+            "verwerkingIdAfnemer": "4b698de3-ffba-45e7-8697-a283ec863db2",
+            "verwerkingId": "48086bf2-11b7-4603-9526-67d7c3bb6587",
+            "tijdstipRegistratie": "2022-05-17T07:08:40",
+            "verwerkingsactiviteitUrlAfnemer": "https://www.amsterdam.nl/var/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "actieId": "2dd10e82-d5b0-11ec-83a2-9747975ca60b",
+            "tijdstip": "2024-04-05T14:35:42+01:00",
+            "url": "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/2dd10e82-d5b0-11ec-83a2-9747975ca60b",
+            "verwerkingsactiviteitUrl": "https://verwerkingsactiviteiten-api.vng.cloud/api/v1/verwerkingsactiviteiten/5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "uitvoerder": "00000001821002193000",
+            "actieNaam": "Zoeken personen",
+            "systeem": "FooBarApp v2.1",
+            "verwerkingsactiviteitId": "5f0bef4c-f66f-4311-84a5-19e8bf359eaf",
+            "gegevensbron": "FooBar Database Publiekszaken",
+            "bewaartermijn": "P10Y",
+            "afnemerId": "00000001821002193000"
+        }
+    ],
+    "Count": 10,
+    "ScannedCount": 10,
+    "ResponseMetadata": {
+        "RequestId": "48HQ9Q8PQP0T3B90BJLA6GBNIBVV4KQNSO5AEMVJF66Q9ASUAAJG",
+        "HTTPStatusCode": 200,
+        "HTTPHeaders": {
+            "server": "Server",
+            "date": "Fri, 03 Jun 2022 08:16:35 GMT",
+            "content-type": "application/x-amz-json-1.0",
+            "content-length": "14926",
+            "connection": "keep-alive",
+            "x-amzn-requestid": "48HQ9Q8PQP0T3B90BJLA6GBNIBVV4KQNSO5AEMVJF66Q9ASUAAJG",
+            "x-amz-crc32": "2903746844"
+        },
+        "RetryAttempts": 0
+    }
+}

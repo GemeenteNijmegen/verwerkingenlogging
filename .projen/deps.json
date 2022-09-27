@@ -6,7 +6,7 @@
     },
     {
       "name": "@types/node",
-      "version": "^12",
+      "version": "^14",
       "type": "build"
     },
     {
@@ -22,6 +22,14 @@
     {
       "name": "aws-cdk",
       "version": "^2.1.0",
+      "type": "build"
+    },
+    {
+      "name": "axios",
+      "type": "build"
+    },
+    {
+      "name": "dotenv",
       "type": "build"
     },
     {
@@ -60,11 +68,16 @@
     },
     {
       "name": "npm-check-updates",
-      "version": "^12",
+      "version": "^15",
       "type": "build"
     },
     {
       "name": "projen",
+      "type": "build"
+    },
+    {
+      "name": "standard-version",
+      "version": "^9",
       "type": "build"
     },
     {
@@ -73,7 +86,6 @@
     },
     {
       "name": "ts-node",
-      "version": "^9",
       "type": "build"
     },
     {
@@ -83,6 +95,11 @@
     {
       "name": "aws-cdk-lib",
       "version": "^2.1.0",
+      "type": "runtime"
+    },
+    {
+      "name": "cdk-nag",
+      "version": "^2.0.0",
       "type": "runtime"
     },
     {
