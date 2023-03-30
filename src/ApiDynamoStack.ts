@@ -1,8 +1,8 @@
 import { Stack, StackProps, RemovalPolicy } from 'aws-cdk-lib';
+import { AwsIntegration, RestApi, PassthroughBehavior } from 'aws-cdk-lib/aws-apigateway';
+import { Table, BillingMode, AttributeType } from 'aws-cdk-lib/aws-dynamodb';
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
-import { AwsIntegration, RestApi, PassthroughBehavior } from 'aws-cdk-lib/aws-apigateway'
-import { Table, BillingMode, AttributeType } from 'aws-cdk-lib/aws-dynamodb'
-import { Role, ServicePrincipal} from 'aws-cdk-lib/aws-iam'
 
 export class ApiDynamoStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -10,20 +10,20 @@ export class ApiDynamoStack extends Stack {
 
     // DynamoDB Table
     const ddbTable = new Table(this, 'verwerkingen-api-dynamo-table', {
-      partitionKey: {name:'actieId', type: AttributeType.STRING},
+      partitionKey: { name: 'actieId', type: AttributeType.STRING },
       billingMode: BillingMode.PAY_PER_REQUEST,
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
     // RestApi
-    const restApi = new RestApi(this, 'verwerkingen-api-dynamo-rest-api')
-    const verwerkingsactiesRoute = restApi.root.addResource('verwerkingsacties')
+    const restApi = new RestApi(this, 'verwerkingen-api-dynamo-rest-api');
+    const verwerkingsactiesRoute = restApi.root.addResource('verwerkingsacties');
 
     // Allow the RestApi to access DynamoDb by assigning this role to the integration
     const integrationRole = new Role(this, 'verwerkingen-integration-role', {
       assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
-    })
-    ddbTable.grantReadWriteData(integrationRole)
+    });
+    ddbTable.grantReadWriteData(integrationRole);
 
     // POST Integration to DynamoDb
     const dynamoPutIntegration = new AwsIntegration({
@@ -34,26 +34,30 @@ export class ApiDynamoStack extends Stack {
         credentialsRole: integrationRole,
         requestTemplates: {
           'application/json': JSON.stringify({
-              'TableName': ddbTable.tableName,
-              'Item': {
-                'actieId': {'S': "$context.requestId"},
-                'actieNaam': {'S': "$input.path('$.actieNaam')"},
-              }
+            TableName: ddbTable.tableName,
+            Item: {
+              actieId: { S: '$context.requestId' },
+              actieNaam: { S: "$input.path('$.actieNaam')" },
+            },
           }),
         },
         integrationResponses: [
           {
-            statusCode: '200',
-            responseTemplates: {
-              'application/json': JSON.stringify({})
-            }
-          }
+            statusCode: '201',
+            // responseTemplates: {
+            //   'application/json': JSON.stringify({
+            //     actieId: { S: '$context.requestId' },
+            //     actieNaam: { S: "$input.path('$.actieNaam')" },
+                
+            //   }),
+            // },
+          },
         ],
-      }
-    })
+      },
+    });
     verwerkingsactiesRoute.addMethod('POST', dynamoPutIntegration, {
-      methodResponses: [{statusCode: '200'}],
-    })
+      methodResponses: [{ statusCode: '200' }],
+    });
 
     // GET Integration with DynamoDb
     // const dynamoQueryIntegration = new AwsIntegration({
