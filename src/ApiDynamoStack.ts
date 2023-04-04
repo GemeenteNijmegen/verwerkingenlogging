@@ -17,7 +17,6 @@ export class ApiDynamoStack extends Stack {
 
     // RestApi
     const restApi = new RestApi(this, 'verwerkingen-api-dynamo-rest-api');
-    const verwerkingsactiesRoute = restApi.root.addResource('verwerkingsacties');
 
     // Allow the RestApi to access DynamoDb by assigning this role to the integration
     const integrationRole = new Role(this, 'verwerkingen-integration-role', {
@@ -46,14 +45,15 @@ export class ApiDynamoStack extends Stack {
             statusCode: '200',
             responseTemplates: {
               'application/json': JSON.stringify({
-                actieId: { S: '$context.requestId' },
-                tijdstipRegistratie: { S: '$context.requestTime' },
+                actieId: '$context.requestId',
+                tijdstipRegistratie: '$context.requestTime',
               }),
             },
           },
         ],
       },
     });
+    const verwerkingsactiesRoute = restApi.root.addResource('verwerkingsacties');
     verwerkingsactiesRoute.addMethod('POST', dynamoPutIntegration, {
       methodResponses: [{ statusCode: '200' }],
     });
@@ -80,7 +80,8 @@ export class ApiDynamoStack extends Stack {
         integrationResponses: [{ statusCode: '200' }],
       },
     });
-    verwerkingsactiesRoute.addMethod('GET', dynamoQueryIntegration, {
+    const actieIdRoute = verwerkingsactiesRoute.addResource('{actieId}');
+    actieIdRoute.addMethod('GET', dynamoQueryIntegration, {
       methodResponses: [{ statusCode: '200' }],
       requestParameters: {
         'method.request.path.id': true,
