@@ -101,10 +101,9 @@ export class ApiDynamoStack extends Stack {
         requestTemplates: {
           'application/json': JSON.stringify({
             TableName: ddbTable.tableName,
-            KeyConditionExpression: 'actieId = :v1',
-            ExpressionAttributeValues: {
-              ':v1': { S: "$input.params('actieId')" },
-            },
+            Key: {
+              actieId: { S: "$input.params('actieId')" }
+              }
           }),
         },
         integrationResponses: [{ statusCode: '200' }],
