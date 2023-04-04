@@ -37,7 +37,7 @@ export class ApiDynamoStack extends Stack {
             TableName: ddbTable.tableName,
             Item: {
               actieId: { S: '$context.requestId' },
-              tijdstipRegistratie: { S: "$context.requestTime" },
+              tijdstipRegistratie: { S: '$context.requestTime' },
             },
           }),
         },
@@ -47,7 +47,7 @@ export class ApiDynamoStack extends Stack {
             responseTemplates: {
               'application/json': JSON.stringify({
                 actieId: { S: '$context.requestId' },
-                tijdstipRegistratie: { S: "$context.requestTime" },
+                tijdstipRegistratie: { S: '$context.requestTime' },
               }),
             },
           },
@@ -66,25 +66,25 @@ export class ApiDynamoStack extends Stack {
         passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
         credentialsRole: integrationRole,
         requestParameters: {
-          'integration.request.path.actieId': 'method.request.path.actieId'
+          'integration.request.path.id': 'method.request.path.id',
         },
         requestTemplates: {
           'application/json': JSON.stringify({
-              'TableName': ddbTable.tableName,
-              'KeyConditionExpression': 'pk = :v1',
-              'ExpressionAttributeValues': {
-                  ':v1': {'S': "$input.params('actieId')"}
-              }
+            TableName: ddbTable.tableName,
+            KeyConditionExpression: 'pk = :v1',
+            ExpressionAttributeValues: {
+              ':v1': { S: "$input.params('actieId')" },
+            },
           }),
         },
         integrationResponses: [{ statusCode: '200' }],
-      }
-    })
+      },
+    });
     verwerkingsactiesRoute.addMethod('GET', dynamoQueryIntegration, {
       methodResponses: [{ statusCode: '200' }],
       requestParameters: {
-        'method.request.path.id': true
-      }
-    })
+        'method.request.path.id': true,
+      },
+    });
   }
 }
