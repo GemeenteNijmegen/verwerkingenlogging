@@ -37,20 +37,19 @@ export class ApiDynamoStack extends Stack {
             TableName: ddbTable.tableName,
             Item: {
               actieId: { S: '$context.requestId' },
-              actieNaam: { S: "$input.path('$.actieNaam')" },
+              tijdstipRegistratie: { S: "$context.requestTime" },
             },
           }),
         },
         integrationResponses: [
           {
-            statusCode: '201',
-            // responseTemplates: {
-            //   'application/json': JSON.stringify({
-            //     actieId: { S: '$context.requestId' },
-            //     actieNaam: { S: "$input.path('$.actieNaam')" },
-                
-            //   }),
-            // },
+            statusCode: '200',
+            responseTemplates: {
+              'application/json': JSON.stringify({
+                actieId: { S: '$context.requestId' },
+                tijdstipRegistratie: { S: "$context.requestTime" },
+              }),
+            },
           },
         ],
       },
@@ -60,32 +59,32 @@ export class ApiDynamoStack extends Stack {
     });
 
     // GET Integration with DynamoDb
-    // const dynamoQueryIntegration = new AwsIntegration({
-    //   service: 'dynamodb',
-    //   action: 'Query',
-    //   options: {
-    //     passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-    //     credentialsRole: integrationRole,
-    //     requestParameters: {
-    //       'integration.request.path.id': 'method.request.path.id'
-    //     },
-    //     requestTemplates: {
-    //       'application/json': JSON.stringify({
-    //           'TableName': ddbTable.tableName,
-    //           'KeyConditionExpression': 'pk = :v1',
-    //           'ExpressionAttributeValues': {
-    //               ':v1': {'S': "$input.params('id')"}
-    //           }
-    //       }),
-    //     },
-    //     integrationResponses: [{ statusCode: '200' }],
-    //   }
-    // })
-    // verwerkingsactiesRoute.addMethod('GET', dynamoQueryIntegration, {
-    //   methodResponses: [{ statusCode: '200' }],
-    //   requestParameters: {
-    //     'method.request.path.id': true
-    //   }
-    // })
+    const dynamoQueryIntegration = new AwsIntegration({
+      service: 'dynamodb',
+      action: 'Query',
+      options: {
+        passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+        credentialsRole: integrationRole,
+        requestParameters: {
+          'integration.request.path.actieId': 'method.request.path.actieId'
+        },
+        requestTemplates: {
+          'application/json': JSON.stringify({
+              'TableName': ddbTable.tableName,
+              'KeyConditionExpression': 'pk = :v1',
+              'ExpressionAttributeValues': {
+                  ':v1': {'S': "$input.params('actieId')"}
+              }
+          }),
+        },
+        integrationResponses: [{ statusCode: '200' }],
+      }
+    })
+    verwerkingsactiesRoute.addMethod('GET', dynamoQueryIntegration, {
+      methodResponses: [{ statusCode: '200' }],
+      requestParameters: {
+        'method.request.path.id': true
+      }
+    })
   }
 }
