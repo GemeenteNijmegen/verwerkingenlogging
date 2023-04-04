@@ -71,7 +71,7 @@ export class ApiDynamoStack extends Stack {
         requestTemplates: {
           'application/json': JSON.stringify({
             TableName: ddbTable.tableName,
-            KeyConditionExpression: 'pk = :v1',
+            KeyConditionExpression: 'actieId = :v1',
             ExpressionAttributeValues: {
               ':v1': { S: "$input.params('actieId')" },
             },
@@ -82,6 +82,35 @@ export class ApiDynamoStack extends Stack {
     });
     const actieIdRoute = verwerkingsactiesRoute.addResource('{actieId}');
     actieIdRoute.addMethod('GET', dynamoQueryIntegration, {
+      methodResponses: [{ statusCode: '200' }],
+      requestParameters: {
+        'method.request.path.id': true,
+      },
+    });
+
+    // DELETE Integration with DynamoDb
+    const dynamoDeleteIntegration = new AwsIntegration({
+      service: 'dynamodb',
+      action: 'DeleteItem',
+      options: {
+        passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+        credentialsRole: integrationRole,
+        requestParameters: {
+          'integration.request.path.id': 'method.request.path.id',
+        },
+        requestTemplates: {
+          'application/json': JSON.stringify({
+            TableName: ddbTable.tableName,
+            KeyConditionExpression: 'actieId = :v1',
+            ExpressionAttributeValues: {
+              ':v1': { S: "$input.params('actieId')" },
+            },
+          }),
+        },
+        integrationResponses: [{ statusCode: '200' }],
+      },
+    });
+    actieIdRoute.addMethod('DELETE', dynamoDeleteIntegration, {
       methodResponses: [{ statusCode: '200' }],
       requestParameters: {
         'method.request.path.id': true,
