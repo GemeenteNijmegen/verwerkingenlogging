@@ -25,7 +25,7 @@ export class ApiDynamoStack extends Stack {
     ddbTable.grantReadWriteData(integrationRole);
 
     // POST Integration to DynamoDb
-    const dynamoPutIntegration = new AwsIntegration({
+    const dynamoPostIntegration = new AwsIntegration({
       service: 'dynamodb',
       action: 'PutItem',
       options: {
@@ -54,7 +54,7 @@ export class ApiDynamoStack extends Stack {
       },
     });
     const verwerkingsactiesRoute = restApi.root.addResource('verwerkingsacties');
-    verwerkingsactiesRoute.addMethod('POST', dynamoPutIntegration, {
+    verwerkingsactiesRoute.addMethod('POST', dynamoPostIntegration, {
       methodResponses: [{ statusCode: '200' }],
     });
 
@@ -88,6 +88,39 @@ export class ApiDynamoStack extends Stack {
       },
     });
 
+    // PUT Integration to DynamoDb
+    const dynamoPutIntegration = new AwsIntegration({
+      service: 'dynamodb',
+      action: 'PutItem',
+      options: {
+        passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
+        credentialsRole: integrationRole,
+        requestParameters: {
+          'integration.request.path.id': 'method.request.path.id',
+        },
+        requestTemplates: {
+          'application/json': JSON.stringify({
+            TableName: ddbTable.tableName,
+            Item: {
+              actieId: { S: "$input.params('actieId')" },
+              tijdstipRegistratie: { S: '$context.requestTime' },
+            },
+          }),
+        },
+        integrationResponses: [
+          {
+            statusCode: '200',
+          },
+        ],
+      },
+    });
+    actieIdRoute.addMethod('PUT', dynamoPutIntegration, {
+      methodResponses: [{ statusCode: '200' }],
+      requestParameters: {
+        'method.request.path.id': true,
+      },
+    });
+
     // DELETE Integration with DynamoDb
     const dynamoDeleteIntegration = new AwsIntegration({
       service: 'dynamodb',
@@ -102,8 +135,8 @@ export class ApiDynamoStack extends Stack {
           'application/json': JSON.stringify({
             TableName: ddbTable.tableName,
             Key: {
-              actieId: { S: "$input.params('actieId')" }
-              }
+              actieId: { S: "$input.params('actieId')" },
+            },
           }),
         },
         integrationResponses: [{ statusCode: '200' }],
