@@ -90,7 +90,7 @@ def generate_patch_message(event):
 
     return msg
 
-def send_to_queue(msg, path, queue):
+def send_to_queue(msg, queue, path):
     queue.send_message(MessageBody=msg, MessageAttributes={'path': path})
 
 def instant_response(msg):
