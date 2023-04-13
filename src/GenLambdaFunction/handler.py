@@ -49,8 +49,8 @@ def filled_item(requestJSON, url, actieId, tijdstipRegistratie, verwerkteObjecte
 
 # Store (backup) verwerking item in S3 Backup Bucket
 def store_item_in_s3(item_json, bucket):
-    path = json.loads(item_json).get('actieId')
-    data = bytes(item_json.encode('UTF-8'))
+    path = item_json.get('actieId')
+    data = bytes(json.dumps(item_json).encode('UTF-8'))
     bucket.put_object(
         ContentType='application/json',
         Key=path,
