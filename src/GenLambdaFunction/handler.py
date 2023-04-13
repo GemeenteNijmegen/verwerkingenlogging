@@ -70,7 +70,7 @@ def generate_post_message(event):
     requestJson = json.loads(event.get('body'))
 
     # Add verwerktObjectId to each verwerktObject
-    verwerkteObjecten = json.loads(requestJson.get('verwerkteObjecten'))
+    verwerkteObjecten = requestJson.get('verwerkteObjecten')
     if (len(verwerkteObjecten) >= 1):
         for object in verwerkteObjecten:
             verwerktObjectId = str(uuid.uuid4()) # uuid4 to make uuid random within a for loop (uuid1 gives same uuid to each object)
