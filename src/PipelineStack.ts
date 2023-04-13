@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { ApiStage } from './ApiStage';
 import { DatabaseStage } from './DatabaseStage';
 import { ParameterStage } from './ParameterStage';
+import { QueueStage } from './QueueStage';
 import { Statics } from './statics';
 
 export interface PipelineStackProps extends StackProps{
@@ -26,6 +27,7 @@ export class PipelineStack extends Stack {
     // the Api Gateway and Lambda.
     pipeline.addStage(new ParameterStage(this, 'ParametersStage', { env: props.deployToEnvironment }));
     pipeline.addStage(new DatabaseStage(this, 'DatabaseStage', { env: props.deployToEnvironment }));
+    pipeline.addStage(new QueueStage(this, 'QueueStage', { env: props.deployToEnvironment }));
     pipeline.addStage(new ApiStage(this, 'ApiStage', { env: props.deployToEnvironment }));
   }
 

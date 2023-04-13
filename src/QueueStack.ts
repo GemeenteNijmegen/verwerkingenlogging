@@ -60,7 +60,7 @@ export class QueueStack extends Stack {
       runtime: Lambda.Runtime.PYTHON_3_9,
       environment: {
         DYNAMO_TABLE_NAME: Statics.verwerkingenTableName,
-        SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
+        SQS_URL: this.verwerkingenMessageQueue.queueUrl,
       },
     });
     this.verwerkingenProcLambdaFunction.addToRolePolicy(new IAM.PolicyStatement({
