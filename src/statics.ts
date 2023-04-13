@@ -16,9 +16,9 @@ export abstract class Statics {
   static readonly ssmName_verwerkingenTableArn: string = '/cdk/verwerkingenlogging/verwerkingen-table-arn';
 
   /**
-   * DynamoDB index name for objecttypesoortObjectIdobjectId.
+   * DynamoDB index name for objectTypeSoortId.
    */
-  static readonly verwerkingenTableIndex_ObjecttypesoortObjectIdobjectId: string = 'objecttypesoortObjectIdobjectId-index';
+  static readonly verwerkingenTableIndex_objectTypeSoortId: string = 'objectTypeSoortId-index';
 
   /**
    * DynamoDB index name for verwerkingId.
@@ -54,4 +54,9 @@ export abstract class Statics {
    * IAM Read Only Role arn (parameter).
    */
   static readonly ssmName_verwerkingenReadOnlyRoleArn: string = '/cdk/verwerkingenlogging/verwerkingen-read-only-role-arn';
+
+  /**
+   * SQS Queue Url
+   */
+  static readonly ssmName_verwerkingenSQSqueueUrl: string = '/cdk/verwerkingenlogging/verwerkingen-sqs-queue-url';
 }

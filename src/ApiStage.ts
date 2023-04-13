@@ -1,6 +1,5 @@
 import { Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { ApiDynamoStack } from './ApiDynamoStack';
 import { ApiStack } from './ApiStack';
 
 export interface ApiStageProps extends StageProps {
@@ -15,6 +14,5 @@ export class ApiStage extends Stage {
     super(scope, id, props);
 
     new ApiStack(this, 'api-stack');
-    new ApiDynamoStack(this, 'apidynamo-stack');
   }
 }
