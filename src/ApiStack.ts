@@ -179,6 +179,8 @@ export class ApiStack extends Stack {
    * @param actieIdRoute
    */
   private addPutMethod(integrationRole: Role, ddbTable: ITable, actieIdRoute: Resource) {
+    const test = '#foreach($elem in $input.path("verwerkteObjecten")) { "betrokkenheid": "$elem.betrokkenheid.S", "objectId": "$elem.objectId.S", "objecttype": "$elem.objecttype.S", "objectTypeSoortId": "$elem.objectTypeSoortId.S", "soortObjectId": "$elem.soortObjectId.S", "verwerkteSoortenGegevens": "#foreach($item in $input.path("$elem.verwerkteSoortenGegevens.L")) { "soortGegeven": "$item.soortGegeven.S" }#if($foreach.hasNext),#end", "verwerktObjectId": "$elem.verwerktObjectId.S" }#if($foreach.hasNext),#end'
+
     const dynamoPutIntegration = new AwsIntegration({
       service: 'dynamodb',
       action: 'PutItem',
@@ -213,7 +215,9 @@ export class ApiStack extends Stack {
               verwerkingIdAfnemer:{ S: "$input.path('verwerkingIdAfnemer')" },
               tijdstip: { S: "$input.path('tijdstip')" },
               tijdstipRegistratie: { S: '$context.requestTime' },
-              verwerkteObjecten: { S: "$input.path('verwerkteObjecten')" }
+              verwerkteObjecten: { L: [ 
+                  test
+              ] }
             },
           }),
         },
