@@ -102,8 +102,8 @@ export class ApiStack extends Stack {
         DYNAMO_TABLE_NAME: ddbTable.tableName,
       },
     });
-    this.verwerkingenGenLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
-    this.verwerkingenGenLambdaFunction.addToRolePolicy(new IAM.PolicyStatement({
+    this.verwerkingenRecLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
+    this.verwerkingenRecLambdaFunction.addToRolePolicy(new IAM.PolicyStatement({
       effect: IAM.Effect.ALLOW,
       actions: [
         'dynamodb:Query',
