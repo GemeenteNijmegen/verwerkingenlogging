@@ -47,10 +47,16 @@ export class QueueStack extends Stack {
       },
     });
 
-    // Add Read Only Role ARN to parameter store.
+    // Add SQS url to parameter store.
     new SSM.StringParameter(this, 'ssm_verwerkingen-sqs-queue-url', {
       stringValue: this.verwerkingenMessageQueue.queueUrl,
       parameterName: Statics.ssmName_verwerkingenSQSqueueUrl,
+    });
+
+    // Add SQS arn to parameter store.
+    new SSM.StringParameter(this, 'ssm_verwerkingn-sqs-queue-arn', {
+      stringValue: this.verwerkingenMessageQueue.queueArn,
+      parameterName: Statics.ssmName_verwerkingenSQSqueueArn,
     });
 
     // Processing Lambda

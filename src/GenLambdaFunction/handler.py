@@ -88,10 +88,15 @@ def generate_patch_message(event):
         "vertouwelijkheid": requestJson.get('vertrouwelijkheid') # Optional
     }
 
-    return msg
+    return json.dumps(msg)
 
 def send_to_queue(msg, queue, path):
-    queue.send_message(MessageBody=msg, MessageAttributes={'path': path})
+    body = json.dumps(msg)
+    queue.send_message(MessageBody=body, MessageAttributes={
+        'path': {
+            'DataType': 'String',
+            'StringValue': path
+        }})
 
 def instant_response(msg):
     {

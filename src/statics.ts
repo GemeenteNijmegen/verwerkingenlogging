@@ -59,4 +59,9 @@ export abstract class Statics {
    * SQS Queue Url
    */
   static readonly ssmName_verwerkingenSQSqueueUrl: string = '/cdk/verwerkingenlogging/verwerkingen-sqs-queue-url';
+
+  /**
+   * SQS Queue Arn
+   */
+  static readonly ssmName_verwerkingenSQSqueueArn: string = '/cdk/verwerkingenlogging/verwerkingen-sqs-queue-arn'
 }

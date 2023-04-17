@@ -81,10 +81,12 @@ export class ApiStack extends Stack {
       effect: IAM.Effect.ALLOW,
       actions: [
         's3:PutObject',
+        'sqs:SendMessage',
       ],
       resources: [
         SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn),
         SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn) + '/*',
+        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueArn)
       ],
     }));
 
