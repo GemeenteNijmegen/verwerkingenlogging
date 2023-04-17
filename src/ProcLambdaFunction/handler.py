@@ -11,7 +11,7 @@ def process_message(event, table):
 
     for record in records:
         body = record.get('body')
-        messageAttributes = json.loads(record.get('messageAttributes'))
+        messageAttributes = record.get('messageAttributes')
 
         if messageAttributes.get('path') == 'POST':
             post_verwerkings_acties(body, table)
@@ -23,13 +23,15 @@ def process_message(event, table):
 # Post verwerkingsacties
 def post_verwerkings_acties(body, table):        
 
+    item = json.loads(body)
+
     table.put_item(
-        Item=body
+        Item=item
     )
 
     return {
         'statusCode': 201,
-        'body': json.dumps(body),
+        'body': json.dumps(item),
         'headers': { "Content-Type": "application/json" }
     }
 
