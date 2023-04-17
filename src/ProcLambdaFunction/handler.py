@@ -13,10 +13,10 @@ def process_message(event, table):
         body = record.get('body')
         messageAttributes = record.get('messageAttributes')
 
-        if messageAttributes.get('path') == 'POST':
+        if messageAttributes.get('path').get('stringValue') == 'POST':
             post_verwerkings_acties(body, table)
         
-        if messageAttributes.get('path') == 'PATCH':
+        if messageAttributes.get('path').get('stringValue') == 'PATCH':
             patch_verwerkings_acties(body, table)
 
 
