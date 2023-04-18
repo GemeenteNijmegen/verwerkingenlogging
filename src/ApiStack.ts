@@ -179,6 +179,8 @@ export class ApiStack extends Stack {
    * @param actieIdRoute
    */
   private addPutMethod(integrationRole: Role, ddbTable: ITable, actieIdRoute: Resource) {
+    const reqTemplate = "{\"TableName\": \"verwerkingen-table\",\"Item\": { \"actieId\": {\"S\": \"$input.params(\'actieId\')\"},\"url\": {\"S\": \"$input.path(\'url\')\"},\"actieNaam\": {\"S\": \"$input.path(\'actieNaam\')\"},\"handelingNaam\": {\"S\": \"$input.path(\'handelingNaam\')\"},\"verwerkingId\": {\"S\": \"$input.path(\'verwerkingId\')\"},\"verwerkingNaam\": {\"S\": \"$input.path(\'verwerkingNaam\')\"},\"verwerkingsactiviteitId\": {\"S\": \"$input.path(\'verwerkingsactiviteitId\')\"},\"verwerkingsactiviteitUrl\": {\"S\": \"$input.path(\'verwerkingsactiviteitUrl\')\"},\"vertrouwelijkheid\": {\"S\": \"$input.path(\'vertrouwelijkheid\')\"},\"bewaartermijn\": {\"S\": \"$input.path(\'bewaartermijn\')\"},\"uitvoerder\": {\"S\": \"$input.path(\'uitvoerder\')\"},\"systeem\": {\"S\": \"$input.path(\'systeem\')\"},\"gebruiker\": {\"S\": \"$input.path(\'gebruiker\')\"},\"gegevensbron\": {\"S\": \"$input.path(\'gegevensbron\')\"},\"soortAfnemerId\": {\"S\": \"$input.path(\'soortAfnemerId\')\"},\"afnemerId\": {\"S\": \"$input.path(\'afnemerId\')\"},\"verwerkingsactiviteitIdAfnemer\": {\"S\": \"$input.path(\'verwerkingsactiviteitIdAfnemer\')\"},\"verwerkingsactiviteitUrlAfnemer\": {\"S\": \"$input.path(\'verwerkingsactiviteitUrlAfnemer\')\"},\"verwerkingIdAfnemer\": {\"S\": \"$input.path(\'verwerkingIdAfnemer\')\"},\"tijdstip\": {\"S\": \"$input.path(\'tijdstip\')\"},\"tijdstipRegistratie\": {\"S\": \"$context.requestTime\"},\"verwerkteObjecten\": { #set($inputroot = $input.path(\"$\"))\"L\":[#foreach($object in $inputroot.verwerkteObjecten) {\"M\" : {\"objecttype\": { \"S\": \"$object.objecttype\" },\"soortObjectId\": { \"S\": \"$object.soortObjectId\" },\"objectId\": { \"S\": \"$object.objectId\" },\"betrokkenheid\": { \"S\": \"$object.betrokkenheid\" },\"verwerkteSoortenGegevens\": { \"L\": [#foreach($sobject in $object.verwerkteSoortenGegevens) {\"M\": {\"soortGegeven\": { \"S\": \"$sobject.soortGegeven\" }}}#if($foreach.hasNext),#end#end] }}}#if($foreach.hasNext),#end#end] }}}";
+
     const dynamoPutIntegration = new AwsIntegration({
       service: 'dynamodb',
       action: 'PutItem',
@@ -189,33 +191,34 @@ export class ApiStack extends Stack {
           'integration.request.path.id': 'method.request.path.id',
         },
         requestTemplates: {
-          'application/json': JSON.stringify({
-            TableName: ddbTable.tableName,
-            Item: {
-              actieId: { S: "$input.params('actieId')" },
-              url: { S: "$input.path('url')" },
-              actieNaam: { S: "$input.path('actieNaam')" },
-              handelingNaam: { S: "$input.path('handelingNaam')" },
-              verwerkingId: { S: "$input.path('verwerkingId')" },
-              verwerkingNaam: { S: "$input.path('verwerkingNaam')" },
-              verwerkingsactiviteitId: { S: "$input.path('verwerkingsactiviteitId')" },
-              verwerkingsactiviteitUrl: { S: "$input.path('verwerkingsactiviteitUrl')" },
-              vertrouwelijkheid: { S: "$input.path('vertrouwelijkheid')" },
-              bewaartermijn: { S: "$input.path('bewaartermijn')" },
-              uitvoerder: { S: "$input.path('uitvoerder')" },
-              systeem: { S: "$input.path('systeem')" },
-              gebruiker: { S: "$input.path('gebruiker')" },
-              gegevensbron: { S: "$input.path('gegevensbron')" },
-              soortAfnemerId: { S: "$input.path('soortAfnemerId')" },
-              afnemerId: { S: "$input.path('afnemerId')" },
-              verwerkingsactiviteitIdAfnemer: { S: "$input.path('verwerkingsactiviteitIdAfnemer')" },
-              verwerkingsactiviteitUrlAfnemer: { S: "$input.path('verwerkingsactiviteitUrlAfnemer')" },
-              verwerkingIdAfnemer:{ S: "$input.path('verwerkingIdAfnemer')" },
-              tijdstip: { S: "$input.path('tijdstip')" },
-              tijdstipRegistratie: { S: '$context.requestTime' },
-              verwerkteObjecten: '{ #set($inputroot = $input.path("$"))"L":[#foreach($object in $inputroot.verwerkteObjecten) {"M" : {"objecttype": { "S": "$object.objecttype" },"soortObjectId": { "S": "$object.soortObjectId" },"objectId": { "S": "$object.objectId" },"betrokkenheid": { "S": "$object.betrokkenheid" },"verwerkteSoortenGegevens": { "L": [#foreach($sobject in $object.verwerkteSoortenGegevens) {"M": {"soortGegeven": { "S": "$sobject.soortGegeven" }}}#if($foreach.hasNext),#end#end] }}}#if($foreach.hasNext),#end#end] }'
-            },
-          }),
+          'application/json': reqTemplate,
+          // 'application/json': JSON.stringify({
+          //   TableName: ddbTable.tableName,
+          //   Item: {
+          //     actieId: { S: "$input.params('actieId')" },
+          //     url: { S: "$input.path('url')" },
+          //     actieNaam: { S: "$input.path('actieNaam')" },
+          //     handelingNaam: { S: "$input.path('handelingNaam')" },
+          //     verwerkingId: { S: "$input.path('verwerkingId')" },
+          //     verwerkingNaam: { S: "$input.path('verwerkingNaam')" },
+          //     verwerkingsactiviteitId: { S: "$input.path('verwerkingsactiviteitId')" },
+          //     verwerkingsactiviteitUrl: { S: "$input.path('verwerkingsactiviteitUrl')" },
+          //     vertrouwelijkheid: { S: "$input.path('vertrouwelijkheid')" },
+          //     bewaartermijn: { S: "$input.path('bewaartermijn')" },
+          //     uitvoerder: { S: "$input.path('uitvoerder')" },
+          //     systeem: { S: "$input.path('systeem')" },
+          //     gebruiker: { S: "$input.path('gebruiker')" },
+          //     gegevensbron: { S: "$input.path('gegevensbron')" },
+          //     soortAfnemerId: { S: "$input.path('soortAfnemerId')" },
+          //     afnemerId: { S: "$input.path('afnemerId')" },
+          //     verwerkingsactiviteitIdAfnemer: { S: "$input.path('verwerkingsactiviteitIdAfnemer')" },
+          //     verwerkingsactiviteitUrlAfnemer: { S: "$input.path('verwerkingsactiviteitUrlAfnemer')" },
+          //     verwerkingIdAfnemer:{ S: "$input.path('verwerkingIdAfnemer')" },
+          //     tijdstip: { S: "$input.path('tijdstip')" },
+          //     tijdstipRegistratie: { S: '$context.requestTime' },
+          //     verwerkteObjecten: '{ #set($inputroot = $input.path("$"))"L":[#foreach($object in $inputroot.verwerkteObjecten) {"M" : {"objecttype": { "S": "$object.objecttype" },"soortObjectId": { "S": "$object.soortObjectId" },"objectId": { "S": "$object.objectId" },"betrokkenheid": { "S": "$object.betrokkenheid" },"verwerkteSoortenGegevens": { "L": [#foreach($sobject in $object.verwerkteSoortenGegevens) {"M": {"soortGegeven": { "S": "$sobject.soortGegeven" }}}#if($foreach.hasNext),#end#end] }}}#if($foreach.hasNext),#end#end] }'
+          //   },
+          // }),
         },
         integrationResponses: [
           {
