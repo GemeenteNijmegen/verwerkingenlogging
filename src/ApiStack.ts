@@ -127,7 +127,7 @@ export class ApiStack extends Stack {
     // Route: /verwerkingsacties/{actieId}
     const actieIdRoute = verwerkingsactiesRoute.addResource('{actieId}');
     this.addDeleteMethod(integrationRole, ddbTable, actieIdRoute);
-    this.addPutMethod(integrationRole, ddbTable, actieIdRoute);
+    this.addPutMethod(integrationRole, actieIdRoute);
     this.addGetMethod(integrationRole, ddbTable, actieIdRoute);
 
     // Create API Key and add a new usage plan
@@ -178,7 +178,7 @@ export class ApiStack extends Stack {
    * @param ddbTable
    * @param actieIdRoute
    */
-  private addPutMethod(integrationRole: Role, ddbTable: ITable, actieIdRoute: Resource) {
+  private addPutMethod(integrationRole: Role, actieIdRoute: Resource) {
     const reqTemplate = "{\"TableName\": \"verwerkingen-table\",\"Item\": { \"actieId\": {\"S\": \"$input.params(\'actieId\')\"},\"url\": {\"S\": \"$input.path(\'url\')\"},\"actieNaam\": {\"S\": \"$input.path(\'actieNaam\')\"},\"handelingNaam\": {\"S\": \"$input.path(\'handelingNaam\')\"},\"verwerkingId\": {\"S\": \"$input.path(\'verwerkingId\')\"},\"verwerkingNaam\": {\"S\": \"$input.path(\'verwerkingNaam\')\"},\"verwerkingsactiviteitId\": {\"S\": \"$input.path(\'verwerkingsactiviteitId\')\"},\"verwerkingsactiviteitUrl\": {\"S\": \"$input.path(\'verwerkingsactiviteitUrl\')\"},\"vertrouwelijkheid\": {\"S\": \"$input.path(\'vertrouwelijkheid\')\"},\"bewaartermijn\": {\"S\": \"$input.path(\'bewaartermijn\')\"},\"uitvoerder\": {\"S\": \"$input.path(\'uitvoerder\')\"},\"systeem\": {\"S\": \"$input.path(\'systeem\')\"},\"gebruiker\": {\"S\": \"$input.path(\'gebruiker\')\"},\"gegevensbron\": {\"S\": \"$input.path(\'gegevensbron\')\"},\"soortAfnemerId\": {\"S\": \"$input.path(\'soortAfnemerId\')\"},\"afnemerId\": {\"S\": \"$input.path(\'afnemerId\')\"},\"verwerkingsactiviteitIdAfnemer\": {\"S\": \"$input.path(\'verwerkingsactiviteitIdAfnemer\')\"},\"verwerkingsactiviteitUrlAfnemer\": {\"S\": \"$input.path(\'verwerkingsactiviteitUrlAfnemer\')\"},\"verwerkingIdAfnemer\": {\"S\": \"$input.path(\'verwerkingIdAfnemer\')\"},\"tijdstip\": {\"S\": \"$input.path(\'tijdstip\')\"},\"tijdstipRegistratie\": {\"S\": \"$context.requestTime\"},\"verwerkteObjecten\": { #set($inputroot = $input.path(\"$\"))\"L\":[#foreach($object in $inputroot.verwerkteObjecten) {\"M\" : {\"objecttype\": { \"S\": \"$object.objecttype\" },\"soortObjectId\": { \"S\": \"$object.soortObjectId\" },\"objectId\": { \"S\": \"$object.objectId\" },\"betrokkenheid\": { \"S\": \"$object.betrokkenheid\" },\"verwerkteSoortenGegevens\": { \"L\": [#foreach($sobject in $object.verwerkteSoortenGegevens) {\"M\": {\"soortGegeven\": { \"S\": \"$sobject.soortGegeven\" }}}#if($foreach.hasNext),#end#end] }}}#if($foreach.hasNext),#end#end] }}}";
 
     const dynamoPutIntegration = new AwsIntegration({
