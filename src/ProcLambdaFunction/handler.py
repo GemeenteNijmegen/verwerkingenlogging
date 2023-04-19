@@ -10,7 +10,7 @@ def process_message(event, table):
     records = event.get('Records') # Get 'records' from queue message
 
     for record in records:
-        body = record.get('body')
+        body = json.loads(record.get('body'))
         messageAttributes = record.get('messageAttributes')
 
         if messageAttributes.get('path').get('stringValue') == 'POST':
@@ -23,56 +23,59 @@ def process_message(event, table):
 # Post verwerkingsacties
 def post_verwerkings_acties(body, table):        
 
-    item = json.loads(body)
-
     table.put_item(
-        Item=item
+        Item=body
     )
 
     return {
         'statusCode': 201,
-        'body': json.dumps(item),
+        'body': json.dumps(body),
         'headers': { "Content-Type": "application/json" }
     }
 
 # Patch verwerkingsacties
 def patch_verwerkings_acties(body, table):
+    
+    bodyJson = json.loads(body)
+    verwerkingId = bodyJson.get('verwerkingId')
+    vertrouwelijkheid = bodyJson.get('vertrouwelijkheid')
+    bewaartermijn = bodyJson.get('bewaartermijn')
 
     verwerkingen = table.query(
         IndexName='verwerkingId-index',
-        KeyConditionExpression=Key('verwerkingId').eq(body.get('verwerkingId'))
+        KeyConditionExpression=Key('verwerkingId').eq(verwerkingId)
     )
     response = []
     for item in verwerkingen.get('Items'):
-        if (body.get('vertrouwelijkheid') != None and body.get('bewaartermijn') == None):
+        if (vertrouwelijkheid != None and bewaartermijn == None):
             response.append(table.update_item(
                 Key={ 
                     'actieId': item.get('actieId') 
                 },
                 UpdateExpression="SET vertrouwelijkheid= :var1",
                 ExpressionAttributeValues={
-                    ':var1': body.get('vertrouwelijkheid')
+                    ':var1': vertrouwelijkheid
                 }
             ))
-        if (body.get('vertrouwelijkheid') == None and body.get('bewaartermijn') != None):
+        if (vertrouwelijkheid == None and bewaartermijn != None):
             response.append(table.update_item(
                 Key={ 
                     'actieId': item.get('actieId') 
                 },
                 UpdateExpression="SET bewaartermijn= :var1",
                 ExpressionAttributeValues={
-                    ':var1': body.get('bewaartermijn')
+                    ':var1': bewaartermijn
                 }
             ))
-        if (body.get('vertrouwelijkheid') != None and body.get('bewaartermijn') != None):
+        if (vertrouwelijkheid != None and bewaartermijn != None):
             response.append(table.update_item(
                 Key={ 
                     'actieId': item.get('actieId') 
                 },
                 UpdateExpression="SET vertrouwelijkheid= :var1, bewaartermijn= :var2",
                 ExpressionAttributeValues={
-                    ':var1': body.get('vertrouwelijkheid'),
-                    ':var2': body.get('bewaartermijn')
+                    ':var1': vertrouwelijkheid,
+                    ':var2': bewaartermijn
                 }
             ))
         

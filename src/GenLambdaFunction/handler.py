@@ -80,10 +80,10 @@ def generate_post_message(event):
     return filled_item(requestJson, url, actieId, tijdstipRegistratie, verwerkteObjecten)
 
 def generate_patch_message(event):
-    requestJson = event.get('body')
+    requestJson = json.loads(event.get('body'))
 
     msg = {
-        "verwerkingId": requestJson.get('verwerkingId'),
+        "verwerkingId": event.get('queryStringParameters').get('verwerkingId'),
         "bewaartermijn": requestJson.get('bewaartermijn'), # Optional
         "vertouwelijkheid": requestJson.get('vertrouwelijkheid') # Optional
     }
@@ -127,8 +127,10 @@ def handle_request(event, bucket, queue):
 
         msg = generate_patch_message(event)
 
-        # Send message to queue. Note: no instant repsonse required.
+        # Send message to queue.
         send_to_queue(msg, queue, 'PATCH')
+
+        return instant_response(msg)
 
     # if no matches were found, handle this as a malformed request
     return {
