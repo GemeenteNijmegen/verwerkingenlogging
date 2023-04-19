@@ -34,8 +34,9 @@ export class DatabaseStack extends Stack {
     super(scope, id);
 
     // Create the DynamoDB verwerkingen table.
-    this.verwerkingenTable = new DynamoDB.Table(this, 'verwerkingen-table', {
+    this.verwerkingenTable = new DynamoDB.Table(this, 'verwerkingen-table-v2', {
       partitionKey: { name: 'actieId', type: DynamoDB.AttributeType.STRING },
+      sortKey: { name: 'objectTypeSoortId', type: DynamoDB.AttributeType.STRING },
       billingMode: DynamoDB.BillingMode.PAY_PER_REQUEST,
       tableName: Statics.verwerkingenTableName,
       timeToLiveAttribute: 'ttl',

@@ -21,10 +21,11 @@ def validate_params(params):
             raise Exception("GET and PUT requests to /verwerkingsacties should have query parameters")
     return params
 
-def filled_item(requestJSON, url, actieId, tijdstipRegistratie, verwerkteObjecten):
+def filled_item(requestJSON, objectTypeSoortId, actieId, url, tijdstipRegistratie, verwerkteObjecten):
     return {
         'url': url,
         'actieId': actieId,
+        'objectTypeSoortId': objectTypeSoortId,
         'actieNaam': requestJSON['actieNaam'],
         'handelingNaam': requestJSON['handelingNaam'],
         'verwerkingId': requestJSON['verwerkingId'],
@@ -57,27 +58,9 @@ def store_item_in_s3(item_json, bucket):
         Body=data,
     )
 
-def generate_post_message(event):
-    # Generate UUID for actieId
-    actieId = str(uuid.uuid1()) # V1 Timestamp
-
-    # Create DB url using generated actieId
-    url = "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + actieId
-    
-    # Generate timestamp for tijdstipRegistratie.
-    tijdstipRegistratie = datetime.now().isoformat(timespec='seconds')
-
-    requestJson = json.loads(event.get('body'))
-
-    # Add verwerktObjectId to each verwerktObject
-    verwerkteObjecten = requestJson.get('verwerkteObjecten')
-    if (len(verwerkteObjecten) >= 1):
-        for object in verwerkteObjecten:
-            verwerktObjectId = str(uuid.uuid4()) # uuid4 to make uuid random within a for loop (uuid1 gives same uuid to each object)
-            objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
-            object.update({ "verwerktObjectId": verwerktObjectId, "objectTypeSoortId": objectTypeSoortId })
-
-    return filled_item(requestJson, url, actieId, tijdstipRegistratie, verwerkteObjecten)
+def generate_post_message(requestJson, object, actieId, url, tijdstipRegistratie, verwerkteObjecten):
+    objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
+    return filled_item(requestJson, objectTypeSoortId, actieId, url, tijdstipRegistratie, verwerkteObjecten)
 
 def generate_patch_message(event):
     requestJson = json.loads(event.get('body'))
@@ -110,14 +93,37 @@ def handle_request(event, bucket, queue):
     params = parse_event(event)
 
     if(params['method'] == 'POST' and params['resource'] == '/verwerkingsacties'):
-        # Generate actieId, Url, verwerktObjectId and objectTypeSoortId
-        msg = generate_post_message(event)
 
-        # Store message as backup in S3
-        store_item_in_s3(msg, bucket)
+        # Generate UUID for actieId
+        actieId = str(uuid.uuid1()) # V1 Timestamp
 
-        # Send message to queue
-        send_to_queue(msg, queue, 'POST')
+        # Create DB url using generated actieId
+        url = "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + actieId
+        
+        # Generate timestamp for tijdstipRegistratie.
+        tijdstipRegistratie = datetime.now().isoformat(timespec='seconds')
+
+        requestJson = json.loads(event.get('body'))
+
+        # Add verwerktObjectId to each verwerktObject before proceeding
+        verwerkteObjecten = requestJson.get('verwerkteObjecten')
+        if (len(verwerkteObjecten) >= 1):
+            for object in verwerkteObjecten:
+                verwerktObjectId = str(uuid.uuid4()) # uuid4 to make uuid random within a for loop (uuid1 gives same uuid to each object)
+                object.update({ "verwerktObjectId": verwerktObjectId })
+
+        # Create a seperate item (db record) for each verwerktObject
+        # PK = actieId | SK = objectTypeSoortId
+        for object in verwerkteObjecten:
+
+            # Generate post message (including verwerktObjectId and objectTypeSoortId)
+            msg = generate_post_message(requestJson, object, actieId, url, tijdstipRegistratie, verwerkteObjecten)
+
+            # Store message as backup in S3
+            store_item_in_s3(msg, bucket)
+
+            # Send message to queue
+            send_to_queue(msg, queue, 'POST')
 
         # Message inlcudes original request combined with actieId and Url
         return instant_response(msg)
