@@ -16,11 +16,6 @@ export abstract class Statics {
   static readonly ssmName_verwerkingenTableArn: string = '/cdk/verwerkingenlogging/verwerkingen-table-arn';
 
   /**
-   * DynamoDB index name for objectTypeSoortId.
-   */
-  static readonly verwerkingenTableIndex_objectTypeSoortId: string = 'objectTypeSoortId-index';
-
-  /**
    * DynamoDB index name for verwerkingId.
    */
   static readonly verwerkingenTableIndex_verwerkingId: string = 'verwerkingId-index';

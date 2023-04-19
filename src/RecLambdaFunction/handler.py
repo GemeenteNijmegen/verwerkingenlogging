@@ -3,7 +3,7 @@ import json
 from boto3.dynamodb.conditions import Key, Attr
 
 def handle_request(event, table):
-    get_verwerkings_acties(event, table)
+    return get_verwerkings_acties(event, table)
 
 def get_verwerkings_acties(event, table):
     object_key = event['queryStringParameters']['objecttype'] + event['queryStringParameters']['soortObjectId'] + event['queryStringParameters']['objectId']

@@ -110,7 +110,6 @@ export class ApiStack extends Stack {
       ],
       resources: [
         ddbTable.tableArn,
-        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_objectTypeSoortId,
         ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
       ],
     }));
