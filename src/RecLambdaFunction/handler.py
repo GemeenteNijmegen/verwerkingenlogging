@@ -2,8 +2,54 @@ import json
 
 from boto3.dynamodb.conditions import Key, Attr
 
+# Parse the event object and extract relevant information.
+# After extraction, validates the object for valid parameter combinations.
+def parse_event(event):
+    params = {
+        'method': event['httpMethod'],
+        'resource': event['resource'],
+        'parameters': event.get('queryStringParameters')
+    }
+    return validate_params(params)
+
+# Validate parameters before request is processed.
+def validate_params(params):
+    if('/verwerkingsacties' in params['resource'] and params['method'] != 'POST'):
+        if(params['parameters'] == None):
+            raise Exception("GET and PUT requests to /verwerkingsacties should have query parameters")
+    return params
+
 def handle_request(event, table):
-    return get_verwerkings_acties(event, table)
+    params = parse_event(event)
+
+    if(params['method'] == 'GET' and params['resource'] == '/verwerkingsacties/{actieId}'):
+        return get_verwerkingsacties_actieid(event, table)
+
+    if(params['method'] == 'GET' and params['resource'] == '/verwerkingsacties'):
+        return get_verwerkings_acties(event, table)
+
+    if(params['method'] == 'DELETE' and params['resource'] == '/verwerkingsacties/{actieId}'):
+        return delete_verwerkingsacties_actieid(event, table)
+
+
+def get_verwerkingsacties_actieid(event, table):
+    response = table.query(
+            KeyConditionExpression=Key('actieId').eq(event['queryStringParameters']['actieId'])
+    )
+    
+    # Check if requested record is found. If not, the list of items is empty (0).
+    if ( len(response.get('Items')) == 0 ):
+        return {
+            'statusCode': 400,
+            'body': 'Record not found',
+            'headers': { "Content-Type": "text/plain" },
+        }
+    else:
+        return {
+            'statusCode': 200,
+            'body': json.dumps(response.get('Items')[0]),
+            'headers': { "Content-Type": "application/json" },
+        }
 
 def get_verwerkings_acties(event, table):
     object_key = event['queryStringParameters']['objecttype'] + event['queryStringParameters']['soortObjectId'] + event['queryStringParameters']['objectId']
@@ -36,4 +82,17 @@ def get_verwerkings_acties(event, table):
         'statusCode': 200,
         'body': json.dumps(response),
         'headers': { "Content-Type": "application/json" },
+    }
+
+def delete_verwerkingsacties_actieid(event, table):
+    response = table.delete_item(
+        Key={
+            'actieId': event.get('queryStringParameters').get('actieId'),
+        }
+    )
+
+    return {
+        'statusCode': 200,
+        'body': json.dumps(response),
+        'headers': { "Content-Type": "application/json" }
     }

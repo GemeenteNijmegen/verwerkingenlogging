@@ -81,6 +81,7 @@ export class QueueStack extends Stack {
       ],
       resources: [
         `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName,
+        `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName + '/index/' + Statics.verwerkingenTableIndex_objectTypeSoortId,
         `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
       ],
     }));

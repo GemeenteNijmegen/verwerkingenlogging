@@ -19,8 +19,11 @@ def process_message(event, table):
         if messageAttributes.get('path').get('stringValue') == 'PATCH':
             patch_verwerkings_acties(body, table)
 
+        if messageAttributes.get('path').get('stringValue') == 'PUT':
+            post_verwerkings_acties(body, table)
 
-# Post verwerkingsacties
+
+# Post / Put verwerkingsacties
 def post_verwerkings_acties(body, table):        
 
     table.put_item(

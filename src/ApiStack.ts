@@ -5,8 +5,8 @@ import {
   aws_iam as IAM,
   aws_ssm as SSM,
 } from 'aws-cdk-lib';
-import { ApiKeySourceType, AwsIntegration, PassthroughBehavior, Resource } from 'aws-cdk-lib/aws-apigateway';
-import { ITable, Table } from 'aws-cdk-lib/aws-dynamodb';
+import { ApiKeySourceType } from 'aws-cdk-lib/aws-apigateway';
+import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
@@ -110,6 +110,7 @@ export class ApiStack extends Stack {
       ],
       resources: [
         ddbTable.tableArn,
+        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_objectTypeSoortId,
         ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
       ],
     }));
@@ -125,150 +126,16 @@ export class ApiStack extends Stack {
 
     // Route: /verwerkingsacties/{actieId}
     const actieIdRoute = verwerkingsactiesRoute.addResource('{actieId}');
-    this.addDeleteMethod(integrationRole, ddbTable, actieIdRoute);
-    this.addPutMethod(integrationRole, actieIdRoute);
-    this.addGetMethod(integrationRole, ddbTable, actieIdRoute);
+    actieIdRoute.addMethod('PUT', this.verwerkingenGenLambdaIntegration, { apiKeyRequired: true });
+    actieIdRoute.addMethod('DELETE', this.verwerkingenRecLambdaIntegration, { apiKeyRequired: true });
+    actieIdRoute.addMethod('GET', this.verwerkingenRecLambdaIntegration, { apiKeyRequired: true });
+    // this.addDeleteMethod(integrationRole, ddbTable, actieIdRoute);
+    // this.addPutMethod(integrationRole, actieIdRoute);
+    // this.addGetMethod(integrationRole, ddbTable, actieIdRoute);
 
     // Create API Key and add a new usage plan
     this.addUsagePlan();
 
-  }
-
-  /**
-   * GET Integration with DynamoDb
-   * @param integrationRole
-   * @param ddbTable
-   * @param actieIdRoute
-   */
-  private addGetMethod(integrationRole: Role, ddbTable: ITable, actieIdRoute: Resource) {
-    const dynamoQueryIntegration = new AwsIntegration({
-      service: 'dynamodb',
-      action: 'Query',
-      options: {
-        passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-        credentialsRole: integrationRole,
-        requestParameters: {
-          'integration.request.path.id': 'method.request.path.id',
-        },
-        requestTemplates: {
-          'application/json': JSON.stringify({
-            TableName: ddbTable.tableName,
-            KeyConditionExpression: 'actieId = :v1',
-            ExpressionAttributeValues: {
-              ':v1': { S: "$input.params('actieId')" },
-            },
-          }),
-        },
-        integrationResponses: [{ statusCode: '200' }],
-      },
-    });
-    actieIdRoute.addMethod('GET', dynamoQueryIntegration, {
-      apiKeyRequired: true,
-      methodResponses: [{ statusCode: '200' }],
-      requestParameters: {
-        'method.request.path.id': true,
-      },
-    });
-  }
-
-  /**
-   * PUT Integration with DynamoDb
-   * @param integrationRole
-   * @param ddbTable
-   * @param actieIdRoute
-   */
-  private addPutMethod(integrationRole: Role, actieIdRoute: Resource) {
-    const reqTemplate = "{\"TableName\": \"verwerkingen-table\",\"Item\": { \"actieId\": {\"S\": \"$input.params(\'actieId\')\"},\"url\": {\"S\": \"$input.path(\'url\')\"},\"actieNaam\": {\"S\": \"$input.path(\'actieNaam\')\"},\"handelingNaam\": {\"S\": \"$input.path(\'handelingNaam\')\"},\"verwerkingId\": {\"S\": \"$input.path(\'verwerkingId\')\"},\"verwerkingNaam\": {\"S\": \"$input.path(\'verwerkingNaam\')\"},\"verwerkingsactiviteitId\": {\"S\": \"$input.path(\'verwerkingsactiviteitId\')\"},\"verwerkingsactiviteitUrl\": {\"S\": \"$input.path(\'verwerkingsactiviteitUrl\')\"},\"vertrouwelijkheid\": {\"S\": \"$input.path(\'vertrouwelijkheid\')\"},\"bewaartermijn\": {\"S\": \"$input.path(\'bewaartermijn\')\"},\"uitvoerder\": {\"S\": \"$input.path(\'uitvoerder\')\"},\"systeem\": {\"S\": \"$input.path(\'systeem\')\"},\"gebruiker\": {\"S\": \"$input.path(\'gebruiker\')\"},\"gegevensbron\": {\"S\": \"$input.path(\'gegevensbron\')\"},\"soortAfnemerId\": {\"S\": \"$input.path(\'soortAfnemerId\')\"},\"afnemerId\": {\"S\": \"$input.path(\'afnemerId\')\"},\"verwerkingsactiviteitIdAfnemer\": {\"S\": \"$input.path(\'verwerkingsactiviteitIdAfnemer\')\"},\"verwerkingsactiviteitUrlAfnemer\": {\"S\": \"$input.path(\'verwerkingsactiviteitUrlAfnemer\')\"},\"verwerkingIdAfnemer\": {\"S\": \"$input.path(\'verwerkingIdAfnemer\')\"},\"tijdstip\": {\"S\": \"$input.path(\'tijdstip\')\"},\"tijdstipRegistratie\": {\"S\": \"$context.requestTime\"},\"verwerkteObjecten\": { #set($inputroot = $input.path(\"$\"))\"L\":[#foreach($object in $inputroot.verwerkteObjecten) {\"M\" : {\"objecttype\": { \"S\": \"$object.objecttype\" },\"soortObjectId\": { \"S\": \"$object.soortObjectId\" },\"objectId\": { \"S\": \"$object.objectId\" },\"betrokkenheid\": { \"S\": \"$object.betrokkenheid\" },\"verwerkteSoortenGegevens\": { \"L\": [#foreach($sobject in $object.verwerkteSoortenGegevens) {\"M\": {\"soortGegeven\": { \"S\": \"$sobject.soortGegeven\" }}}#if($foreach.hasNext),#end#end] }}}#if($foreach.hasNext),#end#end] }}}";
-
-    const dynamoPutIntegration = new AwsIntegration({
-      service: 'dynamodb',
-      action: 'PutItem',
-      options: {
-        passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-        credentialsRole: integrationRole,
-        requestParameters: {
-          'integration.request.path.id': 'method.request.path.id',
-        },
-        requestTemplates: {
-          'application/json': reqTemplate,
-          // 'application/json': JSON.stringify({
-          //   TableName: ddbTable.tableName,
-          //   Item: {
-          //     actieId: { S: "$input.params('actieId')" },
-          //     url: { S: "$input.path('url')" },
-          //     actieNaam: { S: "$input.path('actieNaam')" },
-          //     handelingNaam: { S: "$input.path('handelingNaam')" },
-          //     verwerkingId: { S: "$input.path('verwerkingId')" },
-          //     verwerkingNaam: { S: "$input.path('verwerkingNaam')" },
-          //     verwerkingsactiviteitId: { S: "$input.path('verwerkingsactiviteitId')" },
-          //     verwerkingsactiviteitUrl: { S: "$input.path('verwerkingsactiviteitUrl')" },
-          //     vertrouwelijkheid: { S: "$input.path('vertrouwelijkheid')" },
-          //     bewaartermijn: { S: "$input.path('bewaartermijn')" },
-          //     uitvoerder: { S: "$input.path('uitvoerder')" },
-          //     systeem: { S: "$input.path('systeem')" },
-          //     gebruiker: { S: "$input.path('gebruiker')" },
-          //     gegevensbron: { S: "$input.path('gegevensbron')" },
-          //     soortAfnemerId: { S: "$input.path('soortAfnemerId')" },
-          //     afnemerId: { S: "$input.path('afnemerId')" },
-          //     verwerkingsactiviteitIdAfnemer: { S: "$input.path('verwerkingsactiviteitIdAfnemer')" },
-          //     verwerkingsactiviteitUrlAfnemer: { S: "$input.path('verwerkingsactiviteitUrlAfnemer')" },
-          //     verwerkingIdAfnemer:{ S: "$input.path('verwerkingIdAfnemer')" },
-          //     tijdstip: { S: "$input.path('tijdstip')" },
-          //     tijdstipRegistratie: { S: '$context.requestTime' },
-          //     verwerkteObjecten: '{ #set($inputroot = $input.path("$"))"L":[#foreach($object in $inputroot.verwerkteObjecten) {"M" : {"objecttype": { "S": "$object.objecttype" },"soortObjectId": { "S": "$object.soortObjectId" },"objectId": { "S": "$object.objectId" },"betrokkenheid": { "S": "$object.betrokkenheid" },"verwerkteSoortenGegevens": { "L": [#foreach($sobject in $object.verwerkteSoortenGegevens) {"M": {"soortGegeven": { "S": "$sobject.soortGegeven" }}}#if($foreach.hasNext),#end#end] }}}#if($foreach.hasNext),#end#end] }'
-          //   },
-          // }),
-        },
-        integrationResponses: [
-          {
-            statusCode: '200',
-          },
-        ],
-      },
-    });
-    actieIdRoute.addMethod('PUT', dynamoPutIntegration, {
-      apiKeyRequired: true,
-      methodResponses: [{ statusCode: '200' }],
-      requestParameters: {
-        'method.request.path.id': true,
-      },
-    });
-  }
-
-  /**
-   * DELETE Integration with DynamoDb
-   * @param integrationRole
-   * @param ddbTable
-   * @param actieIdRoute
-   */
-  private addDeleteMethod(integrationRole: Role, ddbTable: ITable, actieIdRoute: Resource) {
-    const dynamoDeleteIntegration = new AwsIntegration({
-      service: 'dynamodb',
-      action: 'DeleteItem',
-      options: {
-        passthroughBehavior: PassthroughBehavior.WHEN_NO_TEMPLATES,
-        credentialsRole: integrationRole,
-        requestParameters: {
-          'integration.request.path.id': 'method.request.path.id',
-        },
-        requestTemplates: {
-          'application/json': JSON.stringify({
-            TableName: ddbTable.tableName,
-            Key: {
-              actieId: { S: "$input.params('actieId')" },
-            },
-          }),
-        },
-        integrationResponses: [{ statusCode: '200' }],
-      },
-    });
-    actieIdRoute.addMethod('DELETE', dynamoDeleteIntegration, {
-      apiKeyRequired: true,
-      methodResponses: [{ statusCode: '200' }],
-      requestParameters: {
-        'method.request.path.id': true,
-      },
-    });
   }
 
   /**

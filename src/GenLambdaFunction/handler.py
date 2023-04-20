@@ -73,6 +73,14 @@ def generate_patch_message(event):
 
     return json.dumps(msg)
 
+
+def generate_put_message(event, requestJson, tijdstipRegistratie):
+    actieId = event.get('queryStringParameters').get('actieId')
+    requestJson.update({ "actieId": actieId, "tijdstipRegistratie": tijdstipRegistratie })
+
+    return requestJson
+
+
 def send_to_queue(msg, queue, path):
     body = json.dumps(msg)
     queue.send_message(MessageBody=body, MessageAttributes={
@@ -84,7 +92,7 @@ def send_to_queue(msg, queue, path):
 def instant_response(msg):
     {
             'statusCode': 200,
-            'body': msg,
+            'body': json.dumps(msg),
             'headers': { "Content-Type": "application/json" }
     }
 
@@ -137,6 +145,17 @@ def handle_request(event, bucket, queue):
         send_to_queue(msg, queue, 'PATCH')
 
         return instant_response(msg)
+
+    if(params['method'] == 'PUT' and params['resource'] == '/verwerkingsacties/{actieId}'):
+
+        msg = generate_put_message(event, requestJson, tijdstipRegistratie)
+
+        store_item_in_s3(msg, bucket)
+
+        send_to_queue(msg, queue, 'PUT')
+
+        return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
+        
 
     # if no matches were found, handle this as a malformed request
     return {
