@@ -107,6 +107,7 @@ export class ApiStack extends Stack {
       effect: IAM.Effect.ALLOW,
       actions: [
         'dynamodb:Query',
+        'dynamodb:DeleteItem',
       ],
       resources: [
         ddbTable.tableArn,

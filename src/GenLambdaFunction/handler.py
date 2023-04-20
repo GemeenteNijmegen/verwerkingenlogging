@@ -10,15 +10,16 @@ def parse_event(event):
     params = {
         'method': event['httpMethod'],
         'resource': event['resource'],
-        'parameters': event.get('queryStringParameters')
+        'parameters': event.get('queryStringParameters'),
+        'pathParameters': event.get('pathParameters')
     }
     return validate_params(params)
 
 # Validate parameters before request is processed.
 def validate_params(params):
-    if('/verwerkingsacties' in params['resource'] and params['method'] != 'POST'):
+    if('/verwerkingsacties' in params['resource'] and params['method'] != 'POST' and params['pathParameters'] == None):
         if(params['parameters'] == None):
-            raise Exception("GET and PUT requests to /verwerkingsacties should have query parameters")
+            raise Exception("GET and PATCH requests to /verwerkingsacties should have query parameters")
     return params
 
 def filled_item(requestJSON, objectTypeSoortId, actieId, url, tijdstipRegistratie, verwerkteObjecten):
@@ -75,7 +76,9 @@ def generate_patch_message(event):
 
 
 def generate_put_message(event, requestJson, tijdstipRegistratie):
-    actieId = event.get('queryStringParameters').get('actieId')
+    # TODO: validate if actieId in pathParameters equals the actieId in the request body (requestJson)
+    # If they are not equal it's an invalid / forbidden request. 
+    actieId = event.get('pathParameters').get('actieId')
     requestJson.update({ "actieId": actieId, "tijdstipRegistratie": tijdstipRegistratie })
 
     return requestJson
@@ -92,6 +95,10 @@ def send_to_queue(msg, queue, path):
 # Receives the event object and routes it to the correct function
 def handle_request(event, bucket, queue):
     params = parse_event(event)
+    requestJson = json.loads(event.get('body'))
+
+    # Generate timestamp for tijdstipRegistratie.
+    tijdstipRegistratie = datetime.now().isoformat(timespec='seconds')
 
     if(params['method'] == 'POST' and params['resource'] == '/verwerkingsacties'):
 
@@ -100,11 +107,6 @@ def handle_request(event, bucket, queue):
 
         # Create DB url using generated actieId
         url = "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + actieId
-        
-        # Generate timestamp for tijdstipRegistratie.
-        tijdstipRegistratie = datetime.now().isoformat(timespec='seconds')
-
-        requestJson = json.loads(event.get('body'))
 
         # Add verwerktObjectId to each verwerktObject before proceeding
         verwerkteObjecten = requestJson.get('verwerkteObjecten')
