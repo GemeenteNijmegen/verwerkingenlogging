@@ -89,13 +89,6 @@ def send_to_queue(msg, queue, path):
             'StringValue': path
         }})
 
-def instant_response(msg):
-    {
-            'statusCode': 200,
-            'body': json.dumps(msg),
-            'headers': { "Content-Type": "application/json" }
-    }
-
 # Receives the event object and routes it to the correct function
 def handle_request(event, bucket, queue):
     params = parse_event(event)
@@ -134,7 +127,7 @@ def handle_request(event, bucket, queue):
             send_to_queue(msg, queue, 'POST')
 
         # Message inlcudes original request combined with actieId and Url
-        return instant_response(msg)
+        return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
 
     if(params['method'] == 'PATCH' and params['resource'] =='/verwerkingsacties'):
         # Backup using verwerkingId (instead of actieId)??
@@ -144,7 +137,7 @@ def handle_request(event, bucket, queue):
         # Send message to queue.
         send_to_queue(msg, queue, 'PATCH')
 
-        return instant_response(msg)
+        return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
 
     if(params['method'] == 'PUT' and params['resource'] == '/verwerkingsacties/{actieId}'):
 

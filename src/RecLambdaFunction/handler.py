@@ -8,13 +8,14 @@ def parse_event(event):
     params = {
         'method': event['httpMethod'],
         'resource': event['resource'],
-        'parameters': event.get('queryStringParameters')
+        'parameters': event.get('queryStringParameters'),
+        'pathParameters': event.get('pathParameters')
     }
     return validate_params(params)
 
 # Validate parameters before request is processed.
 def validate_params(params):
-    if('/verwerkingsacties' in params['resource'] and params['method'] != 'POST'):
+    if('/verwerkingsacties' in params['resource'] and params['method'] != 'POST' and params['pathParameters'] == None):
         if(params['parameters'] == None):
             raise Exception("GET and PUT requests to /verwerkingsacties should have query parameters")
     return params
@@ -34,7 +35,7 @@ def handle_request(event, table):
 
 def get_verwerkingsacties_actieid(event, table):
     response = table.query(
-            KeyConditionExpression=Key('actieId').eq(event['queryStringParameters']['actieId'])
+            KeyConditionExpression=Key('actieId').eq(event['pathParameters']['actieId'])
     )
     
     # Check if requested record is found. If not, the list of items is empty (0).
@@ -85,14 +86,24 @@ def get_verwerkings_acties(event, table):
     }
 
 def delete_verwerkingsacties_actieid(event, table):
-    response = table.delete_item(
-        Key={
-            'actieId': event.get('queryStringParameters').get('actieId'),
-        }
+    response = table.query(
+            KeyConditionExpression=Key('actieId').eq(event['pathParameters']['actieId'])
     )
+
+    deletedResponses = {}
+
+    for item in response.get('Items'):
+        deleteResponse = table.delete_item(
+            Key={
+                'actieId': item.get('actieId'),
+                'objectTypeSoortId': item.get('objectTypeSoortId')
+            },
+            ReturnValues= "ALL_OLD"
+        )
+        deletedResponses.append(deleteResponse)
 
     return {
         'statusCode': 200,
-        'body': json.dumps(response),
+        'body': json.dumps(deletedResponses),
         'headers': { "Content-Type": "application/json" }
     }
