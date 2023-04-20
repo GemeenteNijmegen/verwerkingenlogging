@@ -90,20 +90,17 @@ def delete_verwerkingsacties_actieid(event, table):
             KeyConditionExpression=Key('actieId').eq(event['pathParameters']['actieId'])
     )
 
-    deletedResponses = {}
-
     for item in response.get('Items'):
-        deleteResponse = table.delete_item(
+        table.delete_item(
             Key={
                 'actieId': item.get('actieId'),
                 'objectTypeSoortId': item.get('objectTypeSoortId')
             },
             ReturnValues= "ALL_OLD"
         )
-        deletedResponses.append(deleteResponse)
 
     return {
         'statusCode': 200,
-        'body': json.dumps(deletedResponses),
+        'body': 'Deleted: ' + event['pathParameters']['actieId'],
         'headers': { "Content-Type": "application/json" }
     }
