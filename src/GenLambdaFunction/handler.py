@@ -75,11 +75,12 @@ def generate_patch_message(event):
     return json.dumps(msg)
 
 
-def generate_put_message(event, requestJson, tijdstipRegistratie):
+def generate_put_message(event, object, requestJson, tijdstipRegistratie):
     # TODO: validate if actieId in pathParameters equals the actieId in the request body (requestJson)
     # If they are not equal it's an invalid / forbidden request. 
     actieId = event.get('pathParameters').get('actieId')
-    requestJson.update({ "actieId": actieId, "tijdstipRegistratie": tijdstipRegistratie })
+    objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
+    requestJson.update({ "actieId": actieId, "objectTypeSoortId": objectTypeSoortId, "tijdstipRegistratie": tijdstipRegistratie })
 
     return requestJson
 
@@ -143,11 +144,14 @@ def handle_request(event, bucket, queue):
 
     if(params['method'] == 'PUT' and params['resource'] == '/verwerkingsacties/{actieId}'):
 
-        msg = generate_put_message(event, requestJson, tijdstipRegistratie)
+        verwerkteObjecten = requestJson.get('verwerkteObjecten')
 
-        store_item_in_s3(msg, bucket)
+        for object in verwerkteObjecten:
+            msg = generate_put_message(event, requestJson, tijdstipRegistratie)
 
-        send_to_queue(msg, queue, 'PUT')
+            store_item_in_s3(msg, bucket)
+
+            send_to_queue(msg, queue, 'PUT')
 
         return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
         

@@ -53,7 +53,8 @@ def patch_verwerkings_acties(body, table):
         if (vertrouwelijkheid != None and bewaartermijn == None):
             response.append(table.update_item(
                 Key={ 
-                    'actieId': item.get('actieId') 
+                    'actieId': item.get('actieId'),
+                    'objectTypeSoortId': item.get('objectTypeSoortId')
                 },
                 UpdateExpression="SET vertrouwelijkheid= :var1",
                 ExpressionAttributeValues={
@@ -63,7 +64,8 @@ def patch_verwerkings_acties(body, table):
         if (vertrouwelijkheid == None and bewaartermijn != None):
             response.append(table.update_item(
                 Key={ 
-                    'actieId': item.get('actieId') 
+                    'actieId': item.get('actieId'),
+                    'objectTypeSoortId': item.get('objectTypeSoortId')
                 },
                 UpdateExpression="SET bewaartermijn= :var1",
                 ExpressionAttributeValues={
@@ -73,7 +75,8 @@ def patch_verwerkings_acties(body, table):
         if (vertrouwelijkheid != None and bewaartermijn != None):
             response.append(table.update_item(
                 Key={ 
-                    'actieId': item.get('actieId') 
+                    'actieId': item.get('actieId'),
+                    'objectTypeSoortId': item.get('objectTypeSoortId')
                 },
                 UpdateExpression="SET vertrouwelijkheid= :var1, bewaartermijn= :var2",
                 ExpressionAttributeValues={
