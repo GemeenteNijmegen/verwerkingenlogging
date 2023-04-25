@@ -147,7 +147,7 @@ def handle_request(event, bucket, queue):
         verwerkteObjecten = requestJson.get('verwerkteObjecten')
 
         for object in verwerkteObjecten:
-            msg = generate_put_message(event, requestJson, tijdstipRegistratie)
+            msg = generate_put_message(event, object, requestJson, tijdstipRegistratie)
 
             store_item_in_s3(msg, bucket)
 
