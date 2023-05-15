@@ -130,9 +130,6 @@ export class ApiStack extends Stack {
     actieIdRoute.addMethod('PUT', this.verwerkingenGenLambdaIntegration, { apiKeyRequired: true });
     actieIdRoute.addMethod('DELETE', this.verwerkingenRecLambdaIntegration, { apiKeyRequired: true });
     actieIdRoute.addMethod('GET', this.verwerkingenRecLambdaIntegration, { apiKeyRequired: true });
-    // this.addDeleteMethod(integrationRole, ddbTable, actieIdRoute);
-    // this.addPutMethod(integrationRole, actieIdRoute);
-    // this.addGetMethod(integrationRole, ddbTable, actieIdRoute);
 
     // Create API Key and add a new usage plan
     this.addUsagePlan();

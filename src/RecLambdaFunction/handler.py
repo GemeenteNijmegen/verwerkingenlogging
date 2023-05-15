@@ -6,8 +6,8 @@ from boto3.dynamodb.conditions import Key, Attr
 # After extraction, validates the object for valid parameter combinations.
 def parse_event(event):
     params = {
-        'method': event['httpMethod'],
-        'resource': event['resource'],
+        'method': event.get('httpMethod'),
+        'resource': event.get('resource'),
         'parameters': event.get('queryStringParameters'),
         'pathParameters': event.get('pathParameters')
     }
@@ -15,27 +15,27 @@ def parse_event(event):
 
 # Validate parameters before request is processed.
 def validate_params(params):
-    if('/verwerkingsacties' in params['resource'] and params['method'] != 'POST' and params['pathParameters'] == None):
-        if(params['parameters'] == None):
+    if('/verwerkingsacties' in params.get('resource') and params.get('method') != 'POST' and params.get('pathParameters') == None):
+        if(params.get('parameters') == None):
             raise Exception("GET and PUT requests to /verwerkingsacties should have query parameters")
     return params
 
 def handle_request(event, table):
     params = parse_event(event)
 
-    if(params['method'] == 'GET' and params['resource'] == '/verwerkingsacties/{actieId}'):
+    if(params['method'] == 'GET' and params.get('resource') == '/verwerkingsacties/{actieId}'):
         return get_verwerkingsacties_actieid(event, table)
 
-    if(params['method'] == 'GET' and params['resource'] == '/verwerkingsacties'):
+    if(params['method'] == 'GET' and params.get('resource') == '/verwerkingsacties'):
         return get_verwerkings_acties(event, table)
 
-    if(params['method'] == 'DELETE' and params['resource'] == '/verwerkingsacties/{actieId}'):
+    if(params['method'] == 'DELETE' and params.get('resource') == '/verwerkingsacties/{actieId}'):
         return delete_verwerkingsacties_actieid(event, table)
 
-
+# Get specific verwerkingsactie based on actieId
 def get_verwerkingsacties_actieid(event, table):
     response = table.query(
-            KeyConditionExpression=Key('actieId').eq(event['pathParameters']['actieId'])
+            KeyConditionExpression=Key('actieId').eq(event.get('pathParameters').get('actieId'))
     )
     
     # Check if requested record is found. If not, the list of items is empty (0).
@@ -52,22 +52,23 @@ def get_verwerkingsacties_actieid(event, table):
             'headers': { "Content-Type": "application/json" },
         }
 
+# Get verwerkingsacties based on given filter parameters
 def get_verwerkings_acties(event, table):
-    object_key = event['queryStringParameters']['objecttype'] + event['queryStringParameters']['soortObjectId'] + event['queryStringParameters']['objectId']
+    object_key = event.get('queryStringParameters').get('objecttype') + event.get('queryStringParameters').get('soortObjectId') + event.get('queryStringParameters')('objectId')
     
     attrs = None
-    if (event['queryStringParameters'].get('beginDatum') != None or event['queryStringParameters'].get('eindDatum') != None):
+    if (event.get('queryStringParameters').get('beginDatum') != None or event.get('queryStringParameters').get('eindDatum') != None):
         attrs = Attr("tijdstip").between(event['queryStringParameters'].get('beginDatum'), event['queryStringParameters'].get('eindDatum'))
     if (event['queryStringParameters'].get('verwerkingsactiviteitId') != None):
         if (attrs != None):
-            attrs &= Attr("verwerkingsactiviteitId").eq(event['queryStringParameters'].get('verwerkingsactiviteitId'))
+            attrs &= Attr("verwerkingsactiviteitId").eq(event.get('queryStringParameters').get('verwerkingsactiviteitId'))
         else:
-            attrs = Attr("verwerkingsactiviteitId").eq(event['queryStringParameters'].get('verwerkingsactiviteitId'))
+            attrs = Attr("verwerkingsactiviteitId").eq(event.get('queryStringParameters').get('verwerkingsactiviteitId'))
     if(event['queryStringParameters'].get('vertrouwelijkheid') != None):
         if (attrs != None):
-            attrs &= Attr("vertrouwelijkheid").eq(event['queryStringParameters'].get('vertrouwelijkheid'))
+            attrs &= Attr("vertrouwelijkheid").eq(event.get('queryStringParameters').get('vertrouwelijkheid'))
         else:
-            attrs = Attr("vertrouwelijkheid").eq(event['queryStringParameters'].get('vertrouwelijkheid'))
+            attrs = Attr("vertrouwelijkheid").eq(event.get('queryStringParameters').get('vertrouwelijkheid'))
     
     if (attrs != None):
         response = table.query(
@@ -85,9 +86,11 @@ def get_verwerkings_acties(event, table):
         'headers': { "Content-Type": "application/json" },
     }
 
+# Delete specific verwerkingsactie based on actieId
+# TODO: make this a soft delete
 def delete_verwerkingsacties_actieid(event, table):
     response = table.query(
-            KeyConditionExpression=Key('actieId').eq(event['pathParameters']['actieId'])
+            KeyConditionExpression=Key('actieId').eq(event.get('pathParameters').get('actieId'))
     )
 
     for item in response.get('Items'):
@@ -101,6 +104,6 @@ def delete_verwerkingsacties_actieid(event, table):
 
     return {
         'statusCode': 200,
-        'body': 'Deleted: ' + event['pathParameters']['actieId'],
+        'body': 'Deleted: ' + event.get('pathParameters').get('actieId'),
         'headers': { "Content-Type": "application/json" }
     }

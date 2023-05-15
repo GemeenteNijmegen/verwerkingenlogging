@@ -8,8 +8,8 @@ from boto3.dynamodb.conditions import Key, Attr
 # After extraction, validates the object for valid parameter combinations.
 def parse_event(event):
     params = {
-        'method': event['httpMethod'],
-        'resource': event['resource'],
+        'method': event.get('httpMethod'),
+        'resource': event.get('resource'),
         'parameters': event.get('queryStringParameters'),
         'pathParameters': event.get('pathParameters')
     }
@@ -17,34 +17,35 @@ def parse_event(event):
 
 # Validate parameters before request is processed.
 def validate_params(params):
-    if('/verwerkingsacties' in params['resource'] and params['method'] != 'POST' and params['pathParameters'] == None):
-        if(params['parameters'] == None):
+    if('/verwerkingsacties' in params.get('resource') and params.get('method') != 'POST' and params.get('pathParameters') == None):
+        if(params.get('parameters') == None):
             raise Exception("GET and PATCH requests to /verwerkingsacties should have query parameters")
     return params
 
+# Parse message
 def filled_item(requestJSON, objectTypeSoortId, actieId, url, tijdstipRegistratie, verwerkteObjecten):
     return {
         'url': url,
         'actieId': actieId,
         'objectTypeSoortId': objectTypeSoortId,
-        'actieNaam': requestJSON['actieNaam'],
-        'handelingNaam': requestJSON['handelingNaam'],
-        'verwerkingId': requestJSON['verwerkingId'],
-        'verwerkingNaam': requestJSON['verwerkingNaam'],
-        'verwerkingsactiviteitId': requestJSON['verwerkingsactiviteitId'],
-        'verwerkingsactiviteitUrl': requestJSON['verwerkingsactiviteitUrl'],
-        'vertrouwelijkheid': requestJSON['vertrouwelijkheid'],
-        'bewaartermijn': requestJSON['bewaartermijn'],
-        'uitvoerder': requestJSON['uitvoerder'],
-        'systeem': requestJSON['systeem'],
-        'gebruiker': requestJSON['gebruiker'],
-        'gegevensbron': requestJSON['gegevensbron'],
-        'soortAfnemerId': requestJSON['soortAfnemerId'],
-        'afnemerId': requestJSON['afnemerId'],
-        'verwerkingsactiviteitIdAfnemer': requestJSON['verwerkingsactiviteitIdAfnemer'],
-        'verwerkingsactiviteitUrlAfnemer': requestJSON['verwerkingsactiviteitUrlAfnemer'],
-        'verwerkingIdAfnemer': requestJSON['verwerkingIdAfnemer'],
-        'tijdstip': requestJSON['tijdstip'],
+        'actieNaam': requestJSON.get('actieNaam'),
+        'handelingNaam': requestJSON.get('handelingNaam'),
+        'verwerkingId': requestJSON.get('verwerkingId'),
+        'verwerkingNaam': requestJSON.get('verwerkingNaam'),
+        'verwerkingsactiviteitId': requestJSON.get('verwerkingsactiviteitId'),
+        'verwerkingsactiviteitUrl': requestJSON.get('verwerkingsactiviteitUrl'),
+        'vertrouwelijkheid': requestJSON.get('vertrouwelijkheid'),
+        'bewaartermijn': requestJSON.get('bewaartermijn'),
+        'uitvoerder': requestJSON.get('uitvoerder'),
+        'systeem': requestJSON.get('systeem'),
+        'gebruiker': requestJSON.get('gebruiker'),
+        'gegevensbron': requestJSON.get('gegevensbron'),
+        'soortAfnemerId': requestJSON.get('soortAfnemerId'),
+        'afnemerId': requestJSON.get('afnemerId'),
+        'verwerkingsactiviteitIdAfnemer': requestJSON.get('verwerkingsactiviteitIdAfnemer'),
+        'verwerkingsactiviteitUrlAfnemer': requestJSON.get('verwerkingsactiviteitUrlAfnemer'),
+        'verwerkingIdAfnemer': requestJSON.get('verwerkingIdAfnemer'),
+        'tijdstip': requestJSON.get('tijdstip'),
         'tijdstipRegistratie': tijdstipRegistratie,
         'verwerkteObjecten': verwerkteObjecten,
     }
@@ -59,10 +60,12 @@ def store_item_in_s3(item_json, bucket):
         Body=data,
     )
 
+# Create a new POST message
 def generate_post_message(requestJson, object, actieId, url, tijdstipRegistratie, verwerkteObjecten):
     objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
     return filled_item(requestJson, objectTypeSoortId, actieId, url, tijdstipRegistratie, verwerkteObjecten)
 
+# Create a new PATCH message
 def generate_patch_message(event):
     requestJson = json.loads(event.get('body'))
 
@@ -74,7 +77,7 @@ def generate_patch_message(event):
 
     return json.dumps(msg)
 
-
+# Create a new PUT message
 def generate_put_message(event, object, requestJson, tijdstipRegistratie):
     # TODO: validate if actieId in pathParameters equals the actieId in the request body (requestJson)
     # If they are not equal it's an invalid / forbidden request. 
@@ -84,7 +87,7 @@ def generate_put_message(event, object, requestJson, tijdstipRegistratie):
 
     return requestJson
 
-
+# Send message to queue
 def send_to_queue(msg, queue, path):
     body = json.dumps(msg)
     queue.send_message(MessageBody=body, MessageAttributes={
@@ -101,7 +104,7 @@ def handle_request(event, bucket, queue):
     # Generate timestamp for tijdstipRegistratie.
     tijdstipRegistratie = datetime.now().isoformat(timespec='seconds')
 
-    if(params['method'] == 'POST' and params['resource'] == '/verwerkingsacties'):
+    if(params.get('method') == 'POST' and params.get('resource') == '/verwerkingsacties'):
 
         # Generate UUID for actieId
         actieId = str(uuid.uuid1()) # V1 Timestamp
@@ -132,7 +135,7 @@ def handle_request(event, bucket, queue):
         # Message inlcudes original request combined with actieId and Url
         return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
 
-    if(params['method'] == 'PATCH' and params['resource'] =='/verwerkingsacties'):
+    if(params.get('method') == 'PATCH' and params.get('resource') =='/verwerkingsacties'):
         # Backup using verwerkingId (instead of actieId)??
 
         msg = generate_patch_message(event)
@@ -142,7 +145,7 @@ def handle_request(event, bucket, queue):
 
         return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
 
-    if(params['method'] == 'PUT' and params['resource'] == '/verwerkingsacties/{actieId}'):
+    if(params.get('method') == 'PUT' and params.get('resource') == '/verwerkingsacties/{actieId}'):
 
         verwerkteObjecten = requestJson.get('verwerkteObjecten')
 
