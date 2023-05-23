@@ -46,9 +46,13 @@ def get_verwerkingsacties_actieid(event, table):
             'headers': { "Content-Type": "text/plain" },
         }
     else:
+        # Remove objectTypeSoortId from return message
+        msg = response.get('Items')[0]
+        responseBody = msg.pop('objectTypeSoortId')
+
         return {
             'statusCode': 200,
-            'body': json.dumps(response.get('Items')[0]),
+            'body': json.dumps(responseBody),
             'headers': { "Content-Type": "application/json" },
         }
 
@@ -58,7 +62,7 @@ def get_verwerkings_acties(event, table):
     
     attrs = None
     if (event.get('queryStringParameters').get('beginDatum') != None or event.get('queryStringParameters').get('eindDatum') != None):
-        attrs = Attr("tijdstip").between(event['queryStringParameters'].get('beginDatum'), event['queryStringParameters'].get('eindDatum'))
+        attrs = Attr("tijdstip").between(event.get('queryStringParameters').get('beginDatum'), event.get('queryStringParameters').get('eindDatum'))
     if (event['queryStringParameters'].get('verwerkingsactiviteitId') != None):
         if (attrs != None):
             attrs &= Attr("verwerkingsactiviteitId").eq(event.get('queryStringParameters').get('verwerkingsactiviteitId'))
@@ -80,6 +84,10 @@ def get_verwerkings_acties(event, table):
                 IndexName='objectTypeSoortId-index',
                 KeyConditionExpression=Key('objectTypeSoortId').eq(object_key))
         
+    # Remove objectTypeSoortId from return message
+    for item in response['Items']:
+        item.pop('objectTypeSoortId')
+
     return {
         'statusCode': 200,
         'body': json.dumps(response),
@@ -98,12 +106,7 @@ def delete_verwerkingsacties_actieid(event, table):
             Key={
                 'actieId': item.get('actieId'),
                 'objectTypeSoortId': item.get('objectTypeSoortId')
-            },
-            ReturnValues= "ALL_OLD"
+            }
         )
 
-    return {
-        'statusCode': 200,
-        'body': 'Deleted: ' + event.get('pathParameters').get('actieId'),
-        'headers': { "Content-Type": "application/json" }
-    }
+    return { 'statusCode': 200 }
