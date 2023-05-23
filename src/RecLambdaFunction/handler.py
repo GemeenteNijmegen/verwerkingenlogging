@@ -48,17 +48,17 @@ def get_verwerkingsacties_actieid(event, table):
     else:
         # Remove objectTypeSoortId from return message
         msg = response.get('Items')[0]
-        responseBody = msg.pop('objectTypeSoortId')
+        msg.pop('objectTypeSoortId')
 
         return {
             'statusCode': 200,
-            'body': json.dumps(responseBody),
+            'body': json.dumps(msg),
             'headers': { "Content-Type": "application/json" },
         }
 
 # Get verwerkingsacties based on given filter parameters
 def get_verwerkings_acties(event, table):
-    object_key = event.get('queryStringParameters').get('objecttype') + event.get('queryStringParameters').get('soortObjectId') + event.get('queryStringParameters')('objectId')
+    object_key = event.get('queryStringParameters').get('objecttype') + event.get('queryStringParameters').get('soortObjectId') + event.get('queryStringParameters').get('objectId')
     
     attrs = None
     if (event.get('queryStringParameters').get('beginDatum') != None or event.get('queryStringParameters').get('eindDatum') != None):

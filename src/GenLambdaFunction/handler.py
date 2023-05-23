@@ -134,8 +134,8 @@ def handle_request(event, bucket, queue):
 
         # Message inlcudes original request combined with actieId and Url
         # Remove objectTypeSoortId from return message
-        responseBody = msg.pop('objectTypeSoortId')
-        return { 'statusCode': 200, 'body': json.dumps(responseBody), 'headers': { "Content-Type": "application/json" }}
+        msg.pop('objectTypeSoortId')
+        return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
 
     if(params.get('method') == 'PATCH' and params.get('resource') =='/verwerkingsacties'):
         # Backup using verwerkingId (instead of actieId)??
@@ -159,8 +159,8 @@ def handle_request(event, bucket, queue):
             send_to_queue(msg, queue, 'PUT')
 
         # Remove objectTypeSoortId from return message
-        responseBody = msg.pop('objectTypeSoortId')
-        return { 'statusCode': 200, 'body': json.dumps(responseBody), 'headers': { "Content-Type": "application/json" }}
+        msg.pop('objectTypeSoortId')
+        return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
         
 
     # if no matches were found, handle this as a malformed request
