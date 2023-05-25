@@ -20,6 +20,10 @@ def validate_params(params):
     if('/verwerkingsacties' in params.get('resource') and params.get('method') != 'POST' and params.get('pathParameters') == None):
         if(params.get('parameters') == None):
             raise Exception("GET and PATCH requests to /verwerkingsacties should have query parameters")
+
+    if(params.get('method') == 'PATCH' and 'verwerkingId' not in params.get('parameters')):
+            raise Exception("PATCH requests to /verwerkingsacties should have (required) query parameters")
+
     return params
 
 # Parse message
@@ -50,6 +54,21 @@ def filled_item(requestJSON, objectTypeSoortId, actieId, url, tijdstipRegistrati
         'verwerkteObjecten': verwerkteObjecten,
     }
 
+# Validate if required fields are included in body
+def validate_body(item):
+    for verwerktObject in item.get('verwerkteObjecten'):
+        if(verwerktObject.get('objecttype') == None or verwerktObject.get('soortObjectId') == None or verwerktObject.get('objectId') == None):
+            raise Exception("Post requests to /verwerkingsacties should have (required) body parameters")
+        for verwerkteSoortenGegeven in verwerktObject.get('verwerkteSoortenGegevens'):
+            if(verwerkteSoortenGegeven.get('soortGegeven') == None):
+                raise Exception("Post requests to /verwerkingsacties should have (required) body parameters")
+
+
+    if(item.get('vertrouwelijkheid') == None or item.get('tijdstip') == None):
+        raise Exception("Post requests to /verwerkingsacties should have (required) body parameters")
+    else:
+        return item
+
 # Store (backup) verwerking item in S3 Backup Bucket
 def store_item_in_s3(item_json, bucket):
     path = item_json.get('actieId')
@@ -63,7 +82,8 @@ def store_item_in_s3(item_json, bucket):
 # Create a new POST message
 def generate_post_message(requestJson, object, actieId, url, tijdstipRegistratie, verwerkteObjecten):
     objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
-    return filled_item(requestJson, objectTypeSoortId, actieId, url, tijdstipRegistratie, verwerkteObjecten)
+    item = filled_item(requestJson, objectTypeSoortId, actieId, url, tijdstipRegistratie, verwerkteObjecten)
+    return validate_body(item)
 
 # Create a new PATCH message
 def generate_patch_message(event):
@@ -85,7 +105,7 @@ def generate_put_message(event, object, requestJson, tijdstipRegistratie):
     objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
     requestJson.update({ "actieId": actieId, "objectTypeSoortId": objectTypeSoortId, "tijdstipRegistratie": tijdstipRegistratie })
 
-    return requestJson
+    return validate_body(requestJson)
 
 # Send message to queue
 def send_to_queue(msg, queue, path):

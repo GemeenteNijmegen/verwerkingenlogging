@@ -13,11 +13,14 @@ def parse_event(event):
     }
     return validate_params(params)
 
-# Validate parameters before request is processed.
+# Validate query parameters before request is processed.
 def validate_params(params):
-    if('/verwerkingsacties' in params.get('resource') and params.get('method') != 'POST' and params.get('pathParameters') == None):
-        if(params.get('parameters') == None):
-            raise Exception("GET and PUT requests to /verwerkingsacties should have query parameters")
+    if('/verwerkingsacties' in params.get('resource') and params.get('method') == 'GET'):
+        # GET /verwerkingsacties
+        if(params.get('resouce') == '/verwerkingsacties'):
+            if('objecttype' not in params.get('parameters') or 'soortObjectId' not in params.get('parameters') or 'objectId' not in params.get('parameters')):
+                raise Exception("GET requests to /verwerkingsacties should have (required) query parameters")
+
     return params
 
 def handle_request(event, table):
