@@ -1,5 +1,6 @@
 import json
 import uuid
+import hashlib
 from datetime import datetime
 
 from boto3.dynamodb.conditions import Key, Attr
@@ -83,6 +84,17 @@ def store_item_in_s3(item_json, bucket):
 def generate_post_message(requestJson, object, actieId, url, tijdstipRegistratie, verwerkteObjecten):
     objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
     item = filled_item(requestJson, objectTypeSoortId, actieId, url, tijdstipRegistratie, verwerkteObjecten)
+
+    # hash objectId
+    verwerkteObjecten = item.get('verwerkteObjecten')
+    for verwerktObject in verwerkteObjecten:
+        objectId = verwerktObject.get('objectId')
+        hashedObjectId = hashHelper(objectId)
+        verwerktObject.update({ 'objectId': hashedObjectId })
+    
+    # Update item with hashed objectId's
+    item.update({ 'verwerkteObjecten': verwerkteObjecten })
+
     return validate_body(item)
 
 # Create a new PATCH message
@@ -189,3 +201,11 @@ def handle_request(event, bucket, queue):
             'body': '400 Bad Request',
             'headers': { "Content-Type": "text/plain" }
     }
+
+def hashHelper(input):
+    # salt = secrets.token_hex(8)
+    h = hashlib.new('argon2')
+    h.update(bytes(input))
+    # h.update(bytes(salt))
+    h.hexdigest()
+    return h
