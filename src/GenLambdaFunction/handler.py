@@ -129,7 +129,7 @@ def send_to_queue(msg, queue, path):
         }})
 
 # Receives the event object and routes it to the correct function
-def handle_request(event, bucket, queue):
+def handle_request(event, bucket, queue, table):
     params = parse_event(event)
     requestJson = json.loads(event.get('body'))
 
@@ -148,8 +148,26 @@ def handle_request(event, bucket, queue):
         verwerkteObjecten = requestJson.get('verwerkteObjecten')
         if (len(verwerkteObjecten) >= 1):
             for object in verwerkteObjecten:
-                verwerktObjectId = str(uuid.uuid4()) # uuid4 to make uuid random within a for loop (uuid1 gives same uuid to each object)
-                object.update({ "verwerktObjectId": verwerktObjectId })
+                # check if verwerktObjectId is already present in DB
+                # this is the case when a verwerkt object was already created (in the past) from a different verwerkingsactie
+                # if true:
+                # use the found id
+                # if false:
+                # genereate a new id
+                objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
+
+                response = table.query(
+                    IndexName='objectTypeSoortId-index',
+                    KeyConditionExpression=Key('objectTypeSoortId').eq(objectTypeSoortId))
+
+                if (response == None):
+                    verwerktObjectId = str(uuid.uuid4()) # uuid4 to make uuid random within a for loop (uuid1 gives same uuid to each object)
+                    object.update({ "verwerktObjectId": verwerktObjectId })
+                else:
+                    for verwerktObject in response.get('Items')[0].get('verwerkteObjecten'):
+                        if (verwerktObject.get('objecttype') + verwerktObject.get('soortObjectId') + verwerktObject.get('objectId') == objectTypeSoortId):
+                            verwerktObjectId = verwerktObject.get('verwerktObjectId')
+                            object.update({ "verwerktObjectId": verwerktObjectId })
 
         # Create a seperate item (db record) for each verwerktObject
         # PK = actieId | SK = objectTypeSoortId
