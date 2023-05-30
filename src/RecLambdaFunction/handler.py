@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 from boto3.dynamodb.conditions import Key, Attr
 
@@ -97,19 +98,25 @@ def get_verwerkings_acties(event, table):
         'headers': { "Content-Type": "application/json" },
     }
 
-# Delete specific verwerkingsactie based on actieId
-# TODO: make this a soft delete
+# Mark specific verwerkingsactie deleted based on actieId
 def delete_verwerkingsacties_actieid(event, table):
     response = table.query(
-            KeyConditionExpression=Key('actieId').eq(event.get('pathParameters').get('actieId'))
+            KeyConditionExpression=Key('actieId').eq(event.get('pathParameters').get('actieId')),
+            ScanIndexForward=False, # descending order
+            Limit=1 # top of list
     )
 
-    for item in response.get('Items'):
-        table.delete_item(
-            Key={
-                'actieId': item.get('actieId'),
-                'objectTypeSoortId': item.get('objectTypeSoortId')
-            }
-        )
+    # Get first (and only) item
+    item = response.get('Items')[0]
+
+    # Update tijdstipRegistratie and and vervallen flag
+    item.update({ 
+        'tijdstipRegistratie': datetime.now().isoformat(timespec='seconds'),
+        'vervallen': True
+    })
+
+    table.put_item(
+        Item=item
+    )
 
     return { 'statusCode': 200 }

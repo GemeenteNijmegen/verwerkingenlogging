@@ -205,7 +205,7 @@ def handle_request(event, bucket, queue):
 def hashHelper(input):
     # salt = secrets.token_hex(8)
     h = hashlib.new('sha3_256')
-    h.update(bytes(input))
+    h.update(bytes(input, encoding='UTF-8'))
     # h.update(bytes(salt))
-    h.hexdigest()
-    return h
+    hash = h.hexdigest()
+    return hash
