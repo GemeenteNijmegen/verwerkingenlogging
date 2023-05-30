@@ -63,7 +63,7 @@ export class ApiStack extends Stack {
 
     // Import DynamoDB table (from DatabaseStack)
     // Grant DynamoDB table Read-Write permissions to integration role
-    const ddbTable = Table.fromTableArn(this, 'verwerkingen-api-dynamo-table-v2', SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenTableArn));
+    const ddbTable = Table.fromTableArn(this, 'verwerkingen-api-dynamo-table-v3', SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenTableArn));
     ddbTable.grantReadWriteData(integrationRole);
 
     // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
