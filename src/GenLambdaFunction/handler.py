@@ -28,11 +28,11 @@ def validate_params(params):
     return params
 
 # Parse message
-def filled_item(requestJSON, objectTypeSoortId, actieId, url, tijdstipRegistratie, verwerkteObjecten):
+def filled_item(requestJSON, actieId, url, tijdstipRegistratie, verwerkteObjecten):
     return {
         'url': url,
         'actieId': actieId,
-        'objectTypeSoortId': objectTypeSoortId,
+        'objectTypeSoortId': requestJSON.get('objecttype') + requestJSON.get('soortObjectId') + requestJSON.get('objectId'),
         'actieNaam': requestJSON.get('actieNaam'),
         'handelingNaam': requestJSON.get('handelingNaam'),
         'verwerkingId': requestJSON.get('verwerkingId'),
@@ -71,9 +71,9 @@ def validate_body(item):
         return item
 
 # Store (backup) verwerking item in S3 Backup Bucket
-def store_item_in_s3(item_json, bucket):
-    path = item_json.get('actieId')
-    data = bytes(json.dumps(item_json).encode('UTF-8'))
+def store_item_in_s3(event, bucket):
+    path = event.get('body').get('actieId')
+    data = bytes(json.dumps(event).encode('UTF-8'))
     bucket.put_object(
         ContentType='application/json',
         Key=path,
@@ -81,9 +81,8 @@ def store_item_in_s3(item_json, bucket):
     )
 
 # Create a new POST message
-def generate_post_message(requestJson, object, actieId, url, tijdstipRegistratie, verwerkteObjecten):
-    objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
-    item = filled_item(requestJson, objectTypeSoortId, actieId, url, tijdstipRegistratie, verwerkteObjecten)
+def generate_post_message(requestJson, actieId, url, tijdstipRegistratie, verwerkteObjecten, table):
+    item = filled_item(requestJson, actieId, url, tijdstipRegistratie, verwerkteObjecten)
 
     # hash objectId
     verwerkteObjecten = item.get('verwerkteObjecten')
@@ -94,6 +93,26 @@ def generate_post_message(requestJson, object, actieId, url, tijdstipRegistratie
     
     # Update item with hashed objectId's
     item.update({ 'verwerkteObjecten': verwerkteObjecten })
+
+    # Add verwerktObjectId to each verwerktObject before proceeding
+    verwerkteObjecten = item.get('verwerkteObjecten')
+    if (len(verwerkteObjecten) >= 1):
+        for object in verwerkteObjecten:
+            objectTypeSoortId = object.get('objectTypeSoortId')
+
+            # check if objectTypeSoortId already exists in DB
+            response = table.query(
+                IndexName='objectTypeSoortId-index',
+                KeyConditionExpression=Key('objectTypeSoortId').eq(objectTypeSoortId))
+
+            if (response == None):
+                verwerktObjectId = str(uuid.uuid4()) # uuid4 to make uuid random within a for loop (uuid1 gives same uuid to each object)
+                object.update({ "verwerktObjectId": verwerktObjectId })
+            else:
+                for verwerktObject in response.get('Items')[0].get('verwerkteObjecten'):
+                    if (verwerktObject.get('objectTypeSoortId') == objectTypeSoortId):
+                        verwerktObjectId = verwerktObject.get('verwerktObjectId')
+                        object.update({ "verwerktObjectId": verwerktObjectId })
 
     return validate_body(item)
 
@@ -144,43 +163,14 @@ def handle_request(event, bucket, queue, table):
         # Create DB url using generated actieId
         url = "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + actieId
 
-        # Add verwerktObjectId to each verwerktObject before proceeding
-        verwerkteObjecten = requestJson.get('verwerkteObjecten')
-        if (len(verwerkteObjecten) >= 1):
-            for object in verwerkteObjecten:
-                # check if verwerktObjectId is already present in DB
-                # this is the case when a verwerkt object was already created (in the past) from a different verwerkingsactie
-                # if true:
-                # use the found id
-                # if false:
-                # genereate a new id
-                objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
+        # Generate post message (including verwerktObjectId and objectTypeSoortId)
+        msg = generate_post_message(requestJson, actieId, url, tijdstipRegistratie, verwerkteObjecten, table)
 
-                response = table.query(
-                    IndexName='objectTypeSoortId-index',
-                    KeyConditionExpression=Key('objectTypeSoortId').eq(objectTypeSoortId))
+        # Store message as backup in S3
+        store_item_in_s3(event, bucket)
 
-                if (response == None):
-                    verwerktObjectId = str(uuid.uuid4()) # uuid4 to make uuid random within a for loop (uuid1 gives same uuid to each object)
-                    object.update({ "verwerktObjectId": verwerktObjectId })
-                else:
-                    for verwerktObject in response.get('Items')[0].get('verwerkteObjecten'):
-                        if (verwerktObject.get('objecttype') + verwerktObject.get('soortObjectId') + verwerktObject.get('objectId') == objectTypeSoortId):
-                            verwerktObjectId = verwerktObject.get('verwerktObjectId')
-                            object.update({ "verwerktObjectId": verwerktObjectId })
-
-        # Create a seperate item (db record) for each verwerktObject
-        # PK = actieId | SK = objectTypeSoortId
-        for object in verwerkteObjecten:
-
-            # Generate post message (including verwerktObjectId and objectTypeSoortId)
-            msg = generate_post_message(requestJson, object, actieId, url, tijdstipRegistratie, verwerkteObjecten)
-
-            # Store message as backup in S3
-            store_item_in_s3(msg, bucket)
-
-            # Send message to queue
-            send_to_queue(msg, queue, 'POST')
+        # Send message to queue
+        send_to_queue(msg, queue, 'POST')
 
         # Message inlcudes original request combined with actieId and Url
         # Remove objectTypeSoortId from return message
