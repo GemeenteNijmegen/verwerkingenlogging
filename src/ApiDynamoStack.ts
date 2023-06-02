@@ -15,6 +15,14 @@ export class ApiDynamoStack extends Stack {
       removalPolicy: RemovalPolicy.DESTROY,
     });
 
+    // TODO: Lambda voor GET
+
+    // TODO: Lambda voor POST / PATCH
+
+    // TODO: Lambda voor verwerking (PROC)
+
+    // TODO: SQS queue
+
     // RestApi
     const restApi = new RestApi(this, 'verwerkingen-api-dynamo-rest-api');
 
@@ -82,6 +90,7 @@ export class ApiDynamoStack extends Stack {
     });
     const actieIdRoute = verwerkingsactiesRoute.addResource('{actieId}');
     actieIdRoute.addMethod('GET', dynamoQueryIntegration, {
+      apiKeyRequired: true,
       methodResponses: [{ statusCode: '200' }],
       requestParameters: {
         'method.request.path.id': true,
@@ -102,7 +111,7 @@ export class ApiDynamoStack extends Stack {
           'application/json': JSON.stringify({
             TableName: ddbTable.tableName,
             Item: {
-              actieId: { S: "$input.params('actieId')" },
+              actieId: { S: "$input.path('actieId')" },
               tijdstipRegistratie: { S: '$context.requestTime' },
             },
           }),
@@ -115,6 +124,7 @@ export class ApiDynamoStack extends Stack {
       },
     });
     actieIdRoute.addMethod('PUT', dynamoPutIntegration, {
+      apiKeyRequired: true,
       methodResponses: [{ statusCode: '200' }],
       requestParameters: {
         'method.request.path.id': true,
@@ -143,6 +153,7 @@ export class ApiDynamoStack extends Stack {
       },
     });
     actieIdRoute.addMethod('DELETE', dynamoDeleteIntegration, {
+      apiKeyRequired: true,
       methodResponses: [{ statusCode: '200' }],
       requestParameters: {
         'method.request.path.id': true,

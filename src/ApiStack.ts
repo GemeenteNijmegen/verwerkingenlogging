@@ -74,6 +74,7 @@ export class ApiStack extends Stack {
       environment: {
         S3_BACKUP_BUCKET_NAME: Statics.verwerkingenS3BackupBucketName,
         SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
+        DYNAMO_TABLE_NAME: ddbTable.tableName,
       },
     });
     this.verwerkingenGenLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
