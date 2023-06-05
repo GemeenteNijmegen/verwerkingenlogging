@@ -28,11 +28,11 @@ def validate_params(params):
     return params
 
 # Parse message
-def filled_item(requestJSON, actieId, url, tijdstipRegistratie, verwerkteObjecten):
+def filled_item(requestJSON, actieId, url, tijdstipRegistratie, objectTypeSoortId, compositeSortKey):
     return {
         'url': url,
         'actieId': actieId,
-        'objectTypeSoortId': requestJSON.get('objecttype') + requestJSON.get('soortObjectId') + requestJSON.get('objectId'),
+        'compositeSortKey': compositeSortKey,
         'actieNaam': requestJSON.get('actieNaam'),
         'handelingNaam': requestJSON.get('handelingNaam'),
         'verwerkingId': requestJSON.get('verwerkingId'),
@@ -52,7 +52,7 @@ def filled_item(requestJSON, actieId, url, tijdstipRegistratie, verwerkteObjecte
         'verwerkingIdAfnemer': requestJSON.get('verwerkingIdAfnemer'),
         'tijdstip': requestJSON.get('tijdstip'),
         'tijdstipRegistratie': tijdstipRegistratie,
-        'verwerkteObjecten': verwerkteObjecten,
+        'verwerkteObjecten': requestJSON.get('verwerkteObjecten'),
     }
 
 # Validate if required fields are included in body
@@ -81,8 +81,8 @@ def store_item_in_s3(event, bucket):
     )
 
 # Create a new POST message
-def generate_post_message(requestJson, actieId, url, tijdstipRegistratie, verwerkteObjecten, table):
-    item = filled_item(requestJson, actieId, url, tijdstipRegistratie, verwerkteObjecten)
+def generate_post_message(requestJson, actieId, url, tijdstipRegistratie, objectTypeSoortId, compositeSortKey, table):
+    item = filled_item(requestJson, actieId, url, tijdstipRegistratie, objectTypeSoortId, compositeSortKey)
 
     # hash objectId
     verwerkteObjecten = item.get('verwerkteObjecten')
@@ -98,7 +98,6 @@ def generate_post_message(requestJson, actieId, url, tijdstipRegistratie, verwer
     verwerkteObjecten = item.get('verwerkteObjecten')
     if (len(verwerkteObjecten) >= 1):
         for object in verwerkteObjecten:
-            objectTypeSoortId = object.get('objectTypeSoortId')
 
             # check if objectTypeSoortId already exists in DB
             response = table.query(
@@ -110,7 +109,7 @@ def generate_post_message(requestJson, actieId, url, tijdstipRegistratie, verwer
                 object.update({ "verwerktObjectId": verwerktObjectId })
             else:
                 for verwerktObject in response.get('Items')[0].get('verwerkteObjecten'):
-                    if (verwerktObject.get('objectTypeSoortId') == objectTypeSoortId):
+                    if (verwerktObject.get('objecttype') + verwerktObject.get('soortObjectId') + verwerktObject.get('objectId') == objectTypeSoortId):
                         verwerktObjectId = verwerktObject.get('verwerktObjectId')
                         object.update({ "verwerktObjectId": verwerktObjectId })
 
@@ -157,24 +156,28 @@ def handle_request(event, bucket, queue, table):
 
     if(params.get('method') == 'POST' and params.get('resource') == '/verwerkingsacties'):
 
+        # Store (RAW) message as backup in S3
+        store_item_in_s3(event, bucket)
+
         # Generate UUID for actieId
         actieId = str(uuid.uuid1()) # V1 Timestamp
 
         # Create DB url using generated actieId
         url = "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + actieId
 
-        # Generate post message (including verwerktObjectId and objectTypeSoortId)
-        msg = generate_post_message(requestJson, actieId, url, tijdstipRegistratie, verwerkteObjecten, table)
+        for verwerktObject in requestJson.get('verwerkteObjecten'):
+            objectTypeSoortId = verwerktObject.get('objecttype') + verwerktObject.get('soortObjectId') + verwerktObject.get('objectId')
+            # Composite SK - combining the unique soortObjecTypeId and the tijdstipRegistratie timestamp
+            compositeSortKey = objectTypeSoortId + '#' + tijdstipRegistratie
+            # Generate post message (including verwerktObjectId)
+            msg = generate_post_message(requestJson, actieId, url, tijdstipRegistratie, objectTypeSoortId, compositeSortKey, table)
 
-        # Store message as backup in S3
-        store_item_in_s3(event, bucket)
-
-        # Send message to queue
-        send_to_queue(msg, queue, 'POST')
+            # Send message to queue
+            send_to_queue(msg, queue, 'POST')
 
         # Message inlcudes original request combined with actieId and Url
         # Remove objectTypeSoortId from return message
-        msg.pop('objectTypeSoortId')
+        msg.pop('compositeSortKey')
         return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
 
     if(params.get('method') == 'PATCH' and params.get('resource') =='/verwerkingsacties'):

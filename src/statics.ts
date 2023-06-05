@@ -8,7 +8,7 @@ export abstract class Statics {
   /**
    * DynamoDB table name for verwerkingen.
    */
-  static readonly verwerkingenTableName: string = 'verwerkingen-table-v3';
+  static readonly verwerkingenTableName: string = 'verwerkingen-table-v4';
 
   /**
    * DynamoDB table arn (parameter).
