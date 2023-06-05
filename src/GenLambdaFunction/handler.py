@@ -71,12 +71,11 @@ def validate_body(item):
         return item
 
 # Store (backup) verwerking item in S3 Backup Bucket
-def store_item_in_s3(event, bucket):
-    path = event.get('body').get('actieId')
+def store_item_in_s3(actieId, event, bucket):
     data = bytes(json.dumps(event).encode('UTF-8'))
     bucket.put_object(
         ContentType='application/json',
-        Key=path,
+        Key=actieId,
         Body=data,
     )
 
@@ -156,11 +155,11 @@ def handle_request(event, bucket, queue, table):
 
     if(params.get('method') == 'POST' and params.get('resource') == '/verwerkingsacties'):
 
-        # Store (RAW) message as backup in S3
-        store_item_in_s3(event, bucket)
-
         # Generate UUID for actieId
         actieId = str(uuid.uuid1()) # V1 Timestamp
+
+        # Store (RAW) message as backup in S3
+        store_item_in_s3(actieId, event, bucket)
 
         # Create DB url using generated actieId
         url = "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + actieId

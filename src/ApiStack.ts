@@ -83,11 +83,15 @@ export class ApiStack extends Stack {
       actions: [
         's3:PutObject',
         'sqs:SendMessage',
+        'dynamodb:Query',
       ],
       resources: [
         SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn),
         SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn) + '/*',
         SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueArn),
+        ddbTable.tableArn,
+        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_objectTypeSoortId,
+        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
       ],
     }));
 
@@ -108,7 +112,6 @@ export class ApiStack extends Stack {
       effect: IAM.Effect.ALLOW,
       actions: [
         'dynamodb:Query',
-        'dynamodb:DeleteItem',
       ],
       resources: [
         ddbTable.tableArn,
