@@ -154,14 +154,15 @@ def generate_patch_message(event):
     return json.dumps(msg)
 
 # Create a new PUT message
-def generate_put_message(event, object, requestJson, tijdstipRegistratie):
+def generate_put_message(event, verwerktObject, item, tijdstipRegistratie):
     # TODO: validate if actieId in pathParameters equals the actieId in the request body (requestJson)
     # If they are not equal it's an invalid / forbidden request. 
     actieId = event.get('pathParameters').get('actieId')
-    objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
-    requestJson.update({ "actieId": actieId, "objectTypeSoortId": objectTypeSoortId, "tijdstipRegistratie": tijdstipRegistratie })
+    objectTypeSoortId = verwerktObject.get('objecttype') + verwerktObject.get('soortObjectId') + verwerktObject.get('objectId')
+    compositeSortKey = objectTypeSoortId + '#' + tijdstipRegistratie   # Composite SK - combining the unique soortObjecTypeId and the tijdstipRegistratie timestamp
+    item.update({'actieId': actieId, 'compositeSortKey': compositeSortKey, 'objectTypeSoortId': objectTypeSoortId })
 
-    return validate_body(requestJson)
+    return validate_body(item)
 
 # Send message to queue
 def send_to_queue(msg, queue, path):
@@ -220,12 +221,13 @@ def handle_request(event, bucket, queue, table):
 
     if(params.get('method') == 'PUT' and params.get('resource') == '/verwerkingsacties/{actieId}'):
 
-        verwerkteObjecten = requestJson.get('verwerkteObjecten')
+        item = objectId_check(requestJson)
+        verwerkteObjecten = item.get('verwerkteObjecten')
 
         for object in verwerkteObjecten:
             msg = generate_put_message(event, object, requestJson, tijdstipRegistratie)
 
-            store_item_in_s3(msg, bucket)
+            store_item_in_s3(item.get('actieId'), msg, bucket)
 
             send_to_queue(msg, queue, 'PUT')
 

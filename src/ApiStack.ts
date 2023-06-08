@@ -112,6 +112,7 @@ export class ApiStack extends Stack {
       effect: IAM.Effect.ALLOW,
       actions: [
         'dynamodb:Query',
+        'dynamodb:PutItem',
       ],
       resources: [
         ddbTable.tableArn,

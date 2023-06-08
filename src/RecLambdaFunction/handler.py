@@ -1,4 +1,5 @@
 import json
+import hashlib
 from datetime import datetime
 
 from boto3.dynamodb.conditions import Key, Attr
@@ -59,9 +60,10 @@ def get_verwerkingsacties_actieid(event, table):
             'headers': {"Content-Type": "text/plain"},
         }
     else:
-        # Remove objectTypeSoortId from return message
+        # Remove objectTypeSoortId and compositeSortKey from return message
         msg = response.get('Items')[0]
         msg.pop('objectTypeSoortId')
+        msg.pop('compositeSortKey')
 
         return {
             'statusCode': 200,
@@ -70,11 +72,10 @@ def get_verwerkingsacties_actieid(event, table):
         }
 
 # Get verwerkingsacties based on given filter parameters
-
-
 def get_verwerkings_acties(event, table):
+    hashedObjectId = hashHelper(event.get('queryStringParameters').get('objectId'))
     object_key = event.get('queryStringParameters').get('objecttype') + event.get(
-        'queryStringParameters').get('soortObjectId') + event.get('queryStringParameters').get('objectId')
+        'queryStringParameters').get('soortObjectId') + hashedObjectId
 
     attrs = None
     if (event.get('queryStringParameters').get('beginDatum') != None or event.get('queryStringParameters').get('eindDatum') != None):
@@ -122,11 +123,15 @@ def delete_verwerkingsacties_actieid(event, table):
             event.get('pathParameters').get('actieId'))
     )
 
+    for item in response.get('Items'):
+        print(item)
+        # TODO alternative implementation as described below
+
     # TODO: Efficiency improvement --> another query not required. Data is already available using previous query.
     for item in response.get('Items'):
         response = table.query(
             KeyConditionExpression=Key('actieId').eq(
-                event.get('pathParameters').get('actieId')) and Key('compositeSortKey').eq(item.get('compositeSortKey')),
+                item.get('actieId')) & Key('compositeSortKey').eq(item.get('compositeSortKey')),
             ScanIndexForward=False,  # descending order
             Limit=1  # top of list
         )
@@ -145,3 +150,11 @@ def delete_verwerkingsacties_actieid(event, table):
         )
 
     return {'statusCode': 200}
+
+def hashHelper(input):
+    # salt = secrets.token_hex(8)
+    h = hashlib.new('sha3_256')
+    h.update(bytes(input, encoding='UTF-8'))
+    # h.update(bytes(salt))
+    hash = h.hexdigest()
+    return hash

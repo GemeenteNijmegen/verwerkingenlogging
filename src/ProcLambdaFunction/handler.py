@@ -54,7 +54,7 @@ def patch_verwerkings_acties(body, table):
             response.append(table.update_item(
                 Key={ 
                     'actieId': item.get('actieId'),
-                    'objectTypeSoortId': item.get('objectTypeSoortId')
+                    'compositeSortKey': item.get('compositeSortKey')
                 },
                 UpdateExpression="SET vertrouwelijkheid= :var1",
                 ExpressionAttributeValues={
@@ -65,7 +65,7 @@ def patch_verwerkings_acties(body, table):
             response.append(table.update_item(
                 Key={ 
                     'actieId': item.get('actieId'),
-                    'objectTypeSoortId': item.get('objectTypeSoortId')
+                    'compositeSortKey': item.get('compositeSortKey')
                 },
                 UpdateExpression="SET bewaartermijn= :var1",
                 ExpressionAttributeValues={
@@ -76,7 +76,7 @@ def patch_verwerkings_acties(body, table):
             response.append(table.update_item(
                 Key={ 
                     'actieId': item.get('actieId'),
-                    'objectTypeSoortId': item.get('objectTypeSoortId')
+                    'compositeSortKey': item.get('compositeSortKey')
                 },
                 UpdateExpression="SET vertrouwelijkheid= :var1, bewaartermijn= :var2",
                 ExpressionAttributeValues={
