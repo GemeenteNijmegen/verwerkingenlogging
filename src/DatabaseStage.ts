@@ -1,8 +1,9 @@
 import { Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { Configurable } from './Configuration';
 import { DatabaseStack } from './DatabaseStack';
 
-export interface DynamoStageProps extends StageProps {
+export interface DynamoStageProps extends StageProps, Configurable {
 
 }
 

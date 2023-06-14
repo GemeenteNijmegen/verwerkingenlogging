@@ -1,8 +1,9 @@
 import { Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { Configurable } from './Configuration';
 import { QueueStack } from './QueueStack';
 
-export interface QueueStageProps extends StageProps {
+export interface QueueStageProps extends StageProps, Configurable {
 
 }
 
