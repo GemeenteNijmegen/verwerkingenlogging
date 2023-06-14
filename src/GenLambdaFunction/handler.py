@@ -190,7 +190,7 @@ def handle_request(event, bucket, queue, table):
         store_item_in_s3(actieId, event, bucket)
 
         # Create DB url using generated actieId
-        url = "https://verwerkingenlogging-bewerking-api.vng.cloud/api/v1/verwerkingsacties/" + actieId
+        url = "https://dynamodb.eu-west-1.amazonaws.com/" + actieId
 
         item = objectId_check(requestJson)
         item = verwerktObjectId_check(item, table)
