@@ -1,15 +1,17 @@
 import { Stack, Tags, Stage, StageProps } from 'aws-cdk-lib';
 //import { Stack, Tags, Stage, aws_ssm as SSM, aws_secretsmanager as SecretsManager, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
+import { Configurable } from './Configuration';
 import { Statics } from './statics';
+
+export interface ParameterStageProps extends StageProps, Configurable {}
 
 /**
  * Stage for creating SSM parameters. This needs to run
  * before stages that use them.
  */
-
 export class ParameterStage extends Stage {
-  constructor(scope: Construct, id: string, props: StageProps) {
+  constructor(scope: Construct, id: string, props: ParameterStageProps) {
     super(scope, id, props);
     Tags.of(this).add('cdkManaged', 'yes');
     Tags.of(this).add('Project', Statics.projectName);

@@ -1,8 +1,9 @@
 import { Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ApiStack } from './ApiStack';
+import { Configurable } from './Configuration';
 
-export interface ApiStageProps extends StageProps {
+export interface ApiStageProps extends StageProps, Configurable {
 
 }
 
