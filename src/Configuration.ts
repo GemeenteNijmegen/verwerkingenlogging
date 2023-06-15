@@ -59,7 +59,7 @@ export const configurations: { [key: string]: Configuration } = {
     branchName: 'development',
     codeStarConnectionArn: Statics.gnBuildCodeStarConnectionArn,
     deploymentEnvironment: Statics.deploymentEnvironment,
-    targetEnvironment: Statics.deploymentEnvironment,
+    targetEnvironment: Statics.sandboxEnvironment,
   },
   acceptance: {
     branchName: 'acceptance',
