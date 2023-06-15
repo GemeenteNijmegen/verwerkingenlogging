@@ -34,8 +34,9 @@ export class DatabaseStack extends Stack {
     super(scope, id);
 
     // Create the DynamoDB verwerkingen table.
-    this.verwerkingenTable = new DynamoDB.Table(this, 'verwerkingen-table', {
+    this.verwerkingenTable = new DynamoDB.Table(this, 'verwerkingen-table-v4', {
       partitionKey: { name: 'actieId', type: DynamoDB.AttributeType.STRING },
+      sortKey: { name: 'compositeSortKey', type: DynamoDB.AttributeType.STRING },
       billingMode: DynamoDB.BillingMode.PAY_PER_REQUEST,
       tableName: Statics.verwerkingenTableName,
       timeToLiveAttribute: 'ttl',
@@ -51,15 +52,14 @@ export class DatabaseStack extends Stack {
 
     // Add Global Secondary Indexes to the verwerkingen table.
     this.verwerkingenTable.addGlobalSecondaryIndex({
-      indexName: Statics.verwerkingenTableIndex_ObjecttypesoortObjectIdobjectId,
-      partitionKey: { name: 'objecttypesoortObjectIdobjectId', type: DynamoDB.AttributeType.STRING },
+      indexName: Statics.verwerkingenTableIndex_objectTypeSoortId,
+      partitionKey: { name: 'objectTypeSoortId', type: DynamoDB.AttributeType.STRING },
     });
 
     this.verwerkingenTable.addGlobalSecondaryIndex({
       indexName: Statics.verwerkingenTableIndex_verwerkingId,
       partitionKey: { name: 'verwerkingId', type: DynamoDB.AttributeType.STRING },
     });
-
 
     // Create S3 Backup Bucket
     this.verwerkingenS3BackupBucket = new S3.Bucket(this, 'verwerkingen-s3-backup-bucket', {

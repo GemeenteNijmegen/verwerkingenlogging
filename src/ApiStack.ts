@@ -6,6 +6,8 @@ import {
   aws_ssm as SSM,
 } from 'aws-cdk-lib';
 import { ApiKeySourceType } from 'aws-cdk-lib/aws-apigateway';
+import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
 
@@ -15,19 +17,31 @@ import { Statics } from './statics';
 export class ApiStack extends Stack {
 
   /**
-    * API Gateway for verwerkingenlogging.
-    */
-  verwerkingenAPI: ApiGateway.RestApi;
+   * API Gateway for verwerkingenlogging.
+   */
+  declare verwerkingenAPI: ApiGateway.RestApi;
 
   /**
    * Lambda function attached to routes within the verwerkingen API Gateway.
+   * Generating the actieId, URL and verwerktObjectId on POST request.
+   * Returning a direct response.
    */
-  verwerkingenLambdaFunction: Lambda.Function;
+  declare verwerkingenGenLambdaFunction: Lambda.Function;
 
   /**
-   * Lambda integration to attach to several routes within the verwerkingen API Gateway.
+   * Lambda integration to attach routes (POST/PATCH) within the verwerkingen API Gateway.
    */
-  verwerkingenLambdaIntegration: ApiGateway.LambdaIntegration;
+  declare verwerkingenGenLambdaIntegration: ApiGateway.LambdaIntegration;
+
+  /**
+ * Lambda function attached to GET /verwerkingsacties route within the verwerkingen API Gateway.
+ */
+  declare verwerkingenRecLambdaFunction: Lambda.Function;
+
+  /**
+ * Lambda integration to attach GET /verwerkingsacties route within the verwerkingen API Gateway.
+ */
+  declare verwerkingenRecLambdaIntegration: ApiGateway.LambdaIntegration;
 
   constructor(scope: Construct, id: string) {
     super(scope, id);
@@ -42,51 +56,85 @@ export class ApiStack extends Stack {
       },
     });
 
+    // Allow the RestApi to access DynamoDb by assigning this role to the integration
+    const integrationRole = new Role(this, 'verwerkingen-integration-role', {
+      assumedBy: new ServicePrincipal('apigateway.amazonaws.com'),
+    });
+
+    // Import DynamoDB table (from DatabaseStack)
+    // Grant DynamoDB table Read-Write permissions to integration role
+    const ddbTable = Table.fromTableArn(this, 'verwerkingen-api-dynamo-table-v4', SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenTableArn));
+    ddbTable.grantReadWriteData(integrationRole);
+
     // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
-    this.verwerkingenLambdaFunction = new Lambda.Function(this, 'verwerkingen-lambda-function', {
-      code: Lambda.Code.fromAsset('src/VerwerkingenLambdaFunction'),
+    this.verwerkingenGenLambdaFunction = new Lambda.Function(this, 'verwerkingen-gen-lambda-function', {
+      code: Lambda.Code.fromAsset('src/GenLambdaFunction'),
       handler: 'index.handler',
       runtime: Lambda.Runtime.PYTHON_3_9,
       environment: {
-        DYNAMO_TABLE_NAME: Statics.verwerkingenTableName,
         S3_BACKUP_BUCKET_NAME: Statics.verwerkingenS3BackupBucketName,
+        SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
+        DYNAMO_TABLE_NAME: ddbTable.tableName,
       },
     });
-    this.verwerkingenLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
-    this.verwerkingenLambdaFunction.addToRolePolicy(new IAM.PolicyStatement({
+    this.verwerkingenGenLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
+    this.verwerkingenGenLambdaFunction.addToRolePolicy(new IAM.PolicyStatement({
       effect: IAM.Effect.ALLOW,
       actions: [
-        'dynamodb:PutItem',
-        'dynamodb:DeleteItem',
-        'dynamodb:GetItem',
-        'dynamodb:Scan',
-        'dynamodb:UpdateItem',
-        'dynamodb:Query',
         's3:PutObject',
+        'sqs:SendMessage',
+        'dynamodb:Query',
       ],
       resources: [
-        `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName,
-        `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName + '/index/' + Statics.verwerkingenTableIndex_ObjecttypesoortObjectIdobjectId,
-        `arn:aws:dynamodb:${this.region}:${this.account}:table/` + Statics.verwerkingenTableName + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
         SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn),
         SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn) + '/*',
+        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueArn),
+        ddbTable.tableArn,
+        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_objectTypeSoortId,
+        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
       ],
     }));
 
     // Create Integration & Attach Lambda to API Gateway routes.
-    this.verwerkingenLambdaIntegration = new ApiGateway.LambdaIntegration(this.verwerkingenLambdaFunction);
+    this.verwerkingenGenLambdaIntegration = new ApiGateway.LambdaIntegration(this.verwerkingenGenLambdaFunction);
+
+    // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
+    this.verwerkingenRecLambdaFunction = new Lambda.Function(this, 'verwerkingen-rec-lambda-function', {
+      code: Lambda.Code.fromAsset('src/RecLambdaFunction'),
+      handler: 'index.handler',
+      runtime: Lambda.Runtime.PYTHON_3_9,
+      environment: {
+        DYNAMO_TABLE_NAME: ddbTable.tableName,
+      },
+    });
+    this.verwerkingenRecLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
+    this.verwerkingenRecLambdaFunction.addToRolePolicy(new IAM.PolicyStatement({
+      effect: IAM.Effect.ALLOW,
+      actions: [
+        'dynamodb:Query',
+        'dynamodb:PutItem',
+      ],
+      resources: [
+        ddbTable.tableArn,
+        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_objectTypeSoortId,
+        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
+      ],
+    }));
+
+    // Create Integration & Attach Lambda to API Gateway GET /verwerkingsacties route.
+    this.verwerkingenRecLambdaIntegration = new ApiGateway.LambdaIntegration(this.verwerkingenRecLambdaFunction);
 
     // Route: /verwerkingsacties
     const verwerkingsactiesRoute = this.verwerkingenAPI.root.addResource('verwerkingsacties');
-    verwerkingsactiesRoute.addMethod('POST', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
-    verwerkingsactiesRoute.addMethod('GET', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
-    verwerkingsactiesRoute.addMethod('PATCH', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
+    verwerkingsactiesRoute.addMethod('POST', this.verwerkingenGenLambdaIntegration, { apiKeyRequired: true });
+    verwerkingsactiesRoute.addMethod('PATCH', this.verwerkingenGenLambdaIntegration, { apiKeyRequired: true });
+    verwerkingsactiesRoute.addMethod('GET', this.verwerkingenRecLambdaIntegration, { apiKeyRequired: true });
 
     // Route: /verwerkingsacties/{actieId}
     const actieIdRoute = verwerkingsactiesRoute.addResource('{actieId}');
-    actieIdRoute.addMethod('DELETE', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
-    actieIdRoute.addMethod('PUT', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
-    actieIdRoute.addMethod('GET', this.verwerkingenLambdaIntegration, { apiKeyRequired: true });
+    actieIdRoute.addMethod('PUT', this.verwerkingenGenLambdaIntegration, { apiKeyRequired: true });
+    actieIdRoute.addMethod('DELETE', this.verwerkingenRecLambdaIntegration, { apiKeyRequired: true });
+    actieIdRoute.addMethod('GET', this.verwerkingenRecLambdaIntegration, { apiKeyRequired: true });
 
     // Create API Key and add a new usage plan
     this.addUsagePlan();
