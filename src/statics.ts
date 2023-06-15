@@ -56,7 +56,7 @@ export abstract class Statics {
   /**
    * S3 Backup Bucket name for verwerkingen.
    */
-  static readonly verwerkingenS3BackupBucketName: string = 'verwerkingen-backup-bucket';
+  static readonly ssmName_verwerkingenS3BackupBucketName: string = '/cdk/verwerkingenlogging/verwerkingen-s3-backup-bucket-name';
 
   /**
    * S3 Backup Bucket arn (parameter).
