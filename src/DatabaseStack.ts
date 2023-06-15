@@ -63,7 +63,6 @@ export class DatabaseStack extends Stack {
 
     // Create S3 Backup Bucket
     this.verwerkingenS3BackupBucket = new S3.Bucket(this, 'verwerkingen-s3-backup-bucket', {
-      bucketName: Statics.verwerkingenS3BackupBucketName,
       blockPublicAccess: S3.BlockPublicAccess.BLOCK_ALL,
       enforceSSL: true,
       eventBridgeEnabled: true,
@@ -82,6 +81,11 @@ export class DatabaseStack extends Stack {
       parameterName: Statics.ssmName_verwerkingenS3BackupBucketArn,
     });
 
+    // Add S3 Backup Bucket Name to parameter store.
+    new SSM.StringParameter(this, 'ssm_verwerkingen-s3-backup-bucket-name', {
+      stringValue: this.verwerkingenS3BackupBucket.bucketName,
+      parameterName: Statics.ssmName_verwerkingenS3BackupBucketName,
+    });
 
     // Assumable read only role to view DynamoDB table, S3 Bucket and CloudWatch logging.
     this.verwerkingenReadOnlyRole = new IAM.Role(this, 'verwerkingen-read-only-role', {
