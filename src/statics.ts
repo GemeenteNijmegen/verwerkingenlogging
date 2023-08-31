@@ -89,4 +89,5 @@ export abstract class Statics {
   static readonly ssmName_projectHostedZoneId: string = '/cdk/verwerkingenlogging/hostedZone/id';
   static readonly ssmName_projectHostedZoneName: string = '/cdk/verwerkingenlogging/hostedZone/name';
 
+  static readonly subdomain = (hostedzoneName: string) => `api.${hostedzoneName}`;
 }
