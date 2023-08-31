@@ -20,6 +20,11 @@ const project = new GemeenteNijmegenCdkApp({
     '.vscode',
     '.DS_Store',
   ],
+  jestOptions: {
+    jestConfig: {
+      testPathIgnorePatterns: ['/node_modules/', '/cdk.out', '/test/validation'],
+    },
+  },
 });
 
 project.buildWorkflow.addPostBuildSteps(

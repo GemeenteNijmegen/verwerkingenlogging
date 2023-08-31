@@ -61,6 +61,11 @@
   "license": "EUPL-1.2",
   "version": "0.0.0",
   "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/cdk.out",
+      "/test/validation"
+    ],
     "testMatch": [
       "<rootDir>/src/**/__tests__/**/*.ts?(x)",
       "<rootDir>/(test|src)/**/*(*.)@(spec|test).ts?(x)"
@@ -76,10 +81,9 @@
     ],
     "coverageDirectory": "coverage",
     "coveragePathIgnorePatterns": [
-      "/node_modules/"
-    ],
-    "testPathIgnorePatterns": [
-      "/node_modules/"
+      "/node_modules/",
+      "/cdk.out",
+      "/test/validation"
     ],
     "watchPathIgnorePatterns": [
       "/node_modules/"
