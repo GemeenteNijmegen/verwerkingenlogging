@@ -5,33 +5,27 @@ export abstract class Statics {
    */
   static readonly projectName: string = 'verwerkingenlogging';
 
-  /**
-   * Environment variables
-   */
-  static readonly deploymentEnvironment = {
-    account: '418648875085',
-    region: 'eu-west-1',
+  // Environments
+
+  static readonly gnBuildEnvironment = {
+    account: '836443378780',
+    region: 'eu-central-1',
   };
 
-  static readonly sandboxEnvironment = {
-    account: '122467643252',
-    region: 'eu-west-1',
+  static readonly gnVerwerkingenloggingAccp = {
+    account: '649781704230',
+    region: 'eu-central-1',
   };
 
-  static readonly acceptanceEnvironment = {
-    account: '259142742358',
-    region: 'eu-west-1',
-  };
-
-  static readonly productionEnvironment = {
-    account: '876541623237',
-    region: 'eu-west-1',
+  static readonly gnVerwerkingenloggingProd = {
+    account: '887474129159',
+    region: 'eu-central-1',
   };
 
   /**
    * Codestar connection ARN to connect to GitHub.
    */
-  static readonly gnBuildCodeStarConnectionArn = 'arn:aws:codestar-connections:eu-west-1:418648875085:connection/4f647929-c982-4f30-94f4-24ff7dbf9766';
+  static readonly gnBuildCodeStarConnectionArn = 'arn:aws:codestar-connections:eu-central-1:836443378780:connection/9d20671d-91bc-49e2-8680-59ff96e2ab11';
 
   /**
    * DynamoDB table name for verwerkingen.

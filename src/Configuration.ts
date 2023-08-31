@@ -28,7 +28,7 @@ export interface Configuration {
   /**
      * Deployment environment
      */
-  deploymentEnvironment: Environment;
+  buildEnvironment: Environment;
 
   /**
      * Target environment
@@ -55,23 +55,17 @@ export interface GeoBucketConfig {
 
 
 export const configurations: { [key: string]: Configuration } = {
-  development: {
-    branchName: 'development',
-    codeStarConnectionArn: Statics.gnBuildCodeStarConnectionArn,
-    deploymentEnvironment: Statics.deploymentEnvironment,
-    targetEnvironment: Statics.sandboxEnvironment,
-  },
   acceptance: {
     branchName: 'acceptance',
     codeStarConnectionArn: Statics.gnBuildCodeStarConnectionArn,
-    deploymentEnvironment: Statics.deploymentEnvironment,
-    targetEnvironment: Statics.acceptanceEnvironment,
+    buildEnvironment: Statics.gnBuildEnvironment,
+    targetEnvironment: Statics.gnVerwerkingenloggingAccp,
   },
   main: {
     branchName: 'main',
     codeStarConnectionArn: Statics.gnBuildCodeStarConnectionArn,
-    deploymentEnvironment: Statics.deploymentEnvironment,
-    targetEnvironment: Statics.productionEnvironment,
+    buildEnvironment: Statics.gnBuildEnvironment,
+    targetEnvironment: Statics.gnVerwerkingenloggingProd,
   },
 };
 

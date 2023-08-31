@@ -9,7 +9,7 @@ const configuration = getConfiguration(buildBranch);
 const app = new App();
 
 new PipelineStack(app, `verwerkingenlogging-pipeline-${configuration.branchName}`, {
-  env: configuration.deploymentEnvironment,
+  env: configuration.buildEnvironment,
   configuration: configuration,
 });
 
