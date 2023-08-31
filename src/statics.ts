@@ -81,4 +81,13 @@ export abstract class Statics {
    * SQS Queue Arn
    */
   static readonly ssmName_verwerkingenSQSqueueArn: string = '/cdk/verwerkingenlogging/verwerkingen-sqs-queue-arn';
+
+
+  // DNS Hosted zone ssm
+  static readonly accountRootHostedZoneId: string = '/gemeente-nijmegen/account/hostedzone/id';
+  static readonly accountRootHostedZoneName: string = '/gemeente-nijmegen/account/hostedzone/name';
+  static readonly ssmName_projectHostedZoneId: string = '/cdk/verwerkingenlogging/hostedZone/id';
+  static readonly ssmName_projectHostedZoneName: string = '/cdk/verwerkingenlogging/hostedZone/name';
+
+  static readonly subdomain = (hostedzoneName: string) => `api.${hostedzoneName}`;
 }

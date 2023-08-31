@@ -4,10 +4,15 @@ import {
   aws_lambda as Lambda,
   aws_iam as IAM,
   aws_ssm as SSM,
+  aws_route53 as route53,
+  aws_route53_targets as targets,
 } from 'aws-cdk-lib';
 import { ApiKeySourceType } from 'aws-cdk-lib/aws-apigateway';
+import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
 import { Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { ARecord, AaaaRecord, HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
 
@@ -46,15 +51,18 @@ export class ApiStack extends Stack {
   constructor(scope: Construct, id: string) {
     super(scope, id);
 
+    const hostedzone = this.hostedzone();
     // Create the API Gateway (REST).
     this.verwerkingenAPI = new ApiGateway.RestApi(this, 'verwerkingen-api', {
       restApiName: Statics.verwerkingenApiName,
       description: 'Verwerkingen API Gateway (REST)',
       apiKeySourceType: ApiKeySourceType.HEADER,
-      deployOptions: {
-        stageName: 'dev', //TODO make stageName dynamic.
+      domainName: {
+        certificate: this.certificate(hostedzone),
+        domainName: hostedzone.zoneName,
       },
     });
+    this.setupDnsRecords(hostedzone);
 
     // Allow the RestApi to access DynamoDb by assigning this role to the integration
     const integrationRole = new Role(this, 'verwerkingen-integration-role', {
@@ -163,4 +171,35 @@ export class ApiStack extends Stack {
       stage: this.verwerkingenAPI.deploymentStage,
     });
   }
+
+  private hostedzone() {
+    return HostedZone.fromHostedZoneAttributes(this, 'hostedzone', {
+      hostedZoneId: StringParameter.valueForStringParameter(this, Statics.ssmName_projectHostedZoneId),
+      zoneName: StringParameter.valueForStringParameter(this, Statics.ssmName_projectHostedZoneName),
+    });
+  }
+
+  private certificate(hostedzone: IHostedZone) {
+    const cert = new Certificate(this, 'cert', {
+      domainName: hostedzone.zoneName,
+      validation: CertificateValidation.fromDns(hostedzone),
+    });
+    return cert;
+  }
+
+  private setupDnsRecords(hostedzone: IHostedZone) {
+
+    new ARecord(this, 'a-record', {
+      target: route53.RecordTarget.fromAlias(new targets.ApiGateway(this.verwerkingenAPI)),
+      zone: hostedzone,
+      comment: 'A-record for API gateway',
+    });
+
+    new AaaaRecord(this, 'aaaa-record', {
+      target: route53.RecordTarget.fromAlias(new targets.ApiGateway(this.verwerkingenAPI)),
+      zone: hostedzone,
+      comment: 'AAAA-record for API gateway',
+    });
+  }
+
 }
