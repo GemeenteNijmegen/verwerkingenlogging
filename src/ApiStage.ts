@@ -4,6 +4,7 @@ import { Construct } from 'constructs';
 import { ApiStack } from './ApiStack';
 import { Configurable } from './Configuration';
 import { DatabaseStack } from './DatabaseStack';
+import { DnsStack } from './DnsStack';
 import { QueueStack } from './QueueStack';
 
 export interface ApiStageProps extends StageProps, Configurable {
@@ -18,10 +19,12 @@ export class ApiStage extends Stage {
     super(scope, id, props);
     Aspects.of(this).add(new PermissionsBoundaryAspect());
 
+    const dnsStack = new DnsStack(this, 'dns-stac');
     const queueStack = new QueueStack(this, 'queue-stack');
     const databaseStack = new DatabaseStack(this, 'database-stack');
     const apiStack = new ApiStack(this, 'api-stack');
 
+    apiStack.addDependency(dnsStack);
     apiStack.addDependency(databaseStack);
     apiStack.addDependency(queueStack);
 
