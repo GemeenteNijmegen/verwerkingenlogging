@@ -1,6 +1,10 @@
 {
   "dependencies": [
     {
+      "name": "@gemeentenijmegen/projen-project-type",
+      "type": "build"
+    },
+    {
       "name": "@types/jest",
       "type": "build"
     },
@@ -91,6 +95,10 @@
     {
       "name": "typescript",
       "type": "build"
+    },
+    {
+      "name": "@gemeentenijmegen/aws-constructs",
+      "type": "runtime"
     },
     {
       "name": "aws-cdk-lib",

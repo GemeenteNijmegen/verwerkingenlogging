@@ -332,6 +332,16 @@
   resolved "https://registry.yarnpkg.com/@gar/promisify/-/promisify-1.1.3.tgz#555193ab2e3bb3b6adc3d551c9c030d9e860daf6"
   integrity sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==
 
+"@gemeentenijmegen/aws-constructs@^0.0.4":
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/@gemeentenijmegen/aws-constructs/-/aws-constructs-0.0.4.tgz#ea4440bfd02f660643ffdbed98867559805369f4"
+  integrity sha512-POfKPHohkk6PQBM5KE4gqks+y4jnNKbitt+pQ4yi+y0fbKgWOj5kRdD3eQKSdDDqqrQx2+lVJah58rLJDAA6LQ==
+
+"@gemeentenijmegen/projen-project-type@^1.5.4":
+  version "1.5.4"
+  resolved "https://registry.yarnpkg.com/@gemeentenijmegen/projen-project-type/-/projen-project-type-1.5.4.tgz#7dfecd9ad00d0ccd3bda387e84ffeb589745b9bd"
+  integrity sha512-+LyQ4WtGR+4JJfKxEtezlC7cCmAJ1LAk0GRWxnV8Uf8J58yNrkoOpzeoH0y4O0mWK7HDcgf8tzk0Xs7BFXWJyA==
+
 "@humanwhocodes/config-array@^0.10.5":
   version "0.10.5"
   resolved "https://registry.yarnpkg.com/@humanwhocodes/config-array/-/config-array-0.10.5.tgz#bb679745224745fff1e9a41961c1d45a49f81c04"
