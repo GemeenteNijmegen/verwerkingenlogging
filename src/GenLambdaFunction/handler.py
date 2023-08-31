@@ -59,7 +59,7 @@ def filled_item(requestJSON, actieId, url, tijdstipRegistratie):
 # Validate if required fields are included in body
 def validate_body(item):
     for verwerktObject in item.get('verwerkteObjecten'):
-        if(verwerktObject.get('objecttype') == None or verwerktObject.get('soortObjectId') == None or verwerktObject.get('objectId') == None):
+        if(verwerktObject.get('objectType') == None or verwerktObject.get('soortObjectId') == None or verwerktObject.get('objectId') == None):
             raise Exception("Post requests to /verwerkingsacties should have (required) body parameters")
         for verwerkteSoortenGegeven in verwerktObject.get('verwerkteSoortenGegevens'):
             if(verwerkteSoortenGegeven.get('soortGegeven') == None):
@@ -109,7 +109,7 @@ def verwerktObjectId_check(item, table):
                 # search for a verwerkt object (from the query response) where objectTypeSoortId equals that of the main (posted) object
                 # this Id is used to update the item, since we don't want to recreate an Id of an already existing (in DB) verwerkt object.
                 for verwerktObject in response.get('Items')[0].get('verwerkteObjecten'):
-                    if (verwerktObject.get('objecttype') + verwerktObject.get('soortObjectId') + verwerktObject.get('objectId') == objectTypeSoortId):
+                    if (verwerktObject.get('objectType') + verwerktObject.get('soortObjectId') + verwerktObject.get('objectId') == objectTypeSoortId):
                         verwerktObjectId = verwerktObject.get('verwerktObjectId')
                 
                 # update verwertkObjectId
@@ -135,7 +135,7 @@ def objectId_check(item):
 def generate_post_message(verwerktObject, requestJson, actieId, url, tijdstipRegistratie):
     item = filled_item(requestJson, actieId, url, tijdstipRegistratie)
     
-    objectTypeSoortId = verwerktObject.get('objecttype') + verwerktObject.get('soortObjectId') + verwerktObject.get('objectId')
+    objectTypeSoortId = verwerktObject.get('objectType') + verwerktObject.get('soortObjectId') + verwerktObject.get('objectId')
     compositeSortKey = objectTypeSoortId + '#' + tijdstipRegistratie   # Composite SK - combining the unique soortObjecTypeId and the tijdstipRegistratie timestamp
     item.update({ 'compositeSortKey': compositeSortKey, 'objectTypeSoortId': objectTypeSoortId })
 
@@ -158,7 +158,7 @@ def generate_put_message(event, verwerktObject, item, tijdstipRegistratie):
     # TODO: validate if actieId in pathParameters equals the actieId in the request body (requestJson)
     # If they are not equal it's an invalid / forbidden request. 
     actieId = event.get('pathParameters').get('actieId')
-    objectTypeSoortId = verwerktObject.get('objecttype') + verwerktObject.get('soortObjectId') + verwerktObject.get('objectId')
+    objectTypeSoortId = verwerktObject.get('objectType') + verwerktObject.get('soortObjectId') + verwerktObject.get('objectId')
     compositeSortKey = objectTypeSoortId + '#' + tijdstipRegistratie   # Composite SK - combining the unique soortObjecTypeId and the tijdstipRegistratie timestamp
     item.update({'actieId': actieId, 'compositeSortKey': compositeSortKey, 'objectTypeSoortId': objectTypeSoortId })
 
