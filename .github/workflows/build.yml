@@ -19,10 +19,14 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           repository: ${{ github.event.pull_request.head.repo.full_name }}
+      - name: Setup cfn-lint
+        uses: scottbrenner/cfn-lint-action@v2
       - name: Install dependencies
         run: yarn install --check-files
       - name: build
         run: npx projen build
+      - name: CloudFormation lint
+        run: npx projen lint
       - name: Install Python 3.9
         uses: actions/setup-python@v3.1.2
         with:
