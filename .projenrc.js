@@ -1,45 +1,30 @@
-const { awscdk } = require('projen');
-const project = new awscdk.AwsCdkTypeScriptApp({
+const { GemeenteNijmegenCdkApp } = require('@gemeentenijmegen/projen-project-type');
+
+const project = new GemeenteNijmegenCdkApp({
   cdkVersion: '2.1.0',
-  defaultReleaseBranch: 'main',
   name: 'verwerkingenlogging',
-  release: true,
-  defaultReleaseBranch: 'production',
+  defaultReleaseBranch: 'main',
   majorVersion: 0,
-  depsUpgradeOptions: {
-    workflow: true,
-    workflowOptions: {
-      branches: ['development'],
-    },
-  },
-  scripts: {
-    lint: 'cfn-lint cdk.out/**/*.template.json -i W3005 W2001',
-  },
   deps: [
     'cdk-nag@^2.0.0',
+    '@gemeentenijmegen/aws-constructs',
   ],
   devDeps: [
     'dotenv',
     'axios',
+    '@gemeentenijmegen/projen-project-type',
   ],
   gitignore: [
     'test/__snapshots__/*',
     '.env',
     '.vscode',
     '.DS_Store',
-    'test/playwright/report',
-    'test/playwright/screenshots',
   ],
   jestOptions: {
     jestConfig: {
       testPathIgnorePatterns: ['/node_modules/', '/cdk.out', '/test/validation'],
     },
   },
-
-  // deps: [],                /* Runtime dependencies of this module. */
-  // description: undefined,  /* The description is just a string that helps people understand the purpose of the package. */
-  // devDeps: [],             /* Build dependencies for this module. */
-  // packageName: undefined,  /* The "name" in package.json. */
 });
 
 project.buildWorkflow.addPostBuildSteps(

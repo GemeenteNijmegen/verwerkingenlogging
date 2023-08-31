@@ -14,7 +14,7 @@ test('Snapshot', () => {
     configuration: {
       branchName: 'test',
       codeStarConnectionArn: Statics.gnBuildCodeStarConnectionArn,
-      deploymentEnvironment: testEnv,
+      buildEnvironment: testEnv,
       targetEnvironment: testEnv,
     },
     env: {
@@ -32,7 +32,7 @@ test('MainPipelineExists', () => {
     configuration: {
       branchName: 'test',
       codeStarConnectionArn: Statics.gnBuildCodeStarConnectionArn,
-      deploymentEnvironment: testEnv,
+      buildEnvironment: testEnv,
       targetEnvironment: testEnv,
     },
     env: {

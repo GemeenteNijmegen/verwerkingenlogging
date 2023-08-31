@@ -72,7 +72,7 @@ export class ApiStack extends Stack {
       handler: 'index.handler',
       runtime: Lambda.Runtime.PYTHON_3_9,
       environment: {
-        S3_BACKUP_BUCKET_NAME: Statics.verwerkingenS3BackupBucketName,
+        S3_BACKUP_BUCKET_NAME: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketName),
         SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
         DYNAMO_TABLE_NAME: ddbTable.tableName,
       },
