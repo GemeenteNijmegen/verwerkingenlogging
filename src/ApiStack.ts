@@ -6,6 +6,7 @@ import {
   aws_ssm as SSM,
   aws_route53 as route53,
   aws_route53_targets as targets,
+  StackProps,
 } from 'aws-cdk-lib';
 import { ApiKeySourceType } from 'aws-cdk-lib/aws-apigateway';
 import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
@@ -14,7 +15,10 @@ import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { ARecord, AaaaRecord, HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
+import { Configurable } from './Configuration';
 import { Statics } from './statics';
+
+export interface ApiStackProps extends StackProps, Configurable {}
 
 /**
  * Database Stack responsible for creating the verwerkingen API Gateway and all other related services.
@@ -48,8 +52,8 @@ export class ApiStack extends Stack {
  */
   declare verwerkingenRecLambdaIntegration: ApiGateway.LambdaIntegration;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: ApiStackProps) {
+    super(scope, id, props);
 
     const hostedzone = this.hostedzone();
     // Create the API Gateway (REST).
@@ -83,6 +87,7 @@ export class ApiStack extends Stack {
         S3_BACKUP_BUCKET_NAME: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketName),
         SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
         DYNAMO_TABLE_NAME: ddbTable.tableName,
+        DEBUG: props.configuration.debug ? 'true' : 'false',
       },
     });
     this.verwerkingenGenLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
@@ -113,6 +118,7 @@ export class ApiStack extends Stack {
       runtime: Lambda.Runtime.PYTHON_3_9,
       environment: {
         DYNAMO_TABLE_NAME: ddbTable.tableName,
+        DEBUG: props.configuration.debug ? 'true' : 'false',
       },
     });
     this.verwerkingenRecLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));

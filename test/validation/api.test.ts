@@ -15,7 +15,7 @@ beforeAll(() => {
 
 describe('Run GET api calls', () => {
   test('GET verwerkinglogging', async () => {
-    const result = await axios.get('verwerkingsacties?objecttype=persoon&soortObjectId=BSN&objectId=1234567&beginDatum=2024-04-05T14:35:42+01:00&eindDatum=2024-04-05T14:36:42+01:00&verwerkingsactiviteitId=5f0bef4c-f66f-4311-84a5-19e8bf359eaf&vertrouwelijkheid=normaal');
+    const result = await axios.get('verwerkingsacties?objectType=persoon&soortObjectId=BSN&objectId=1234567&beginDatum=2024-04-05T14:35:42+01:00&eindDatum=2024-04-05T14:36:42+01:00&verwerkingsactiviteitId=5f0bef4c-f66f-4311-84a5-19e8bf359eaf&vertrouwelijkheid=normaal');
     expect(result.status).toBe(200);
   });
   test('GET specific actie', async () => {

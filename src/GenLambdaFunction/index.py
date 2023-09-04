@@ -8,7 +8,9 @@ sqs = boto3.resource('sqs')
 queue = sqs.Queue(os.environ['SQS_URL'])
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['DYNAMO_TABLE_NAME'])
+debug = os.getenv('DEBUG', 'false') == 'true'
 
 def handler(event, context):
-    print(event)
+    if debug:
+        print(event)
     return handle_request(event, bucketName, queue, table)

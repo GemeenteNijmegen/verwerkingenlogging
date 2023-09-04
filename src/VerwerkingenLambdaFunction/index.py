@@ -7,7 +7,9 @@ table = dynamodb.Table(os.environ['DYNAMO_TABLE_NAME'])
 
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(os.environ['S3_BACKUP_BUCKET_NAME'])
+debug = os.getenv('DEBUG', 'false') == 'true'
 
 def handler(event, context):
-    print(event)
+    if debug:
+        print(event)
     return handle_request(event, table, bucket)

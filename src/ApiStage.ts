@@ -19,10 +19,20 @@ export class ApiStage extends Stage {
     super(scope, id, props);
     Aspects.of(this).add(new PermissionsBoundaryAspect());
 
-    const dnsStack = new DnsStack(this, 'dns-stac');
-    const queueStack = new QueueStack(this, 'queue-stack');
-    const databaseStack = new DatabaseStack(this, 'database-stack');
-    const apiStack = new ApiStack(this, 'api-stack');
+    const dnsStack = new DnsStack(this, 'dns-stac', {
+      env: props.configuration.targetEnvironment,
+    });
+    const queueStack = new QueueStack(this, 'queue-stack', {
+      env: props.configuration.targetEnvironment,
+      configuration: props.configuration,
+    });
+    const databaseStack = new DatabaseStack(this, 'database-stack', {
+      env: props.configuration.targetEnvironment,
+    });
+    const apiStack = new ApiStack(this, 'api-stack', {
+      env: props.configuration.targetEnvironment,
+      configuration: props.configuration,
+    });
 
     apiStack.addDependency(dnsStack);
     apiStack.addDependency(databaseStack);

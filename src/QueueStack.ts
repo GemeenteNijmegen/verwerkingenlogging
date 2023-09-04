@@ -1,11 +1,14 @@
-import { Stack } from 'aws-cdk-lib';
+import { Stack, StackProps } from 'aws-cdk-lib';
 import * as IAM from 'aws-cdk-lib/aws-iam';
 import * as Lambda from 'aws-cdk-lib/aws-lambda';
 import * as LambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as Sqs from 'aws-cdk-lib/aws-sqs';
 import * as SSM from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
+import { Configurable } from './Configuration';
 import { Statics } from './statics';
+
+export interface QueueStackProps extends StackProps, Configurable {}
 
 export class QueueStack extends Stack {
 
@@ -30,8 +33,8 @@ export class QueueStack extends Stack {
     */
   declare verwerkingenLambdaSqsEventSource: LambdaEventSources.SqsEventSource;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: QueueStackProps) {
+    super(scope, id, props);
 
     // Message Dead-Letter-Queue (DLQ)
     this.verwerkingenMessageDeadLetterQueue = new Sqs.Queue(this, 'verwerkingen-message-dead-letter-queue', {
@@ -67,6 +70,7 @@ export class QueueStack extends Stack {
       environment: {
         DYNAMO_TABLE_NAME: Statics.verwerkingenTableName,
         SQS_URL: this.verwerkingenMessageQueue.queueUrl,
+        DEBUG: props.configuration.debug ? 'true' : 'false',
       },
     });
     this.verwerkingenProcLambdaFunction.addToRolePolicy(new IAM.PolicyStatement({
