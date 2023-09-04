@@ -108,7 +108,7 @@ Object {
     },
     \\"build\\": {
       \\"commands\\": [
-        \\"cdk-assets --path \\\\\\"assembly-test-vwlog/testvwlogapistackDF7727C9.assets.json\\\\\\" --verbose publish \\\\\\"a05849ae7b10be61f18782068e67cd9c2ea53ddbdc403b9843168b73f0f073a4:test-eu-west-1\\\\\\"\\"
+        \\"cdk-assets --path \\\\\\"assembly-test-vwlog/testvwlogapistackDF7727C9.assets.json\\\\\\" --verbose publish \\\\\\"690479a1af1d30757cf2fde373f7837597a06ac13b58b2287db0c11df3285b5a:test-eu-west-1\\\\\\"\\"
       ]
     }
   }
@@ -167,7 +167,7 @@ Object {
     },
     \\"build\\": {
       \\"commands\\": [
-        \\"cdk-assets --path \\\\\\"assembly-test-vwlog/testvwlogapistackDF7727C9.assets.json\\\\\\" --verbose publish \\\\\\"df178ac88b69ddcb89de4566df9d38664a0625a07eed9e8a5f94c1df29564fe1:test-eu-west-1\\\\\\"\\"
+        \\"cdk-assets --path \\\\\\"assembly-test-vwlog/testvwlogapistackDF7727C9.assets.json\\\\\\" --verbose publish \\\\\\"d7718c7f959944b5c180de538b20a4e190a2ab2abf55e27d9bb2f924d9358434:test-eu-west-1\\\\\\"\\"
       ]
     }
   }

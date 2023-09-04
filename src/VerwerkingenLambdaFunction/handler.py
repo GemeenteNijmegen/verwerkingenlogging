@@ -45,7 +45,7 @@ def filled_item(requestJSON, actieId, tijdstipRegistratie):
         'tijdstip': requestJSON['tijdstip'],
         'tijdstipRegistratie': tijdstipRegistratie,
         'verwerkteObjecten': requestJSON['verwerkteObjecten'],
-        'objecttypesoortObjectIdobjectId': requestJSON['verwerkteObjecten'][0]['objecttype'] + "_" + requestJSON['verwerkteObjecten'][0]['soortObjectId'] + "_" + requestJSON['verwerkteObjecten'][0]['objectId'],
+        'objectTypesoortObjectIdobjectId': requestJSON['verwerkteObjecten'][0]['objectType'] + "_" + requestJSON['verwerkteObjecten'][0]['soortObjectId'] + "_" + requestJSON['verwerkteObjecten'][0]['objectId'],
     }
 
 ############################
@@ -53,7 +53,7 @@ def filled_item(requestJSON, actieId, tijdstipRegistratie):
 ############################
 def get_verwerkings_acties(event, table):
     # ONLY verwerkingsactiviteitId
-    object_key = event['queryStringParameters']['objecttype'] + "_" + event['queryStringParameters']['soortObjectId'] + "_" + event['queryStringParameters']['objectId']
+    object_key = event['queryStringParameters']['objectType'] + "_" + event['queryStringParameters']['soortObjectId'] + "_" + event['queryStringParameters']['objectId']
     
     attrs = None
     if (event['queryStringParameters'].get('beginDatum') != None or event['queryStringParameters'].get('eindDatum') != None):
@@ -71,13 +71,13 @@ def get_verwerkings_acties(event, table):
     
     if (attrs != None):
         response = table.query(
-                IndexName='objecttypesoortObjectIdobjectId-index',
-                KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key),
+                IndexName='objectTypesoortObjectIdobjectId-index',
+                KeyConditionExpression=Key('objectTypesoortObjectIdobjectId').eq(object_key),
                 FilterExpression=attrs)
     else:
         response = table.query(
-                IndexName='objecttypesoortObjectIdobjectId-index',
-                KeyConditionExpression=Key('objecttypesoortObjectIdobjectId').eq(object_key))
+                IndexName='objectTypesoortObjectIdobjectId-index',
+                KeyConditionExpression=Key('objectTypesoortObjectIdobjectId').eq(object_key))
         
     return {
         'statusCode': 200,

@@ -292,7 +292,7 @@ def post_event():
             "tijdstip": "2024-04-05T14:35:42+01:00",
             "verwerkteObjecten": [
                 {
-                    "objecttype": "persoon",
+                    "objectType": "persoon",
                     "soortObjectId": "BSN",
                     "objectId": "1234567",
                     "betrokkenheid": "Getuige",
@@ -312,7 +312,7 @@ def get_event():
     event = {
         'queryStringParameters': { 
             'verwerkingsactiviteitId': '5f0bef4c-f66f-4311-84a5-19e8bf359eaf', 
-            'objecttype': 'persoon',
+            'objectType': 'persoon',
             'soortObjectId': 'BSN',
             'objectId': '1234567',
             'beginDatum': '2022-04-05T14:35:42+01:00',
@@ -329,7 +329,7 @@ def get_event_vertrouwelijk():
     event = {
         'queryStringParameters': { 
             'verwerkingsactiviteitId': '5f0bef4c-f66f-4311-84a5-19e8bf359eaf', 
-            'objecttype': 'persoon',
+            'objectType': 'persoon',
             'soortObjectId': 'BSN',
             'objectId': '1234567',
             'beginDatum': '2022-04-05T14:35:42+01:00',
@@ -347,7 +347,7 @@ def get_event_vertrouwelijk():
 def get_event_time_only():
     event = {
         'queryStringParameters': { 
-            'objecttype': 'persoon',
+            'objectType': 'persoon',
             'soortObjectId': 'BSN',
             'objectId': '1234567',
             'beginDatum': '2022-04-05T14:35:42+01:00',
@@ -365,7 +365,7 @@ def get_specific_event():
     event = {
         'queryStringParameters': { 
             'verwerkingsactiviteitId': '5f0bef4c-f66f-4311-84a5-19e8bf359eaf', 
-            'objecttype': 'persoon',
+            'objectType': 'persoon',
             'soortObjectId': 'BSN',
             'objectId': '1234567',
             'beginDatum': '2022-04-05T14:35:42+01:00',
@@ -415,7 +415,7 @@ def patch_body():
         "tijdstip": "2024-04-05T14:35:42+01:00",
         "verwerkteObjecten": [
             {
-                "objecttype": "persoon",
+                "objectType": "persoon",
                 "soortObjectId": "BSN",
                 "objectId": "1234567",
                 "betrokkenheid": "Getuige",
@@ -449,7 +449,7 @@ def mock_table():
             "AttributeName": "actieId", "AttributeType": "S"
         },
         {
-            "AttributeName": "objecttypesoortObjectIdobjectId", "AttributeType": "S"
+            "AttributeName": "objectTypesoortObjectIdobjectId", "AttributeType": "S"
         },
         {
             "AttributeName": "verwerkingId", "AttributeType": "S"
@@ -457,10 +457,10 @@ def mock_table():
     ],
     GlobalSecondaryIndexes=[
         {
-            'IndexName': 'objecttypesoortObjectIdobjectId-index',
+            'IndexName': 'objectTypesoortObjectIdobjectId-index',
             'KeySchema': [
             {
-                'AttributeName': 'objecttypesoortObjectIdobjectId',
+                'AttributeName': 'objectTypesoortObjectIdobjectId',
                 'KeyType': 'HASH'
             }
             ],

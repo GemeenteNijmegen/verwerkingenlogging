@@ -24,7 +24,7 @@ def validate_params(params):
     if ('/verwerkingsacties' in params.get('resource') and params.get('method') == 'GET'):
         # GET /verwerkingsacties
         if (params.get('resouce') == '/verwerkingsacties'):
-            if ('objecttype' not in params.get('parameters') or 'soortObjectId' not in params.get('parameters') or 'objectId' not in params.get('parameters')):
+            if ('objectType' not in params.get('parameters') or 'soortObjectId' not in params.get('parameters') or 'objectId' not in params.get('parameters')):
                 raise Exception(
                     "GET requests to /verwerkingsacties should have (required) query parameters")
 
@@ -74,7 +74,7 @@ def get_verwerkingsacties_actieid(event, table):
 # Get verwerkingsacties based on given filter parameters
 def get_verwerkings_acties(event, table):
     hashedObjectId = hashHelper(event.get('queryStringParameters').get('objectId'))
-    object_key = event.get('queryStringParameters').get('objecttype') + event.get(
+    object_key = event.get('queryStringParameters').get('objectType') + event.get(
         'queryStringParameters').get('soortObjectId') + hashedObjectId
 
     attrs = None

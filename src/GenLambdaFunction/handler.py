@@ -90,7 +90,7 @@ def verwerktObjectId_check(item, table):
     if (len(verwerkteObjecten) >= 1):
         for object in verwerkteObjecten:
             # check if objectTypeSoortId already exists in DB
-            objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
+            objectTypeSoortId = object.get('objectType') + object.get('soortObjectId') + object.get('objectId')
             response = table.query(
                     IndexName='objectTypeSoortId-index',
                     KeyConditionExpression=Key('objectTypeSoortId').eq(objectTypeSoortId)
