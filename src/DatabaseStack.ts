@@ -6,6 +6,7 @@ import {
   aws_ssm as SSM,
   aws_s3 as S3,
   aws_iam as IAM,
+  StackProps,
 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
@@ -30,8 +31,8 @@ export class DatabaseStack extends Stack {
    */
   verwerkingenReadOnlyRole: IAM.Role;
 
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
+  constructor(scope: Construct, id: string, props: StackProps) {
+    super(scope, id, props);
 
     // Create the DynamoDB verwerkingen table.
     this.verwerkingenTable = new DynamoDB.Table(this, 'verwerkingen-table-v4', {

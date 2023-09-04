@@ -1,4 +1,3 @@
-import { aws_s3 as s3 } from 'aws-cdk-lib';
 import { Statics } from './statics';
 
 /**
@@ -15,44 +14,33 @@ export interface Configurable {
 
 export interface Configuration {
   /**
-     * The git branch name to which this configuration applies.
-     */
+   * The git branch name to which this configuration applies.
+   */
   branchName: string;
 
-
   /**
-     * Code star connection arn in the deployment environment
-     */
+   * Code star connection arn in the deployment environment
+   */
   codeStarConnectionArn: string;
 
   /**
-     * Deployment environment
-     */
+   * Deployment environment
+   */
   buildEnvironment: Environment;
 
   /**
-     * Target environment
-     */
+   * Target environment
+   */
   targetEnvironment: Environment;
 
-}
-
-export interface GeoBucketConfig {
-  cdkId: string;
-  name: string;
   /**
-     * If undefined no backup is configured for this bucket
-     */
-  backupName?: string;
-  description: string;
-  bucketConfiguration: s3.BucketProps;
+   * Flag to enable debugging (logging in lambdas)
+   * Caution: should never be true in production!
+   * @default false
+   */
+  debug?: boolean;
 
-  /**
-     * @default false
-     */
-  setupAccessForIamUser?: boolean;
 }
-
 
 export const configurations: { [key: string]: Configuration } = {
   acceptance: {
@@ -60,6 +48,7 @@ export const configurations: { [key: string]: Configuration } = {
     codeStarConnectionArn: Statics.gnBuildCodeStarConnectionArn,
     buildEnvironment: Statics.gnBuildEnvironment,
     targetEnvironment: Statics.gnVerwerkingenloggingAccp,
+    debug: true,
   },
   main: {
     branchName: 'main',
