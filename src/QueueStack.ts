@@ -5,8 +5,8 @@ import * as LambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as Sqs from 'aws-cdk-lib/aws-sqs';
 import * as SSM from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
-import { Statics } from './statics';
 import { Configurable } from './Configuration';
+import { Statics } from './statics';
 
 export interface QueueStackProps extends StackProps, Configurable {}
 

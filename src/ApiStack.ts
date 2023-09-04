@@ -15,8 +15,8 @@ import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { ARecord, AaaaRecord, HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
-import { Statics } from './statics';
 import { Configurable } from './Configuration';
+import { Statics } from './statics';
 
 export interface ApiStackProps extends StackProps, Configurable {}
 
