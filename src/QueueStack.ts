@@ -70,7 +70,7 @@ export class QueueStack extends Stack {
       environment: {
         DYNAMO_TABLE_NAME: Statics.verwerkingenTableName,
         SQS_URL: this.verwerkingenMessageQueue.queueUrl,
-        DEBUG: props.configuration.debug ? 'true' : 'false',
+        ENABLE_VERBOSE_AND_SENSITIVE_LOGGING: props.configuration.enableVerboseAndSensitiveLogging ? 'true' : 'false',
       },
     });
     this.verwerkingenProcLambdaFunction.addToRolePolicy(new IAM.PolicyStatement({

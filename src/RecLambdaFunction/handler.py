@@ -5,7 +5,7 @@ import os
 
 from boto3.dynamodb.conditions import Key, Attr
 
-debug = os.getenv('DEBUG', 'false') == 'true'
+debug = os.getenv('ENABLE_VERBOSE_AND_SENSITIVE_LOGGING', 'false') == 'true'
 
 # Parse the event object and extract relevant information.
 # After extraction, validates the object for valid parameter combinations.

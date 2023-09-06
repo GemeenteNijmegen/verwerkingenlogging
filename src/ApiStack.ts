@@ -87,7 +87,7 @@ export class ApiStack extends Stack {
         S3_BACKUP_BUCKET_NAME: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketName),
         SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
         DYNAMO_TABLE_NAME: ddbTable.tableName,
-        DEBUG: props.configuration.debug ? 'true' : 'false',
+        ENABLE_VERBOSE_AND_SENSITIVE_LOGGING: props.configuration.enableVerboseAndSensitiveLogging ? 'true' : 'false',
       },
     });
     this.verwerkingenGenLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
@@ -118,7 +118,7 @@ export class ApiStack extends Stack {
       runtime: Lambda.Runtime.PYTHON_3_9,
       environment: {
         DYNAMO_TABLE_NAME: ddbTable.tableName,
-        DEBUG: props.configuration.debug ? 'true' : 'false',
+        ENABLE_VERBOSE_AND_SENSITIVE_LOGGING: props.configuration.enableVerboseAndSensitiveLogging ? 'true' : 'false',
       },
     });
     this.verwerkingenRecLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
