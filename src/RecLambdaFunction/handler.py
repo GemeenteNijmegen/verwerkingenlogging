@@ -1,8 +1,11 @@
 import json
 import hashlib
 from datetime import datetime
+import os
 
 from boto3.dynamodb.conditions import Key, Attr
+
+debug = os.getenv('ENABLE_VERBOSE_AND_SENSITIVE_LOGGING', 'false') == 'true'
 
 # Parse the event object and extract relevant information.
 # After extraction, validates the object for valid parameter combinations.
@@ -124,8 +127,8 @@ def delete_verwerkingsacties_actieid(event, table):
     )
 
     for item in response.get('Items'):
-        print(item)
-        # TODO alternative implementation as described below
+        if debug:
+            print(item) # TODO alternative implementation as described below
 
     # TODO: Efficiency improvement --> another query not required. Data is already available using previous query.
     for item in response.get('Items'):

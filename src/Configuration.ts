@@ -38,7 +38,7 @@ export interface Configuration {
    * Caution: should never be true in production!
    * @default false
    */
-  debug?: boolean;
+  enableVerboseAndSensitiveLogging?: boolean;
 
 }
 
@@ -48,7 +48,7 @@ export const configurations: { [key: string]: Configuration } = {
     codeStarConnectionArn: Statics.gnBuildCodeStarConnectionArn,
     buildEnvironment: Statics.gnBuildEnvironment,
     targetEnvironment: Statics.gnVerwerkingenloggingAccp,
-    debug: true,
+    enableVerboseAndSensitiveLogging: true,
   },
   main: {
     branchName: 'main',

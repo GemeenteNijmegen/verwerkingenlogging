@@ -10,11 +10,12 @@ import {
 } from 'aws-cdk-lib';
 import { ApiKeySourceType } from 'aws-cdk-lib/aws-apigateway';
 import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
-import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import { ITable, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { ARecord, AaaaRecord, HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
+import { ApiFunction } from './ApiFunction';
 import { Configurable } from './Configuration';
 import { Statics } from './statics';
 
@@ -35,7 +36,7 @@ export class ApiStack extends Stack {
    * Generating the actieId, URL and verwerktObjectId on POST request.
    * Returning a direct response.
    */
-  declare verwerkingenGenLambdaFunction: Lambda.Function;
+  declare verwerkingenGenLambdaFunction: ApiFunction;
 
   /**
    * Lambda integration to attach routes (POST/PATCH) within the verwerkingen API Gateway.
@@ -45,7 +46,7 @@ export class ApiStack extends Stack {
   /**
  * Lambda function attached to GET /verwerkingsacties route within the verwerkingen API Gateway.
  */
-  declare verwerkingenRecLambdaFunction: Lambda.Function;
+  declare verwerkingenRecLambdaFunction: ApiFunction;
 
   /**
  * Lambda integration to attach GET /verwerkingsacties route within the verwerkingen API Gateway.
@@ -78,65 +79,13 @@ export class ApiStack extends Stack {
     const ddbTable = Table.fromTableArn(this, 'verwerkingen-api-dynamo-table-v4', SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenTableArn));
     ddbTable.grantReadWriteData(integrationRole);
 
-    // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
-    this.verwerkingenGenLambdaFunction = new Lambda.Function(this, 'verwerkingen-gen-lambda-function', {
-      code: Lambda.Code.fromAsset('src/GenLambdaFunction'),
-      handler: 'index.handler',
-      runtime: Lambda.Runtime.PYTHON_3_9,
-      environment: {
-        S3_BACKUP_BUCKET_NAME: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketName),
-        SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
-        DYNAMO_TABLE_NAME: ddbTable.tableName,
-        DEBUG: props.configuration.debug ? 'true' : 'false',
-      },
-    });
-    this.verwerkingenGenLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
-    this.verwerkingenGenLambdaFunction.addToRolePolicy(new IAM.PolicyStatement({
-      effect: IAM.Effect.ALLOW,
-      actions: [
-        's3:PutObject',
-        'sqs:SendMessage',
-        'dynamodb:Query',
-      ],
-      resources: [
-        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn),
-        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn) + '/*',
-        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueArn),
-        ddbTable.tableArn,
-        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_objectTypeSoortId,
-        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
-      ],
-    }));
+    // Setup lambdas
+    this.verwerkingenGenLambdaFunction = this.setupVerwerkingenGenLambdaFunction(ddbTable, props.configuration.enableVerboseAndSensitiveLogging);
+    this.verwerkingenRecLambdaFunction = this.setupVerwerkingenRecLambdaFunction(ddbTable, props.configuration.enableVerboseAndSensitiveLogging);
 
-    // Create Integration & Attach Lambda to API Gateway routes.
-    this.verwerkingenGenLambdaIntegration = new ApiGateway.LambdaIntegration(this.verwerkingenGenLambdaFunction);
-
-    // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
-    this.verwerkingenRecLambdaFunction = new Lambda.Function(this, 'verwerkingen-rec-lambda-function', {
-      code: Lambda.Code.fromAsset('src/RecLambdaFunction'),
-      handler: 'index.handler',
-      runtime: Lambda.Runtime.PYTHON_3_9,
-      environment: {
-        DYNAMO_TABLE_NAME: ddbTable.tableName,
-        DEBUG: props.configuration.debug ? 'true' : 'false',
-      },
-    });
-    this.verwerkingenRecLambdaFunction.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
-    this.verwerkingenRecLambdaFunction.addToRolePolicy(new IAM.PolicyStatement({
-      effect: IAM.Effect.ALLOW,
-      actions: [
-        'dynamodb:Query',
-        'dynamodb:PutItem',
-      ],
-      resources: [
-        ddbTable.tableArn,
-        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_objectTypeSoortId,
-        ddbTable.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
-      ],
-    }));
-
-    // Create Integration & Attach Lambda to API Gateway GET /verwerkingsacties route.
-    this.verwerkingenRecLambdaIntegration = new ApiGateway.LambdaIntegration(this.verwerkingenRecLambdaFunction);
+    // Create Integrations
+    this.verwerkingenGenLambdaIntegration = new ApiGateway.LambdaIntegration(this.verwerkingenGenLambdaFunction.lambda);
+    this.verwerkingenRecLambdaIntegration = new ApiGateway.LambdaIntegration(this.verwerkingenRecLambdaFunction.lambda);
 
     // Route: /verwerkingsacties
     const verwerkingsactiesRoute = this.verwerkingenAPI.root.addResource('verwerkingsacties');
@@ -154,6 +103,75 @@ export class ApiStack extends Stack {
     this.addUsagePlan();
 
   }
+
+  /**
+   * Lambda for forwaring to queue and sync responses
+   * @param table
+   * @param enableVerboseAndSensitiveLogging
+   */
+  private setupVerwerkingenGenLambdaFunction(table: ITable, enableVerboseAndSensitiveLogging?: boolean) {
+    // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
+    const lambda = new ApiFunction(this, 'generation', {
+      description: 'Receive calls and place on queue',
+      code: Lambda.Code.fromAsset('src/GenLambdaFunction'),
+      environment: {
+        S3_BACKUP_BUCKET_NAME: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketName),
+        SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
+        DYNAMO_TABLE_NAME: table.tableName,
+        ENABLE_VERBOSE_AND_SENSITIVE_LOGGING: enableVerboseAndSensitiveLogging ? 'true' : 'false',
+      },
+    });
+    lambda.lambda.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
+    lambda.lambda.addToRolePolicy(new IAM.PolicyStatement({
+      effect: IAM.Effect.ALLOW,
+      actions: [
+        's3:PutObject',
+        'sqs:SendMessage',
+        'dynamodb:Query',
+      ],
+      resources: [
+        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn),
+        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketArn) + '/*',
+        SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueArn),
+        table.tableArn,
+        table.tableArn + '/index/' + Statics.verwerkingenTableIndex_objectTypeSoortId,
+        table.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
+      ],
+    }));
+    return lambda;
+  }
+
+  /**
+   * Lambda for processing get and delete verwerkingsacties
+   * @param table
+   * @param enableVerboseAndSensitiveLogging
+   * @returns
+   */
+  private setupVerwerkingenRecLambdaFunction(table: ITable, enableVerboseAndSensitiveLogging?: boolean) {
+    const lambda = new ApiFunction(this, 'receiver', {
+      description: 'Responsible for get and delete verwerkingsacties',
+      code: Lambda.Code.fromAsset('src/RecLambdaFunction'),
+      environment: {
+        DYNAMO_TABLE_NAME: table.tableName,
+        ENABLE_VERBOSE_AND_SENSITIVE_LOGGING: enableVerboseAndSensitiveLogging ? 'true' : 'false',
+      },
+    });
+    lambda.lambda.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
+    lambda.lambda.addToRolePolicy(new IAM.PolicyStatement({
+      effect: IAM.Effect.ALLOW,
+      actions: [
+        'dynamodb:Query',
+        'dynamodb:PutItem',
+      ],
+      resources: [
+        table.tableArn,
+        table.tableArn + '/index/' + Statics.verwerkingenTableIndex_objectTypeSoortId,
+        table.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
+      ],
+    }));
+    return lambda;
+  }
+
 
   /**
    * Add a usage plan (a container for api keys/limits per user of the api)

@@ -7,7 +7,7 @@ table = dynamodb.Table(os.environ['DYNAMO_TABLE_NAME'])
 
 s3 = boto3.resource('s3')
 bucket = s3.Bucket(os.environ['S3_BACKUP_BUCKET_NAME'])
-debug = os.getenv('DEBUG', 'false') == 'true'
+debug = os.getenv('ENABLE_VERBOSE_AND_SENSITIVE_LOGGING', 'false') == 'true'
 
 def handler(event, context):
     if debug:
