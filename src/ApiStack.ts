@@ -111,7 +111,7 @@ export class ApiStack extends Stack {
    */
   private setupVerwerkingenGenLambdaFunction(table: ITable, enableVerboseAndSensitiveLogging?: boolean) {
     // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
-    const lambda = new ApiFunction(this, 'gen', {
+    const lambda = new ApiFunction(this, 'generation', {
       description: 'Receive calls and place on queue',
       code: Lambda.Code.fromAsset('src/GenLambdaFunction'),
       environment: {
@@ -148,7 +148,7 @@ export class ApiStack extends Stack {
    * @returns
    */
   private setupVerwerkingenRecLambdaFunction(table: ITable, enableVerboseAndSensitiveLogging?: boolean) {
-    const lambda = new ApiFunction(this, 'verwerkingen-rec-lambda-function', {
+    const lambda = new ApiFunction(this, 'receiver', {
       description: 'Responsible for get and delete verwerkingsacties',
       code: Lambda.Code.fromAsset('src/RecLambdaFunction'),
       environment: {
