@@ -43,6 +43,7 @@ export class DatabaseStack extends Stack {
       timeToLiveAttribute: 'ttl',
       removalPolicy: RemovalPolicy.RETAIN,
       encryption: DynamoDB.TableEncryption.AWS_MANAGED,
+      deletionProtection: true,
     });
 
     // Add DynamoDB table ARN to parameter store.
