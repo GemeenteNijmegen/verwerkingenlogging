@@ -1,13 +1,13 @@
 
 import json
-
 from Shared.version import VERWERKINGENLOGGING_API_VERSION
-def successResponse(body):
+
+def successResponse(body, code=200):
   responseBody = ''
   if body is not None:
     responseBody = json.dumps(body)
   return {
-    'statusCode': 200,
+    'statusCode': code,
     'body': json.dumps(responseBody),
     'headers': { 
       "Content-Type": "application/json",
@@ -20,6 +20,9 @@ def badRequestResponse():
 
 def internalServerErrorResponse():
   return errorResponse('Internal server error', 500)
+
+def notFoundResponse():
+  return errorResponse('Not found', 404)
 
 def errorResponse(title, status):
   problem = {
