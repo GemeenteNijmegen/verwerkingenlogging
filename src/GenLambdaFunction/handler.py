@@ -1,9 +1,13 @@
 import json
+import os
 import uuid
 import hashlib
 from datetime import datetime
 
 from boto3.dynamodb.conditions import Key, Attr
+
+apiBaseUrl = os.getenv('API_BASE_URL', 'api.vwlog-prod.csp-nijmegen.nl')
+
 
 # Parse the event object and extract relevant information.
 # After extraction, validates the object for valid parameter combinations.
@@ -190,7 +194,7 @@ def handle_request(event, bucket, queue, table):
         store_item_in_s3(actieId, event, bucket)
 
         # Create DB url using generated actieId
-        url = "https://dynamodb.eu-west-1.amazonaws.com/" + actieId
+        url = "https://" + apiBaseUrl + "/verwerkingsacties/" + actieId
 
         item = objectId_check(requestJson)
         item = verwerktObjectId_check(item, table)
