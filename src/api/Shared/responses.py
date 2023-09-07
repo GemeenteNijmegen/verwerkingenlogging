@@ -1,6 +1,6 @@
 
 import json
-from version import VERWERKINGENLOGGING_API_VERSION
+from Shared.version import VERWERKINGENLOGGING_API_VERSION
 
 def successResponse(body, code=200):
   responseBody = ''
