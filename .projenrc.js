@@ -1,4 +1,5 @@
 const { GemeenteNijmegenCdkApp } = require('@gemeentenijmegen/projen-project-type');
+const { awscdk } = require('projen');
 
 const project = new GemeenteNijmegenCdkApp({
   cdkVersion: '2.1.0',

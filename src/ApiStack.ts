@@ -80,12 +80,9 @@ export class ApiStack extends Stack {
     ddbTable.grantReadWriteData(integrationRole);
 
     // Setup lambdas
-    this.verwerkingenGenLambdaFunction = this.setupVerwerkingenGenLambdaFunction(
-      ddbTable,
-      hostedzone.zoneName,
-      props.configuration.enableVerboseAndSensitiveLogging,
-    );
-    this.verwerkingenRecLambdaFunction = this.setupVerwerkingenRecLambdaFunction(ddbTable, props.configuration.enableVerboseAndSensitiveLogging);
+    const verboseLogs = props.configuration.enableVerboseAndSensitiveLogging;
+    this.verwerkingenGenLambdaFunction = this.setupVerwerkingenGenLambdaFunction(ddbTable, hostedzone.zoneName, verboseLogs);
+    this.verwerkingenRecLambdaFunction = this.setupVerwerkingenRecLambdaFunction(ddbTable, verboseLogs);
 
     // Create Integrations
     this.verwerkingenGenLambdaIntegration = new ApiGateway.LambdaIntegration(this.verwerkingenGenLambdaFunction.lambda);
@@ -117,7 +114,8 @@ export class ApiStack extends Stack {
     // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
     const lambda = new ApiFunction(this, 'generation', {
       description: 'Receive calls and place on queue',
-      code: Lambda.Code.fromAsset('src/GenLambdaFunction'),
+      code: Lambda.Code.fromAsset('src/api'),
+      handler: 'GenLambdaFunction/index.handler',
       environment: {
         S3_BACKUP_BUCKET_NAME: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketName),
         SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
@@ -155,7 +153,8 @@ export class ApiStack extends Stack {
   private setupVerwerkingenRecLambdaFunction(table: ITable, enableVerboseAndSensitiveLogging?: boolean) {
     const lambda = new ApiFunction(this, 'receiver', {
       description: 'Responsible for get and delete verwerkingsacties',
-      code: Lambda.Code.fromAsset('src/RecLambdaFunction'),
+      code: Lambda.Code.fromAsset('src/api'),
+      handler: 'RecLambdaFunction/index.handler',
       environment: {
         DYNAMO_TABLE_NAME: table.tableName,
         ENABLE_VERBOSE_AND_SENSITIVE_LOGGING: enableVerboseAndSensitiveLogging ? 'true' : 'false',
