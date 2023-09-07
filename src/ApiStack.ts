@@ -116,7 +116,7 @@ export class ApiStack extends Stack {
     const lambda = new ApiFunction(this, 'generation', {
       description: 'Receive calls and place on queue',
       code: Lambda.Code.fromAsset('src/api/GenLambdaFunction', {
-        followSymlinks: SymlinkFollowMode.BLOCK_EXTERNAL,
+        followSymlinks: SymlinkFollowMode.ALWAYS,
       }),
       environment: {
         S3_BACKUP_BUCKET_NAME: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketName),
@@ -156,7 +156,7 @@ export class ApiStack extends Stack {
     const lambda = new ApiFunction(this, 'receiver', {
       description: 'Responsible for get and delete verwerkingsacties',
       code: Lambda.Code.fromAsset('src/api/RecLambdaFunction', {
-        followSymlinks: SymlinkFollowMode.BLOCK_EXTERNAL,
+        followSymlinks: SymlinkFollowMode.ALWAYS,
       }),
       environment: {
         DYNAMO_TABLE_NAME: table.tableName,

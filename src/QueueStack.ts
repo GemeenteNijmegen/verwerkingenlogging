@@ -86,7 +86,7 @@ export class QueueStack extends Stack {
     const lambda = new ApiFunction(this, 'processing', {
       description: 'Responsible for processing messages from the verwerkingenlog queue',
       code: Lambda.Code.fromAsset('src/api/ProcLambdaFunction', {
-        followSymlinks: SymlinkFollowMode.BLOCK_EXTERNAL,
+        followSymlinks: SymlinkFollowMode.ALWAYS,
       }),
       environment: {
         DYNAMO_TABLE_NAME: Statics.verwerkingenTableName,
