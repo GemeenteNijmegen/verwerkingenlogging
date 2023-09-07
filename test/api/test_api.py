@@ -18,6 +18,9 @@
 
 # from handler import handle_request, parse_event
 
+def test():
+  print('No tests yet')
+
 # def test_parse_event(get_event):
 #     """Test parsing and validation of events
 #     """
