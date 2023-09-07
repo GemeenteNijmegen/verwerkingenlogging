@@ -8,9 +8,9 @@ import {
   aws_iam as IAM,
   StackProps,
 } from 'aws-cdk-lib';
+import { Key } from 'aws-cdk-lib/aws-kms';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
-import { Key } from 'aws-cdk-lib/aws-kms';
 
 /**
  * Database Stack responsible for creating the DynamoDB Table and all other related services.
@@ -45,6 +45,7 @@ export class DatabaseStack extends Stack {
       removalPolicy: RemovalPolicy.RETAIN,
       encryption: DynamoDB.TableEncryption.CUSTOMER_MANAGED,
       encryptionKey: this.customKmsKey(),
+      deletionProtection: true,
     });
 
     // Add DynamoDB table ARN to parameter store.
@@ -117,7 +118,7 @@ export class DatabaseStack extends Stack {
   }
 
 
-  customKmsKey(){
+  customKmsKey() {
     const key = new Key(this, 'key', {
       alias: '/verwerkingenlogging/dynamodb/kmskey',
       description: 'Key for DynamoDB table for logging verwerkingen',
