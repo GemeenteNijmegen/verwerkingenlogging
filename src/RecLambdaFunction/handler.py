@@ -1,5 +1,3 @@
-import json
-import hashlib
 from datetime import datetime
 import os
 from Shared.helpers import hashHelper, logApiCall
