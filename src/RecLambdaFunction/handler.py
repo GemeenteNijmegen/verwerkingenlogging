@@ -2,6 +2,7 @@ import json
 import hashlib
 from datetime import datetime
 import os
+from Shared.helpers import hashHelper, logApiCall
 
 from boto3.dynamodb.conditions import Key, Attr
 
@@ -38,17 +39,25 @@ def handle_request(event, table):
     params = parse_event(event)
 
     if (params['method'] == 'GET' and params.get('resource') == '/verwerkingsacties/{actieId}'):
+        logApiCall(params['method'], params.get('resource'))
         return get_verwerkingsacties_actieid(event, table)
 
     if (params['method'] == 'GET' and params.get('resource') == '/verwerkingsacties'):
+        logApiCall(params['method'], params.get('resource'))
         return get_verwerkings_acties(event, table)
 
     if (params['method'] == 'DELETE' and params.get('resource') == '/verwerkingsacties/{actieId}'):
+        logApiCall(params['method'], params.get('resource'))
         return delete_verwerkingsacties_actieid(event, table)
+    
+    # Not a valid request
+    return {
+            'statusCode': 400,
+            'body': '400 Bad Request',
+            'headers': { "Content-Type": "text/plain" }
+    }
 
 # Get specific verwerkingsactie based on actieId
-
-
 def get_verwerkingsacties_actieid(event, table):
     response = table.query(
         KeyConditionExpression=Key('actieId').eq(
@@ -153,11 +162,3 @@ def delete_verwerkingsacties_actieid(event, table):
         )
 
     return {'statusCode': 200}
-
-def hashHelper(input):
-    # salt = secrets.token_hex(8)
-    h = hashlib.new('sha3_256')
-    h.update(bytes(input, encoding='UTF-8'))
-    # h.update(bytes(salt))
-    hash = h.hexdigest()
-    return hash

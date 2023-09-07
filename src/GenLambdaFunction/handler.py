@@ -1,8 +1,8 @@
 import json
 import os
 import uuid
-import hashlib
 from datetime import datetime
+from Shared.helpers import hashHelper, logApiCall
 
 from boto3.dynamodb.conditions import Key, Attr
 
@@ -186,6 +186,7 @@ def handle_request(event, bucket, queue, table):
     tijdstipRegistratie = datetime.now().isoformat(timespec='seconds')
 
     if(params.get('method') == 'POST' and params.get('resource') == '/verwerkingsacties'):
+        logApiCall('POST', '/verwerkingsacties')
 
         # Generate UUID for actieId
         actieId = str(uuid.uuid1()) # V1 Timestamp
@@ -214,6 +215,7 @@ def handle_request(event, bucket, queue, table):
         return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
 
     if(params.get('method') == 'PATCH' and params.get('resource') =='/verwerkingsacties'):
+        logApiCall('PATCH', '/verwerkingsacties')
         # Backup using verwerkingId (instead of actieId)??
 
         msg = generate_patch_message(event)
@@ -224,6 +226,7 @@ def handle_request(event, bucket, queue, table):
         return { 'statusCode': 200 }
 
     if(params.get('method') == 'PUT' and params.get('resource') == '/verwerkingsacties/{actieId}'):
+        logApiCall('POST', '/verwerkingsacties/\{actieId\}')
 
         item = objectId_check(requestJson)
         verwerkteObjecten = item.get('verwerkteObjecten')
@@ -247,10 +250,3 @@ def handle_request(event, bucket, queue, table):
             'headers': { "Content-Type": "text/plain" }
     }
 
-def hashHelper(input):
-    # salt = secrets.token_hex(8)
-    h = hashlib.new('sha3_256')
-    h.update(bytes(input, encoding='UTF-8'))
-    # h.update(bytes(salt))
-    hash = h.hexdigest()
-    return hash
