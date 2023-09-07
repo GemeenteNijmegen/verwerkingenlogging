@@ -1,7 +1,6 @@
 import {
   RemovalPolicy,
   Stack,
-  Duration,
   aws_dynamodb as DynamoDB,
   aws_ssm as SSM,
   aws_s3 as S3,
@@ -71,12 +70,13 @@ export class DatabaseStack extends Stack {
       enforceSSL: true,
       eventBridgeEnabled: true,
       encryption: S3.BucketEncryption.S3_MANAGED,
-      lifecycleRules: [
-        {
-          enabled: true,
-          expiration: Duration.days(90),
-        },
-      ],
+      // Disabled as we want to be resiliant may something change even after 2 years
+      // lifecycleRules: [
+      //   {
+      //     enabled: true,
+      //     expiration: Duration.days(90),
+      //   },
+      // ],
     });
 
     // Add S3 Backup Bucket ARN to parameter store.

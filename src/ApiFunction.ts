@@ -26,6 +26,13 @@ export interface ApiFunctionProps {
    * @default - Any log line that contains ERROR
    */
   monitorFilterPattern?: IFilterPattern;
+
+  /**
+   * File and function that are the entrypoint of the lambda
+   *
+   * @default index.handler
+   */
+  handler?: string;
 }
 
 export class ApiFunction extends Construct {
@@ -36,7 +43,7 @@ export class ApiFunction extends Construct {
     // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsx86-64.html
     const insightsArn = `arn:aws:lambda:${Stack.of(this).region}:580247275435:layer:LambdaInsightsExtension:21`;
     this.lambda = new Lambda.Function(this, 'lambda', {
-      handler: 'index.handler',
+      handler: props.handler ??'index.handler',
       runtime: Lambda.Runtime.PYTHON_3_9,
       memorySize: 512,
       description: props.description,
