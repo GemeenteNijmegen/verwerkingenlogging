@@ -1,6 +1,4 @@
 import json
-import uuid
-from datetime import datetime
 
 from boto3.dynamodb.conditions import Key
 
@@ -99,3 +97,5 @@ def patch_verwerkings_acties(body, table):
             'body': json.dumps(response),
             'headers': { "Content-Type": "application/json" },
         }
+    
+
