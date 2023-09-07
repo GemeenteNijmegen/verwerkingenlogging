@@ -1,4 +1,4 @@
-import { Duration, Stack, StackProps } from 'aws-cdk-lib';
+import { Duration, Stack, StackProps, SymlinkFollowMode } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as IAM from 'aws-cdk-lib/aws-iam';
 import * as Lambda from 'aws-cdk-lib/aws-lambda';
@@ -85,8 +85,9 @@ export class QueueStack extends Stack {
     // Processing Lambda
     const lambda = new ApiFunction(this, 'processing', {
       description: 'Responsible for processing messages from the verwerkingenlog queue',
-      code: Lambda.Code.fromAsset('src/api'),
-      handler: 'ProcLambdaFunction/index.handler',
+      code: Lambda.Code.fromAsset('src/api/ProcLambdaFunction', {
+        followSymlinks: SymlinkFollowMode.BLOCK_EXTERNAL,
+      }),
       environment: {
         DYNAMO_TABLE_NAME: Statics.verwerkingenTableName,
         SQS_URL: queueUrl, //this.verwerkingenMessageQueue.queueUrl,

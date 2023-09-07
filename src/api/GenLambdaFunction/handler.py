@@ -3,7 +3,8 @@ import os
 import uuid
 from datetime import datetime
 from Shared.helpers import hashHelper, logApiCall
-from Shared.responses import badRequestResponse, successResponse
+from Shared.responses import badRequestResponse
+
 
 from boto3.dynamodb.conditions import Key, Attr
 
