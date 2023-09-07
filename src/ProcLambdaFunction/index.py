@@ -1,4 +1,6 @@
+import logging
 import os
+from Shared.responses import internalServerErrorResponse
 import boto3
 from handler import process_message
 
@@ -9,4 +11,8 @@ debug = os.getenv('ENABLE_VERBOSE_AND_SENSITIVE_LOGGING', 'false') == 'true'
 def handler(event, context):
     if debug:
         print(event)
-    return process_message(event, table)
+    try:
+        return process_message(event, table)
+    except Exception as e:
+        logging.error(e)
+        return internalServerErrorResponse()

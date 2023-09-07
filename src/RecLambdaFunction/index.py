@@ -1,4 +1,5 @@
 import os
+from Shared.responses import internalServerErrorResponse
 import boto3
 from handler import handle_request
 import logging
@@ -14,3 +15,4 @@ def handler(event, context):
         return handle_request(event, table)
     except Exception as e:
         logging.error(e)
+        return internalServerErrorResponse()
