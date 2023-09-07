@@ -80,7 +80,11 @@ export class ApiStack extends Stack {
     ddbTable.grantReadWriteData(integrationRole);
 
     // Setup lambdas
-    this.verwerkingenGenLambdaFunction = this.setupVerwerkingenGenLambdaFunction(ddbTable, props.configuration.enableVerboseAndSensitiveLogging);
+    this.verwerkingenGenLambdaFunction = this.setupVerwerkingenGenLambdaFunction(
+      ddbTable,
+      hostedzone.zoneName,
+      props.configuration.enableVerboseAndSensitiveLogging,
+    );
     this.verwerkingenRecLambdaFunction = this.setupVerwerkingenRecLambdaFunction(ddbTable, props.configuration.enableVerboseAndSensitiveLogging);
 
     // Create Integrations
@@ -109,7 +113,7 @@ export class ApiStack extends Stack {
    * @param table
    * @param enableVerboseAndSensitiveLogging
    */
-  private setupVerwerkingenGenLambdaFunction(table: ITable, enableVerboseAndSensitiveLogging?: boolean) {
+  private setupVerwerkingenGenLambdaFunction(table: ITable, apiBaseUrl: string, enableVerboseAndSensitiveLogging?: boolean) {
     // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
     const lambda = new ApiFunction(this, 'generation', {
       description: 'Receive calls and place on queue',
@@ -119,6 +123,7 @@ export class ApiStack extends Stack {
         SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
         DYNAMO_TABLE_NAME: table.tableName,
         ENABLE_VERBOSE_AND_SENSITIVE_LOGGING: enableVerboseAndSensitiveLogging ? 'true' : 'false',
+        API_BASE_URL: apiBaseUrl,
       },
     });
     lambda.lambda.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
