@@ -13,18 +13,26 @@ const project = new GemeenteNijmegenCdkApp({
     'dotenv',
     'axios',
     '@gemeentenijmegen/projen-project-type',
+    'copyfiles',
   ],
   gitignore: [
     'test/__snapshots__/*',
     '.env',
     '.vscode',
     '.DS_Store',
+    'src/api/GenLambdaFunction/Shared',
+    'src/api/RecLambdaFunction/Shared',
   ],
   jestOptions: {
     jestConfig: {
       testPathIgnorePatterns: ['/node_modules/', '/cdk.out', '/test/validation'],
     },
   },
+});
+
+project.addScripts({
+  prebuild: 'copyfiles -f src/api/shared/* src/api/GenLambdaFunction/Shared && copyfiles -f src/api/shared/* src/api/RecLambdaFunction/Shared',
+  postbuild: 'rm -rf src/api/GenLambdaFunction/Shared && rm -rf src/api/RecLambdaFunction/Shared',
 });
 
 project.buildWorkflow.addPostBuildSteps(

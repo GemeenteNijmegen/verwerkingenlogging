@@ -33,6 +33,10 @@
       "type": "build"
     },
     {
+      "name": "copyfiles",
+      "type": "build"
+    },
+    {
       "name": "dotenv",
       "type": "build"
     },

@@ -6,7 +6,6 @@ import { ApiStage } from './ApiStage';
 import { Configurable } from './Configuration';
 import { ParameterStage } from './ParameterStage';
 import { Statics } from './statics';
-import { BuildSpec } from 'aws-cdk-lib/aws-codebuild';
 
 export interface PipelineStackProps extends StackProps, Configurable{}
 
@@ -38,13 +37,6 @@ export class PipelineStack extends Stack {
     const pipeline = new pipelines.CodePipeline(this, `verwerkingenlogging-${this.branchName}`, {
       pipelineName: `verwerkingenlogging-${this.branchName}`,
       crossAccountKeys: true,
-      synthCodeBuildDefaults: {
-        partialBuildSpec: BuildSpec.fromObject({
-          artifacts: {
-            'enable-symlinks': 'yes',
-          }
-        })
-      },
       synth: new pipelines.ShellStep('Synth', {
         input: source,
         env: {

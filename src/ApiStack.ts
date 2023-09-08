@@ -1,13 +1,12 @@
 import {
-  Stack,
   aws_apigateway as ApiGateway,
-  aws_lambda as Lambda,
   aws_iam as IAM,
+  aws_lambda as Lambda,
   aws_ssm as SSM,
+  Stack,
+  StackProps,
   aws_route53 as route53,
   aws_route53_targets as targets,
-  StackProps,
-  SymlinkFollowMode,
 } from 'aws-cdk-lib';
 import { ApiKeySourceType } from 'aws-cdk-lib/aws-apigateway';
 import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
@@ -115,9 +114,7 @@ export class ApiStack extends Stack {
     // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
     const lambda = new ApiFunction(this, 'generation', {
       description: 'Receive calls and place on queue',
-      code: Lambda.Code.fromAsset('src/api/GenLambdaFunction', {
-        followSymlinks: SymlinkFollowMode.ALWAYS,
-      }),
+      code: Lambda.Code.fromAsset('src/api/GenLambdaFunction'),
       environment: {
         S3_BACKUP_BUCKET_NAME: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketName),
         SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
@@ -155,9 +152,7 @@ export class ApiStack extends Stack {
   private setupVerwerkingenRecLambdaFunction(table: ITable, enableVerboseAndSensitiveLogging?: boolean) {
     const lambda = new ApiFunction(this, 'receiver', {
       description: 'Responsible for get and delete verwerkingsacties',
-      code: Lambda.Code.fromAsset('src/api/RecLambdaFunction', {
-        followSymlinks: SymlinkFollowMode.ALWAYS,
-      }),
+      code: Lambda.Code.fromAsset('src/api/RecLambdaFunction'),
       environment: {
         DYNAMO_TABLE_NAME: table.tableName,
         ENABLE_VERBOSE_AND_SENSITIVE_LOGGING: enableVerboseAndSensitiveLogging ? 'true' : 'false',

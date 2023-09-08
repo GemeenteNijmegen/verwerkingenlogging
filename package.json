@@ -25,7 +25,9 @@
     "unbump": "npx projen unbump",
     "upgrade": "npx projen upgrade",
     "watch": "npx projen watch",
-    "projen": "npx projen"
+    "projen": "npx projen",
+    "prebuild": "copyfiles -f src/api/shared/* src/api/GenLambdaFunction/Shared && copyfiles -f src/api/shared/* src/api/RecLambdaFunction/Shared",
+    "postbuild": "rm -rf src/api/GenLambdaFunction/Shared && rm -rf src/api/RecLambdaFunction/Shared"
   },
   "devDependencies": {
     "@gemeentenijmegen/projen-project-type": "^1.5.4",
@@ -35,6 +37,7 @@
     "@typescript-eslint/parser": "^6",
     "aws-cdk": "^2.1.0",
     "axios": "^0.27.2",
+    "copyfiles": "^2.4.1",
     "dotenv": "^16.3.1",
     "esbuild": "^0.19.2",
     "eslint": "^8",
