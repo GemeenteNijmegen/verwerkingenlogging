@@ -25,13 +25,6 @@ export interface ApiFunctionProps {
   monitorFilterPattern?: IFilterPattern;
 
   /**
-   * File and function that are the entrypoint of the lambda
-   *
-   * @default index.handler
-   */
-  handler?: string;
-
-  /**
    * Reference to the lambda source dir
    */
   entry: string;
@@ -57,7 +50,8 @@ export class ApiFunction extends Construct {
     }
 
     this.lambda = new PythonFunction(this, 'lambda', {
-      handler: props.handler ??'index.handler',
+      handler: 'handler',
+      index: 'index.py',
       runtime: Lambda.Runtime.PYTHON_3_9,
       memorySize: 512,
       description: props.description,
