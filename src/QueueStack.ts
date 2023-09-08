@@ -1,7 +1,6 @@
 import { Duration, Stack, StackProps } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
 import * as IAM from 'aws-cdk-lib/aws-iam';
-import * as Lambda from 'aws-cdk-lib/aws-lambda';
 import * as LambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as Sqs from 'aws-cdk-lib/aws-sqs';
 import * as SSM from 'aws-cdk-lib/aws-ssm';
@@ -85,7 +84,8 @@ export class QueueStack extends Stack {
     // Processing Lambda
     const lambda = new ApiFunction(this, 'processing', {
       description: 'Responsible for processing messages from the verwerkingenlog queue',
-      code: Lambda.Code.fromAsset('src/api/ProcLambdaFunction'),
+      entry: 'src/api/ProcLambdaFunction',
+      pythonLayerArn: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_pythonLambdaLayerArn),
       environment: {
         DYNAMO_TABLE_NAME: Statics.verwerkingenTableName,
         SQS_URL: queueUrl, //this.verwerkingenMessageQueue.queueUrl,

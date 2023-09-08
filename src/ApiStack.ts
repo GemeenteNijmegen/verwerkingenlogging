@@ -1,7 +1,6 @@
 import {
   aws_apigateway as ApiGateway,
   aws_iam as IAM,
-  aws_lambda as Lambda,
   aws_ssm as SSM,
   Stack,
   StackProps,
@@ -112,9 +111,11 @@ export class ApiStack extends Stack {
    */
   private setupVerwerkingenGenLambdaFunction(table: ITable, apiBaseUrl: string, enableVerboseAndSensitiveLogging?: boolean) {
     // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
+
     const lambda = new ApiFunction(this, 'generation', {
       description: 'Receive calls and place on queue',
-      code: Lambda.Code.fromAsset('src/api/GenLambdaFunction'),
+      entry: 'src/api/GenLambdaFunction',
+      pythonLayerArn: StringParameter.valueForStringParameter(this, Statics.ssmName_pythonLambdaLayerArn),
       environment: {
         S3_BACKUP_BUCKET_NAME: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketName),
         SQS_URL: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenSQSqueueUrl),
@@ -152,7 +153,8 @@ export class ApiStack extends Stack {
   private setupVerwerkingenRecLambdaFunction(table: ITable, enableVerboseAndSensitiveLogging?: boolean) {
     const lambda = new ApiFunction(this, 'receiver', {
       description: 'Responsible for get and delete verwerkingsacties',
-      code: Lambda.Code.fromAsset('src/api/RecLambdaFunction'),
+      entry: 'src/api/RecLambdaFunction',
+      pythonLayerArn: StringParameter.valueForStringParameter(this, Statics.ssmName_pythonLambdaLayerArn),
       environment: {
         DYNAMO_TABLE_NAME: table.tableName,
         ENABLE_VERBOSE_AND_SENSITIVE_LOGGING: enableVerboseAndSensitiveLogging ? 'true' : 'false',

@@ -33,10 +33,6 @@
       "type": "build"
     },
     {
-      "name": "copyfiles",
-      "type": "build"
-    },
-    {
       "name": "dotenv",
       "type": "build"
     },
@@ -95,6 +91,10 @@
     {
       "name": "typescript",
       "type": "build"
+    },
+    {
+      "name": "@aws-cdk/aws-lambda-python-alpha",
+      "type": "runtime"
     },
     {
       "name": "@gemeentenijmegen/aws-constructs",

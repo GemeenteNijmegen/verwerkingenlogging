@@ -1,3 +1,4 @@
+import { PythonFunction, PythonLayerVersion } from '@aws-cdk/aws-lambda-python-alpha';
 import { aws_lambda as Lambda, RemovalPolicy, Duration, Stack } from 'aws-cdk-lib';
 import { Alarm } from 'aws-cdk-lib/aws-cloudwatch';
 import { FilterPattern, IFilterPattern, MetricFilter, RetentionDays } from 'aws-cdk-lib/aws-logs';
@@ -5,10 +6,6 @@ import { Construct } from 'constructs';
 import { Statics } from './statics';
 
 export interface ApiFunctionProps {
-  /**
-   * The constructor of the lambda function to create
-   */
-  code: Lambda.AssetCode;
 
   /**
    * Description of the lambda function
@@ -33,6 +30,16 @@ export interface ApiFunctionProps {
    * @default index.handler
    */
   handler?: string;
+
+  /**
+   * Reference to the lambda source dir
+   */
+  entry: string;
+
+  /**
+   * Python layer arn
+   */
+  pythonLayerArn?: string;
 }
 
 export class ApiFunction extends Construct {
@@ -40,16 +47,24 @@ export class ApiFunction extends Construct {
 
   constructor(scope: Construct, id: string, props: ApiFunctionProps) {
     super(scope, id);
+
     // See https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/Lambda-Insights-extension-versionsx86-64.html
     const insightsArn = `arn:aws:lambda:${Stack.of(this).region}:580247275435:layer:LambdaInsightsExtension:21`;
-    this.lambda = new Lambda.Function(this, 'lambda', {
+
+    const layers = [];
+    if (props.pythonLayerArn) {
+      layers.push(PythonLayerVersion.fromLayerVersionArn(this, 'lambda-layer', props.pythonLayerArn));
+    }
+
+    this.lambda = new PythonFunction(this, 'lambda', {
       handler: props.handler ??'index.handler',
       runtime: Lambda.Runtime.PYTHON_3_9,
       memorySize: 512,
       description: props.description,
-      code: props.code,
+      entry: props.entry,
       insightsVersion: Lambda.LambdaInsightsVersion.fromInsightVersionArn(insightsArn),
       logRetention: RetentionDays.ONE_MONTH,
+      layers: layers,
       environment: {
         ...props.environment,
       },

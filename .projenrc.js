@@ -8,12 +8,12 @@ const project = new GemeenteNijmegenCdkApp({
   deps: [
     'cdk-nag@^2.0.0',
     '@gemeentenijmegen/aws-constructs',
+    '@aws-cdk/aws-lambda-python-alpha',
   ],
   devDeps: [
     'dotenv',
     'axios',
     '@gemeentenijmegen/projen-project-type',
-    'copyfiles',
   ],
   gitignore: [
     'test/__snapshots__/*',
@@ -28,11 +28,6 @@ const project = new GemeenteNijmegenCdkApp({
       testPathIgnorePatterns: ['/node_modules/', '/cdk.out', '/test/validation'],
     },
   },
-});
-
-project.addScripts({
-  prebuild: 'copyfiles -f src/api/shared/* src/api/GenLambdaFunction/Shared && copyfiles -f src/api/shared/* src/api/RecLambdaFunction/Shared',
-  postbuild: 'rm -rf src/api/GenLambdaFunction/Shared && rm -rf src/api/RecLambdaFunction/Shared',
 });
 
 project.buildWorkflow.addPostBuildSteps(
