@@ -8,6 +8,7 @@ const project = new GemeenteNijmegenCdkApp({
   deps: [
     'cdk-nag@^2.0.0',
     '@gemeentenijmegen/aws-constructs',
+    '@aws-cdk/aws-lambda-python-alpha',
   ],
   devDeps: [
     'dotenv',
@@ -19,6 +20,8 @@ const project = new GemeenteNijmegenCdkApp({
     '.env',
     '.vscode',
     '.DS_Store',
+    'src/api/GenLambdaFunction/Shared',
+    'src/api/RecLambdaFunction/Shared',
   ],
   jestOptions: {
     jestConfig: {

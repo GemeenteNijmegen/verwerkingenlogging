@@ -1,7 +1,6 @@
 import {
   RemovalPolicy,
   Stack,
-  Duration,
   aws_dynamodb as DynamoDB,
   aws_ssm as SSM,
   aws_s3 as S3,
@@ -9,6 +8,7 @@ import {
   StackProps,
 } from 'aws-cdk-lib';
 import { Key } from 'aws-cdk-lib/aws-kms';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
 
@@ -71,12 +71,13 @@ export class DatabaseStack extends Stack {
       enforceSSL: true,
       eventBridgeEnabled: true,
       encryption: S3.BucketEncryption.S3_MANAGED,
-      lifecycleRules: [
-        {
-          enabled: true,
-          expiration: Duration.days(90),
-        },
-      ],
+      // Disabled as we want to be resiliant may something change even after 2 years
+      // lifecycleRules: [
+      //   {
+      //     enabled: true,
+      //     expiration: Duration.days(90),
+      //   },
+      // ],
     });
 
     // Add S3 Backup Bucket ARN to parameter store.
@@ -124,6 +125,12 @@ export class DatabaseStack extends Stack {
       description: 'Key for DynamoDB table for logging verwerkingen',
       enableKeyRotation: true,
     });
+
+    new StringParameter(this, 'key-ssm', {
+      stringValue: key.keyArn,
+      parameterName: Statics.ssmName_dynamodbKmsKeyArn,
+    });
+
     return key;
   }
 
