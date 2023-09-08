@@ -36,7 +36,6 @@ export class PipelineStack extends Stack {
 
     const pipeline = new pipelines.CodePipeline(this, `verwerkingenlogging-${this.branchName}`, {
       pipelineName: `verwerkingenlogging-${this.branchName}`,
-      dockerEnabledForSynth: true,
       crossAccountKeys: true,
       synth: new pipelines.ShellStep('Synth', {
         input: source,
