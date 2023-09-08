@@ -1,4 +1,4 @@
-import { PythonFunction, PythonLayerVersion } from '@aws-cdk/aws-lambda-python-alpha';
+import { PythonLayerVersion } from '@aws-cdk/aws-lambda-python-alpha';
 import { aws_lambda as Lambda, RemovalPolicy, Duration, Stack } from 'aws-cdk-lib';
 import { Alarm } from 'aws-cdk-lib/aws-cloudwatch';
 import { FilterPattern, IFilterPattern, MetricFilter, RetentionDays } from 'aws-cdk-lib/aws-logs';
@@ -27,7 +27,7 @@ export interface ApiFunctionProps {
   /**
    * Reference to the lambda source dir
    */
-  entry: string;
+  code: string;
 
   /**
    * Python layer arn
@@ -49,13 +49,12 @@ export class ApiFunction extends Construct {
       layers.push(PythonLayerVersion.fromLayerVersionArn(this, 'lambda-layer', props.pythonLayerArn));
     }
 
-    this.lambda = new PythonFunction(this, 'lambda', {
-      handler: 'handler',
-      index: 'index.py',
+    this.lambda = new Lambda.Function(this, 'lambda', {
+      handler: 'index.handler',
+      code: Lambda.Code.fromAsset(props.code),
       runtime: Lambda.Runtime.PYTHON_3_9,
       memorySize: 512,
       description: props.description,
-      entry: props.entry,
       insightsVersion: Lambda.LambdaInsightsVersion.fromInsightVersionArn(insightsArn),
       logRetention: RetentionDays.ONE_MONTH,
       layers: layers,

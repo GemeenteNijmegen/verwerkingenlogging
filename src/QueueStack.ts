@@ -88,7 +88,7 @@ export class QueueStack extends Stack {
 
     const lambda = new ApiFunction(this, 'processing', {
       description: 'Responsible for processing messages from the verwerkingenlog queue',
-      entry: 'src/api/ProcLambdaFunction',
+      code: 'src/api/ProcLambdaFunction',
       pythonLayerArn: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_pythonLambdaLayerArn),
       environment: {
         DYNAMO_TABLE_NAME: Statics.verwerkingenTableName,

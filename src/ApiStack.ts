@@ -117,7 +117,7 @@ export class ApiStack extends Stack {
 
     const lambda = new ApiFunction(this, 'generation', {
       description: 'Receive calls and place on queue',
-      entry: 'src/api/GenLambdaFunction',
+      code: 'src/api/GenLambdaFunction',
       pythonLayerArn: StringParameter.valueForStringParameter(this, Statics.ssmName_pythonLambdaLayerArn),
       environment: {
         S3_BACKUP_BUCKET_NAME: SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenS3BackupBucketName),
@@ -157,7 +157,7 @@ export class ApiStack extends Stack {
   private setupVerwerkingenRecLambdaFunction(table: ITable, key: IKey, enableVerboseAndSensitiveLogging?: boolean) {
     const lambda = new ApiFunction(this, 'receiver', {
       description: 'Responsible for get and delete verwerkingsacties',
-      entry: 'src/api/RecLambdaFunction',
+      code: 'src/api/RecLambdaFunction',
       pythonLayerArn: StringParameter.valueForStringParameter(this, Statics.ssmName_pythonLambdaLayerArn),
       environment: {
         DYNAMO_TABLE_NAME: table.tableName,
