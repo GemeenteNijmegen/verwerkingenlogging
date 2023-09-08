@@ -5,7 +5,7 @@ import { ApiStack } from './ApiStack';
 import { Configurable } from './Configuration';
 import { DatabaseStack } from './DatabaseStack';
 import { DnsStack } from './DnsStack';
-import { LambdaLayerStack } from './LambdaLayerStack';
+// import { LambdaLayerStack } from './LambdaLayerStack';
 import { QueueStack } from './QueueStack';
 
 export interface ApiStageProps extends StageProps, Configurable {
@@ -21,9 +21,9 @@ export class ApiStage extends Stage {
     Aspects.of(this).add(new PermissionsBoundaryAspect());
 
 
-    const lambdaLayerStack = new LambdaLayerStack(this, 'lambda-layer', {
-      env: props.configuration.targetEnvironment,
-    });
+    // const lambdaLayerStack = new LambdaLayerStack(this, 'lambda-layer', {
+    //   env: props.configuration.targetEnvironment,
+    // });
     const dnsStack = new DnsStack(this, 'dns-stac', {
       env: props.configuration.targetEnvironment,
     });
@@ -43,8 +43,8 @@ export class ApiStage extends Stage {
     apiStack.addDependency(databaseStack);
     apiStack.addDependency(queueStack);
 
-    apiStack.addDependency(lambdaLayerStack);
-    queueStack.addDependency(lambdaLayerStack);
+    // apiStack.addDependency(lambdaLayerStack);
+    // queueStack.addDependency(lambdaLayerStack);
 
   }
 
