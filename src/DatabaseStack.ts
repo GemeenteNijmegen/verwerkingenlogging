@@ -8,6 +8,7 @@ import {
   StackProps,
 } from 'aws-cdk-lib';
 import { Key } from 'aws-cdk-lib/aws-kms';
+import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
 import { Statics } from './statics';
 
@@ -124,6 +125,12 @@ export class DatabaseStack extends Stack {
       description: 'Key for DynamoDB table for logging verwerkingen',
       enableKeyRotation: true,
     });
+
+    new StringParameter(this, 'key-ssm', {
+      stringValue: key.keyArn,
+      parameterName: Statics.ssmName_dynamodbKmsKeyArn,
+    });
+
     return key;
   }
 

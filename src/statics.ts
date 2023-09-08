@@ -88,6 +88,12 @@ export abstract class Statics {
   static readonly ssmName_pythonLambdaLayerArn: string = '/cdk/verwerkingenlogging/python-lambda-layer-arn';
 
 
+  /**
+   * ARN of the dynamodb key
+   */
+  static readonly ssmName_dynamodbKmsKeyArn = '/cdk/verwerkingenlogging/dynamodb-key-arn';
+
+
   // DNS Hosted zone ssm
   static readonly accountRootHostedZoneId: string = '/gemeente-nijmegen/account/hostedzone/id';
   static readonly accountRootHostedZoneName: string = '/gemeente-nijmegen/account/hostedzone/name';

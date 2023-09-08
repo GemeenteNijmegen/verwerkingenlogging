@@ -11,6 +11,7 @@ import { ApiKeySourceType } from 'aws-cdk-lib/aws-apigateway';
 import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
 import { ITable, Table } from 'aws-cdk-lib/aws-dynamodb';
 import { Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { IKey, Key } from 'aws-cdk-lib/aws-kms';
 import { ARecord, AaaaRecord, HostedZone, IHostedZone } from 'aws-cdk-lib/aws-route53';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 import { Construct } from 'constructs';
@@ -80,8 +81,10 @@ export class ApiStack extends Stack {
 
     // Setup lambdas
     const verboseLogs = props.configuration.enableVerboseAndSensitiveLogging;
-    this.verwerkingenGenLambdaFunction = this.setupVerwerkingenGenLambdaFunction(ddbTable, hostedzone.zoneName, verboseLogs);
-    this.verwerkingenRecLambdaFunction = this.setupVerwerkingenRecLambdaFunction(ddbTable, verboseLogs);
+    const keyArn = SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_dynamodbKmsKeyArn);
+    const key = Key.fromKeyArn(this, 'key', keyArn);
+    this.verwerkingenGenLambdaFunction = this.setupVerwerkingenGenLambdaFunction(ddbTable, key, hostedzone.zoneName, verboseLogs);
+    this.verwerkingenRecLambdaFunction = this.setupVerwerkingenRecLambdaFunction(ddbTable, key, verboseLogs);
 
     // Create Integrations
     this.verwerkingenGenLambdaIntegration = new ApiGateway.LambdaIntegration(this.verwerkingenGenLambdaFunction.lambda);
@@ -109,7 +112,7 @@ export class ApiStack extends Stack {
    * @param table
    * @param enableVerboseAndSensitiveLogging
    */
-  private setupVerwerkingenGenLambdaFunction(table: ITable, apiBaseUrl: string, enableVerboseAndSensitiveLogging?: boolean) {
+  private setupVerwerkingenGenLambdaFunction(table: ITable, key: IKey, apiBaseUrl: string, enableVerboseAndSensitiveLogging?: boolean) {
     // Create Lambda & Grant API Gateway permission to invoke the Lambda function.
 
     const lambda = new ApiFunction(this, 'generation', {
@@ -124,6 +127,7 @@ export class ApiStack extends Stack {
         API_BASE_URL: apiBaseUrl,
       },
     });
+    key.grantEncryptDecrypt(lambda.lambda);
     lambda.lambda.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
     lambda.lambda.addToRolePolicy(new IAM.PolicyStatement({
       effect: IAM.Effect.ALLOW,
@@ -150,7 +154,7 @@ export class ApiStack extends Stack {
    * @param enableVerboseAndSensitiveLogging
    * @returns
    */
-  private setupVerwerkingenRecLambdaFunction(table: ITable, enableVerboseAndSensitiveLogging?: boolean) {
+  private setupVerwerkingenRecLambdaFunction(table: ITable, key: IKey, enableVerboseAndSensitiveLogging?: boolean) {
     const lambda = new ApiFunction(this, 'receiver', {
       description: 'Responsible for get and delete verwerkingsacties',
       entry: 'src/api/RecLambdaFunction',
@@ -160,6 +164,7 @@ export class ApiStack extends Stack {
         ENABLE_VERBOSE_AND_SENSITIVE_LOGGING: enableVerboseAndSensitiveLogging ? 'true' : 'false',
       },
     });
+    key.grantEncryptDecrypt(lambda.lambda);
     lambda.lambda.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
     lambda.lambda.addToRolePolicy(new IAM.PolicyStatement({
       effect: IAM.Effect.ALLOW,
