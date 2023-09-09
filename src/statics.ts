@@ -105,7 +105,7 @@ export abstract class Statics {
   /**
    * ARN of the log group for the Rec lambda
    */
-  static readonly ssmName_recLambdaLogGroupArn = '/cdk/verwerkingenlogging/gen-lambda-loggroup-arn';
+  static readonly ssmName_recLambdaLogGroupArn = '/cdk/verwerkingenlogging/rec-lambda-loggroup-arn';
 
   // DNS Hosted zone ssm
   static readonly accountRootHostedZoneId: string = '/gemeente-nijmegen/account/hostedzone/id';
