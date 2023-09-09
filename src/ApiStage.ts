@@ -3,11 +3,11 @@ import { Aspects, Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ApiStack } from './ApiStack';
 import { Configurable } from './Configuration';
+import { DashboardStack } from './DashboardStack';
 import { DatabaseStack } from './DatabaseStack';
 import { DnsStack } from './DnsStack';
 import { LambdaLayerStack } from './LambdaLayerStack';
 import { QueueStack } from './QueueStack';
-import { DashboardStack } from './DashboardStack';
 
 export interface ApiStageProps extends StageProps, Configurable {
 
