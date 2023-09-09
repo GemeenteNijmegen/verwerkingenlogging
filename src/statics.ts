@@ -83,6 +83,11 @@ export abstract class Statics {
   static readonly ssmName_verwerkingenSQSqueueArn: string = '/cdk/verwerkingenlogging/verwerkingen-sqs-queue-arn';
 
   /**
+   * SQS DLQ Arn
+   */
+  static readonly ssmName_verwerkingenSQSdlqArn: string = '/cdk/verwerkingenlogging/verwerkingen-sqs-dlq-arn';
+
+  /**
    * Arn for the pyton lambda layer
    */
   static readonly ssmName_pythonLambdaLayerArn: string = '/cdk/verwerkingenlogging/python-lambda-layer-arn';

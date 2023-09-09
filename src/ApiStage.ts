@@ -7,6 +7,7 @@ import { DatabaseStack } from './DatabaseStack';
 import { DnsStack } from './DnsStack';
 import { LambdaLayerStack } from './LambdaLayerStack';
 import { QueueStack } from './QueueStack';
+import { DashboardStack } from './DashboardStack';
 
 export interface ApiStageProps extends StageProps, Configurable {
 
@@ -39,12 +40,20 @@ export class ApiStage extends Stage {
       configuration: props.configuration,
     });
 
+    const dashboardStack = new DashboardStack(this, 'dashboard-stack', {
+      env: props.configuration.targetEnvironment,
+    });
+
     apiStack.addDependency(dnsStack);
     apiStack.addDependency(databaseStack);
     apiStack.addDependency(queueStack);
 
     apiStack.addDependency(lambdaLayerStack);
     queueStack.addDependency(lambdaLayerStack);
+
+    dashboardStack.addDependency(apiStack, 'Relies on the log groups of the lambdas in this stack');
+    dashboardStack.addDependency(dashboardStack, 'Relies on the queues in this stack');
+    dashboardStack.addDependency(databaseStack, 'Relies on the metrics of resources in this stack');
 
   }
 
