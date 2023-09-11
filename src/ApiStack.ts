@@ -145,6 +145,10 @@ export class ApiStack extends Stack {
         table.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
       ],
     }));
+    new StringParameter(this, 'gen-log-group-arn-ssm', {
+      stringValue: lambda.lambda.logGroup.logGroupArn,
+      parameterName: Statics.ssmName_genLambdaLogGroupArn,
+    });
     return lambda;
   }
 
@@ -178,6 +182,10 @@ export class ApiStack extends Stack {
         table.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId,
       ],
     }));
+    new StringParameter(this, 'rec-log-group-arn-ssm', {
+      stringValue: lambda.lambda.logGroup.logGroupArn,
+      parameterName: Statics.ssmName_recLambdaLogGroupArn,
+    });
     return lambda;
   }
 

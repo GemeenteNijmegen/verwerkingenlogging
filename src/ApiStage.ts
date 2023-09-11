@@ -3,6 +3,7 @@ import { Aspects, Stage, StageProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { ApiStack } from './ApiStack';
 import { Configurable } from './Configuration';
+import { DashboardStack } from './DashboardStack';
 import { DatabaseStack } from './DatabaseStack';
 import { DnsStack } from './DnsStack';
 import { LambdaLayerStack } from './LambdaLayerStack';
@@ -39,12 +40,20 @@ export class ApiStage extends Stage {
       configuration: props.configuration,
     });
 
+    const dashboardStack = new DashboardStack(this, 'dashboard-stack', {
+      env: props.configuration.targetEnvironment,
+    });
+
     apiStack.addDependency(dnsStack);
     apiStack.addDependency(databaseStack);
     apiStack.addDependency(queueStack);
 
     apiStack.addDependency(lambdaLayerStack);
     queueStack.addDependency(lambdaLayerStack);
+
+    dashboardStack.addDependency(apiStack, 'Relies on the log groups of the lambdas in this stack');
+    dashboardStack.addDependency(dashboardStack, 'Relies on the queues in this stack');
+    dashboardStack.addDependency(databaseStack, 'Relies on the metrics of resources in this stack');
 
   }
 

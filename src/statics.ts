@@ -83,16 +83,29 @@ export abstract class Statics {
   static readonly ssmName_verwerkingenSQSqueueArn: string = '/cdk/verwerkingenlogging/verwerkingen-sqs-queue-arn';
 
   /**
+   * SQS DLQ Arn
+   */
+  static readonly ssmName_verwerkingenSQSdlqArn: string = '/cdk/verwerkingenlogging/verwerkingen-sqs-dlq-arn';
+
+  /**
    * Arn for the pyton lambda layer
    */
   static readonly ssmName_pythonLambdaLayerArn: string = '/cdk/verwerkingenlogging/python-lambda-layer-arn';
-
 
   /**
    * ARN of the dynamodb key
    */
   static readonly ssmName_dynamodbKmsKeyArn = '/cdk/verwerkingenlogging/dynamodb-key-arn';
 
+  /**
+   * ARN of the log group for the Gen lambda
+   */
+  static readonly ssmName_genLambdaLogGroupArn = '/cdk/verwerkingenlogging/gen-lambda-loggroup-arn';
+
+  /**
+   * ARN of the log group for the Rec lambda
+   */
+  static readonly ssmName_recLambdaLogGroupArn = '/cdk/verwerkingenlogging/rec-lambda-loggroup-arn';
 
   // DNS Hosted zone ssm
   static readonly accountRootHostedZoneId: string = '/gemeente-nijmegen/account/hostedzone/id';

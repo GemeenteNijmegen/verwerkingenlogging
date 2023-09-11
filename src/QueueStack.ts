@@ -65,6 +65,11 @@ export class QueueStack extends Stack {
       parameterName: Statics.ssmName_verwerkingenSQSqueueArn,
     });
 
+    new SSM.StringParameter(this, 'ssm_verwerkingn-sqs-dlq-arn', {
+      stringValue: this.verwerkingenMessageDeadLetterQueue.queueArn,
+      parameterName: Statics.ssmName_verwerkingenSQSdlqArn,
+    });
+
     this.verwerkingenProcLambdaFunction = this.setupProcessingLambda(
       this.verwerkingenMessageQueue.queueUrl,
       props.configuration.enableVerboseAndSensitiveLogging,
