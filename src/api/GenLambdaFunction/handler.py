@@ -1,9 +1,15 @@
 import json
+import os
 import uuid
-import hashlib
 from datetime import datetime
+from Shared.helpers import hashHelper, logApiCall
+from Shared.responses import badRequestResponse, successResponse
+
 
 from boto3.dynamodb.conditions import Key, Attr
+
+apiBaseUrl = os.getenv('API_BASE_URL', 'api.vwlog-prod.csp-nijmegen.nl')
+
 
 # Parse the event object and extract relevant information.
 # After extraction, validates the object for valid parameter combinations.
@@ -90,7 +96,7 @@ def verwerktObjectId_check(item, table):
     if (len(verwerkteObjecten) >= 1):
         for object in verwerkteObjecten:
             # check if objectTypeSoortId already exists in DB
-            objectTypeSoortId = object.get('objecttype') + object.get('soortObjectId') + object.get('objectId')
+            objectTypeSoortId = object.get('objectType') + object.get('soortObjectId') + object.get('objectId')
             response = table.query(
                     IndexName='objectTypeSoortId-index',
                     KeyConditionExpression=Key('objectTypeSoortId').eq(objectTypeSoortId)
@@ -182,6 +188,7 @@ def handle_request(event, bucket, queue, table):
     tijdstipRegistratie = datetime.now().isoformat(timespec='seconds')
 
     if(params.get('method') == 'POST' and params.get('resource') == '/verwerkingsacties'):
+        logApiCall('POST', '/verwerkingsacties')
 
         # Generate UUID for actieId
         actieId = str(uuid.uuid1()) # V1 Timestamp
@@ -190,7 +197,7 @@ def handle_request(event, bucket, queue, table):
         store_item_in_s3(actieId, event, bucket)
 
         # Create DB url using generated actieId
-        url = "https://dynamodb.eu-west-1.amazonaws.com/" + actieId
+        url = "https://" + apiBaseUrl + "/verwerkingsacties/" + actieId
 
         item = objectId_check(requestJson)
         item = verwerktObjectId_check(item, table)
@@ -207,9 +214,10 @@ def handle_request(event, bucket, queue, table):
         # Remove compositeSortKey and objectTypeSoortId from return message
         msg.pop('compositeSortKey')
         msg.pop('objectTypeSoortId')
-        return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
+        return successResponse(msg)
 
     if(params.get('method') == 'PATCH' and params.get('resource') =='/verwerkingsacties'):
+        logApiCall('PATCH', '/verwerkingsacties')
         # Backup using verwerkingId (instead of actieId)??
 
         msg = generate_patch_message(event)
@@ -217,9 +225,10 @@ def handle_request(event, bucket, queue, table):
         # Send message to queue.
         send_to_queue(msg, queue, 'PATCH')
 
-        return { 'statusCode': 200 }
+        return successResponse()
 
     if(params.get('method') == 'PUT' and params.get('resource') == '/verwerkingsacties/{actieId}'):
+        logApiCall('POST', '/verwerkingsacties/\{actieId\}')
 
         item = objectId_check(requestJson)
         verwerkteObjecten = item.get('verwerkteObjecten')
@@ -233,20 +242,9 @@ def handle_request(event, bucket, queue, table):
 
         # Remove objectTypeSoortId from return message
         msg.pop('objectTypeSoortId')
-        return { 'statusCode': 200, 'body': json.dumps(msg), 'headers': { "Content-Type": "application/json" }}
+        return successResponse(msg)
         
 
     # if no matches were found, handle this as a malformed request
-    return {
-            'statusCode': 400,
-            'body': '400 Bad Request',
-            'headers': { "Content-Type": "text/plain" }
-    }
+    return badRequestResponse()
 
-def hashHelper(input):
-    # salt = secrets.token_hex(8)
-    h = hashlib.new('sha3_256')
-    h.update(bytes(input, encoding='UTF-8'))
-    # h.update(bytes(salt))
-    hash = h.hexdigest()
-    return hash

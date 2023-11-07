@@ -5,33 +5,27 @@ export abstract class Statics {
    */
   static readonly projectName: string = 'verwerkingenlogging';
 
-  /**
-   * Environment variables
-   */
-  static readonly deploymentEnvironment = {
-    account: '418648875085',
-    region: 'eu-west-1',
+  // Environments
+
+  static readonly gnBuildEnvironment = {
+    account: '836443378780',
+    region: 'eu-central-1',
   };
 
-  static readonly sandboxEnvironment = {
-    account: '122467643252',
-    region: 'eu-west-1',
+  static readonly gnVerwerkingenloggingAccp = {
+    account: '649781704230',
+    region: 'eu-central-1',
   };
 
-  static readonly acceptanceEnvironment = {
-    account: '259142742358',
-    region: 'eu-west-1',
-  };
-
-  static readonly productionEnvironment = {
-    account: '876541623237',
-    region: 'eu-west-1',
+  static readonly gnVerwerkingenloggingProd = {
+    account: '887474129159',
+    region: 'eu-central-1',
   };
 
   /**
    * Codestar connection ARN to connect to GitHub.
    */
-  static readonly gnBuildCodeStarConnectionArn = 'arn:aws:codestar-connections:eu-west-1:418648875085:connection/4f647929-c982-4f30-94f4-24ff7dbf9766';
+  static readonly gnBuildCodeStarConnectionArn = 'arn:aws:codestar-connections:eu-central-1:836443378780:connection/9d20671d-91bc-49e2-8680-59ff96e2ab11';
 
   /**
    * DynamoDB table name for verwerkingen.
@@ -87,4 +81,37 @@ export abstract class Statics {
    * SQS Queue Arn
    */
   static readonly ssmName_verwerkingenSQSqueueArn: string = '/cdk/verwerkingenlogging/verwerkingen-sqs-queue-arn';
+
+  /**
+   * SQS DLQ Arn
+   */
+  static readonly ssmName_verwerkingenSQSdlqArn: string = '/cdk/verwerkingenlogging/verwerkingen-sqs-dlq-arn';
+
+  /**
+   * Arn for the pyton lambda layer
+   */
+  static readonly ssmName_pythonLambdaLayerArn: string = '/cdk/verwerkingenlogging/python-lambda-layer-arn';
+
+  /**
+   * ARN of the dynamodb key
+   */
+  static readonly ssmName_dynamodbKmsKeyArn = '/cdk/verwerkingenlogging/dynamodb-key-arn';
+
+  /**
+   * ARN of the log group for the Gen lambda
+   */
+  static readonly ssmName_genLambdaLogGroupArn = '/cdk/verwerkingenlogging/gen-lambda-loggroup-arn';
+
+  /**
+   * ARN of the log group for the Rec lambda
+   */
+  static readonly ssmName_recLambdaLogGroupArn = '/cdk/verwerkingenlogging/rec-lambda-loggroup-arn';
+
+  // DNS Hosted zone ssm
+  static readonly accountRootHostedZoneId: string = '/gemeente-nijmegen/account/hostedzone/id';
+  static readonly accountRootHostedZoneName: string = '/gemeente-nijmegen/account/hostedzone/name';
+  static readonly ssmName_projectHostedZoneId: string = '/cdk/verwerkingenlogging/hostedZone/id';
+  static readonly ssmName_projectHostedZoneName: string = '/cdk/verwerkingenlogging/hostedZone/name';
+
+  static readonly subdomain = (hostedzoneName: string) => `api.${hostedzoneName}`;
 }

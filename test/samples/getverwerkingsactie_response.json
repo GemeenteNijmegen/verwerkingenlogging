@@ -1,11 +1,11 @@
 {
     "Items": [
         {
-            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "objectTypesoortObjectIdobjectId": "persoon_BSN_1234567",
             "vertrouwelijkheid": "normaal",
             "verwerkteObjecten": [
                 {
-                    "objecttype": "persoon",
+                    "objectType": "persoon",
                     "soortObjectId": "BSN",
                     "verwerkteSoortenGegevens": [
                         {
@@ -37,11 +37,11 @@
             "afnemerId": "00000001821002193000"
         },
         {
-            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "objectTypesoortObjectIdobjectId": "persoon_BSN_1234567",
             "vertrouwelijkheid": "normaal",
             "verwerkteObjecten": [
                 {
-                    "objecttype": "persoon",
+                    "objectType": "persoon",
                     "soortObjectId": "BSN",
                     "verwerkteSoortenGegevens": [
                         {
@@ -73,11 +73,11 @@
             "afnemerId": "00000001821002193000"
         },
         {
-            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "objectTypesoortObjectIdobjectId": "persoon_BSN_1234567",
             "vertrouwelijkheid": "normaal",
             "verwerkteObjecten": [
                 {
-                    "objecttype": "persoon",
+                    "objectType": "persoon",
                     "soortObjectId": "BSN",
                     "verwerkteSoortenGegevens": [
                         {
@@ -109,11 +109,11 @@
             "afnemerId": "00000001821002193000"
         },
         {
-            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "objectTypesoortObjectIdobjectId": "persoon_BSN_1234567",
             "vertrouwelijkheid": "normaal",
             "verwerkteObjecten": [
                 {
-                    "objecttype": "persoon",
+                    "objectType": "persoon",
                     "soortObjectId": "BSN",
                     "verwerkteSoortenGegevens": [
                         {
@@ -145,11 +145,11 @@
             "afnemerId": "00000001821002193000"
         },
         {
-            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "objectTypesoortObjectIdobjectId": "persoon_BSN_1234567",
             "vertrouwelijkheid": "normaal",
             "verwerkteObjecten": [
                 {
-                    "objecttype": "persoon",
+                    "objectType": "persoon",
                     "soortObjectId": "BSN",
                     "verwerkteSoortenGegevens": [
                         {
@@ -181,11 +181,11 @@
             "afnemerId": "00000001821002193000"
         },
         {
-            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "objectTypesoortObjectIdobjectId": "persoon_BSN_1234567",
             "vertrouwelijkheid": "normaal",
             "verwerkteObjecten": [
                 {
-                    "objecttype": "persoon",
+                    "objectType": "persoon",
                     "soortObjectId": "BSN",
                     "verwerkteSoortenGegevens": [
                         {
@@ -217,11 +217,11 @@
             "afnemerId": "00000001821002193000"
         },
         {
-            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "objectTypesoortObjectIdobjectId": "persoon_BSN_1234567",
             "vertrouwelijkheid": "normaal",
             "verwerkteObjecten": [
                 {
-                    "objecttype": "persoon",
+                    "objectType": "persoon",
                     "soortObjectId": "BSN",
                     "verwerkteSoortenGegevens": [
                         {
@@ -253,11 +253,11 @@
             "afnemerId": "00000001821002193000"
         },
         {
-            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "objectTypesoortObjectIdobjectId": "persoon_BSN_1234567",
             "vertrouwelijkheid": "normaal",
             "verwerkteObjecten": [
                 {
-                    "objecttype": "persoon",
+                    "objectType": "persoon",
                     "soortObjectId": "BSN",
                     "verwerkteSoortenGegevens": [
                         {
@@ -289,11 +289,11 @@
             "afnemerId": "00000001821002193000"
         },
         {
-            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "objectTypesoortObjectIdobjectId": "persoon_BSN_1234567",
             "vertrouwelijkheid": "normaal",
             "verwerkteObjecten": [
                 {
-                    "objecttype": "persoon",
+                    "objectType": "persoon",
                     "soortObjectId": "BSN",
                     "verwerkteSoortenGegevens": [
                         {
@@ -325,11 +325,11 @@
             "afnemerId": "00000001821002193000"
         },
         {
-            "objecttypesoortObjectIdobjectId": "persoon_BSN_1234567",
+            "objectTypesoortObjectIdobjectId": "persoon_BSN_1234567",
             "vertrouwelijkheid": "normaal",
             "verwerkteObjecten": [
                 {
-                    "objecttype": "persoon",
+                    "objectType": "persoon",
                     "soortObjectId": "BSN",
                     "verwerkteSoortenGegevens": [
                         {

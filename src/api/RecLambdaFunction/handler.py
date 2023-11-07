@@ -1,8 +1,11 @@
-import json
-import hashlib
 from datetime import datetime
+import os
+from Shared.helpers import hashHelper, logApiCall
+from Shared.responses import badRequestResponse, notFoundResponse, successResponse
 
 from boto3.dynamodb.conditions import Key, Attr
+
+debug = os.getenv('ENABLE_VERBOSE_AND_SENSITIVE_LOGGING', 'false') == 'true'
 
 # Parse the event object and extract relevant information.
 # After extraction, validates the object for valid parameter combinations.
@@ -24,7 +27,7 @@ def validate_params(params):
     if ('/verwerkingsacties' in params.get('resource') and params.get('method') == 'GET'):
         # GET /verwerkingsacties
         if (params.get('resouce') == '/verwerkingsacties'):
-            if ('objecttype' not in params.get('parameters') or 'soortObjectId' not in params.get('parameters') or 'objectId' not in params.get('parameters')):
+            if ('objectType' not in params.get('parameters') or 'soortObjectId' not in params.get('parameters') or 'objectId' not in params.get('parameters')):
                 raise Exception(
                     "GET requests to /verwerkingsacties should have (required) query parameters")
 
@@ -35,17 +38,21 @@ def handle_request(event, table):
     params = parse_event(event)
 
     if (params['method'] == 'GET' and params.get('resource') == '/verwerkingsacties/{actieId}'):
+        logApiCall(params['method'], params.get('resource'))
         return get_verwerkingsacties_actieid(event, table)
 
     if (params['method'] == 'GET' and params.get('resource') == '/verwerkingsacties'):
+        logApiCall(params['method'], params.get('resource'))
         return get_verwerkings_acties(event, table)
 
     if (params['method'] == 'DELETE' and params.get('resource') == '/verwerkingsacties/{actieId}'):
+        logApiCall(params['method'], params.get('resource'))
         return delete_verwerkingsacties_actieid(event, table)
+    
+    # Not a valid request
+    return badRequestResponse()
 
 # Get specific verwerkingsactie based on actieId
-
-
 def get_verwerkingsacties_actieid(event, table):
     response = table.query(
         KeyConditionExpression=Key('actieId').eq(
@@ -54,27 +61,19 @@ def get_verwerkingsacties_actieid(event, table):
 
     # Check if requested record is found. If not, the list of items is empty (0).
     if (len(response.get('Items')) == 0):
-        return {
-            'statusCode': 400,
-            'body': 'Record not found',
-            'headers': {"Content-Type": "text/plain"},
-        }
+        return notFoundResponse()
     else:
         # Remove objectTypeSoortId and compositeSortKey from return message
         msg = response.get('Items')[0]
         msg.pop('objectTypeSoortId')
         msg.pop('compositeSortKey')
 
-        return {
-            'statusCode': 200,
-            'body': json.dumps(msg),
-            'headers': {"Content-Type": "application/json"},
-        }
+        return successResponse(msg)
 
 # Get verwerkingsacties based on given filter parameters
 def get_verwerkings_acties(event, table):
     hashedObjectId = hashHelper(event.get('queryStringParameters').get('objectId'))
-    object_key = event.get('queryStringParameters').get('objecttype') + event.get(
+    object_key = event.get('queryStringParameters').get('objectType') + event.get(
         'queryStringParameters').get('soortObjectId') + hashedObjectId
 
     attrs = None
@@ -110,11 +109,7 @@ def get_verwerkings_acties(event, table):
     for item in response['Items']:
         item.pop('objectTypeSoortId')
 
-    return {
-        'statusCode': 200,
-        'body': json.dumps(response),
-        'headers': {"Content-Type": "application/json"},
-    }
+    return successResponse(response)
 
 # Mark specific verwerkingsactie deleted based on actieId
 def delete_verwerkingsacties_actieid(event, table):
@@ -124,8 +119,8 @@ def delete_verwerkingsacties_actieid(event, table):
     )
 
     for item in response.get('Items'):
-        print(item)
-        # TODO alternative implementation as described below
+        if debug:
+            print(item) # TODO alternative implementation as described below
 
     # TODO: Efficiency improvement --> another query not required. Data is already available using previous query.
     for item in response.get('Items'):
@@ -149,12 +144,4 @@ def delete_verwerkingsacties_actieid(event, table):
             Item=item
         )
 
-    return {'statusCode': 200}
-
-def hashHelper(input):
-    # salt = secrets.token_hex(8)
-    h = hashlib.new('sha3_256')
-    h.update(bytes(input, encoding='UTF-8'))
-    # h.update(bytes(salt))
-    hash = h.hexdigest()
-    return hash
+    return successResponse()
