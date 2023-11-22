@@ -36,7 +36,7 @@
     "aws-cdk": "^2.1.0",
     "axios": "^0.27.2",
     "dotenv": "^16.3.1",
-    "esbuild": "^0.19.6",
+    "esbuild": "^0.19.7",
     "eslint": "^8",
     "eslint-import-resolver-node": "^0.3.9",
     "eslint-import-resolver-typescript": "^2.7.1",
