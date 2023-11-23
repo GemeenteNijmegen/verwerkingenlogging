@@ -205,7 +205,9 @@ export class ApiStack extends Stack {
 
     // Create new API Key
     const key = this.verwerkingenAPI.addApiKey('verwerkingen-api-key');
+    const externalUserKey = this.verwerkingenAPI.addApiKey('verwerkingen-api-key-external-user');
     plan.addApiKey(key);
+    plan.addApiKey(externalUserKey);
 
     // Add Stage to Plan
     plan.addApiStage({
