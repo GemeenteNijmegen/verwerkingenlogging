@@ -1,111 +1,165 @@
-# Readme for Verwerkingenloggingproject
+# VERWERKINGENLOGGING INFORMATIEDOCUMENT 
+## INTRODUCTIE 
+De VNG heeft een standaard ontwikkelt voor de vastlegging van verwerkingen. Door VNG-Realisatie is de Verwerkingenlogging API-standaard als onderdeel van de uitwerking van de informatiekundige visie Common Ground ontwikkeld en opgenomen in de GEMMA referentiearchitectuur. Deze API-standaard biedt leveranciers van informatiesystemen gestandaardiseerde API-specificaties voor het vastleggen en ontsluiten van metagegevens behorend bij vastgelegde (gelogde) verwerkingen. 
 
-## 1. Huidige situatie
-Wat is het probleem?
->Voldoen niet aan AVG-eisen die stelt dat: 'op aanvraag inzage moet worden gegeven in plaatsgevonden verwerkingen van (persoons)gegevens'.
-We voldoen niet aan de eis, met als belangrijkste reden dat er geen goede vastlegging plaatsvindt (van wanneer welke gegevensverwerking plaatsvindt).
+Organisaties die persoonsgegevens verwerken zijn conform de Algemene Verordening Gegevensbescherming (AVG) en de Uitvoeringswet AVG verplicht om aan te kunnen tonen dat een verwerking van persoonsgegevens aan de belangrijkste beginselen van verwerking voldoet, zoals rechtmatigheid, transparantie, doelbinding en juistheid. Om aan deze verantwoordingsplicht te kunnen voldoen is het van belang dat per verwerking de belangrijkste metagegevens van de verwerkingen worden vastgelegd.  
 
-Wat is het doel?
->Relevante informatie vastleggen (loggen) van verwerkingen van (persoons)gegevens.
+Aan de hand van de standaard wordt een API ontwikkeld door de Gemeente Nijmegen. 
 
-Wat is er al aan verwerkingenlogging?
->Nog niets.
+## DOEL 
+Gemeenten gebruiken binnen de uitvoering van de gemeentelijke taken grote hoeveelheden gegevens. Een deel van deze gegevens betreft persoonsgegevens. Vanuit de privacywetgeving zijn gemeenten verplicht dit gebruik van persoonsgegevens vast te leggen, en inzichtelijk te maken voor burgers. Door deze transparantie over het gebruik van persoonsgegevens heeft de burger de mogelijkheid om na te gaan of de gemeente zijn of haar gegevens rechtmatig gebruikt. Naast de gegevens van personen worden door gemeenten ook gegevens van andere ‘objecten’, zoals kadastrale percelen, verwerkt. Hoewel er geen wettelijke verplichting bestaat om van deze objecten verwerkingen vast te leggen kan het wel een toegevoegde waarde hebben. 
 
-## 2. Centraal of Federatief verwerkingenlog
-Verwerkingenlog bestaat uit de 'varianten'. Centraal of Federatief.
+Het doel van het product dat Gemeente Nijmegen gaat ontwikkelen is de implementatie van de standaard zoals beschreven door het VNG. Daarmee biedt de gemeente de mogelijkheid aan applicaties verwerkingen te loggen en burgers om verwerkte gegevens in te zien.  
 
-De kenmerken van de ___centraal verwerkingenlog___ variant zijn: (1) Toegankelijkheid, er is één verwerkingenlog waar logging en inzage geregeld worden. (2) Beschikbaarheid, als het centrale verwerkingenlog uitvalt, moeten alle verwerkingen van de aangesloten system wachten tot de storing is opgelost. (3) Veiligheid, een centraal verwerkingenlog vormt een z.g.n. privacy hotspot.
+## DOELGROEP 
+Het verwerkingenlogging product is beschikbaar voor alle applicaties die persoons(gegevens) verwerken (binnen de scope van de gemeente).  
 
-Hieronder staat een voorbeeld van een potentiële inrichting van het gemeentelijke verwerkingenlog uit de [Quick Start Guide](https://vng-realisatie.github.io/gemma-verwerkingenlogging/quickstart/index) van de VNG. Dit voorbeeld bestaat uit één centraal verwerkingenlog waarin alle informatiesystem hun verwerkingen loggen:
+## GEBRUIK 
+De applicaties hebben de mogelijkheid om verschillende API-verzoeken te maken richting de verwerkingenlogging. Deze verzoeken zijn opgedeeld in het aanmaken, wijzigen of ophalen van [records] uit de achterliggende database. Zo wordt er bijvoorbeeld per nieuwe verwerking een verzoek verstuurd naar de verwerkingenlogging API. Later wordt dieper ingegaan op de verschillende verzoeken en technische implementatie. 
+ 	 
+## STANDAARD 
+#### ARCHITECTUUR 
+In onderstaande schets is weergegeven welke informatiesystemen een rol spelen bij de implementatie van de verschillende aspecten van de verantwoordingsplicht. De onderdelen die door de Verwerkingenlogging APIstandaard worden afgedekt zijn hierbij rood omkaderd aangegeven. 
 
-![](docs/Centraal_verwerkingenlog.png)
+![architectuur_1](/docs/readme/architectuur_1.jpg)
+  
+Als gemeenten hebben we de keuze om één (centraal) verwerkingenlog of meerdere (federatief) verwerkingslogs te hanteren. Eén centraal verwerkingenlog waarin alle informatiesystemen hun verwerkingen loggen of  meerdere verwerkingenlogs, een zogenaamd federatief verwerkingenlog: 
+ 
+Centraal
 
-Het alternatief is een ___federatief verwerkingenlog___. Deze variant kenmekrt zich met: (1) Toegangkelijkheid, ieder systeem logt naar het verwerkingenlog dat aan het systeem is toegewezen. Om inzage eenvoudig te houden is het aan te bevelen om een centraal punt te introduceren dat instaat is de gegevens uit de diverse verwerkingenlogs op te halen. (2) Beschikbaarheid, als een verwerkingenlog uitvalt, worden alleen de verwerkingen van de aangesloten system opgeschort. Andere systemen draait gewoon door. (3) Veiligheid, de federatieve verwerkingenlogs bevatten per stuk minder informatie en zijn dus minder snel een privacy hotspot.
+![figuur 1 centraal](/docs/readme/architectuur_centraal.jpg) 
 
-Hieronder staat een voorbeeld van de federatieve verwerkingenlog variant:
+Federatief
 
-![](docs/Federatief_verwerkingenlog.png)
+![figuur 2 federatief](/docs/readme/architectuur_federatief.jpg)
 
-## 3. Volledige logging van verwerkingen
-Aangezien we voor nu uitgaan dat we verwerkingen van persoonsgegevens gaan loggen is een volledige logging van de verwerkingen verplicht. De minimale variant kan wel gebruikt worden als eerste stap.
+Centraal vs Federatief
 
-De volledige logging van verwerkingen richt zich op twee aspecten: Begrijpelijkheid en Aanpasbaarheid.
+![figuur 4 centraal vs federatief](/docs/readme/architectuur_tabel.jpg)
 
-### 3.1 Begrijpelijkheid
-Om te komen tot een begrijpelijk verwerkingenlog werken we met de volgende begrippen: Verwerking, Handeling en Actie. Toelichting op de begrippen:
+### BASISTERMINOLOGIE 
+Gemeenten moeten een eigen Register van verwerkingsactiviteiten (VAR) hebben. In het VAR staan verschillende verwerkingsactiviteiten zoals BRP Registratie of Geslachtswijziging. Dit kunnen dus sterk uiteenlopende activiteiten zijn, juist generiek of heel specifiek. 
 
-- __Verwerking__: Een verwerking is een concrete taak die een gemeente uitvoert. De taak vormt vanuit het perspectief van de burger of medewerker een logisch geheel. Vaak correspondeert een verwerking met een verzoek of zaak. Hoort de verwerking bij een globale verwerkingsactiviteit, zoals ‘BRP registratie’, dan geeft de verwerking nadere informatie over het soort verwerking.
-- __Handeling__: Een handeling is één stap in de uitvoering van een verwerking. Deze stap kan bij een zogenaamde ‘happy flow’ zonder onderbrekingen uitgevoerd worden. Bestaat een verwerking maar uit één stap dan kan dit niveau weggelaten worden. De informatie is vooral van belang bij processen of zaken die uit meerdere stappen bestaan die verspreid over een bepaalde periode uitgevoerd worden.
-- __Actie__: Een actie is een operatie die wordt uitgevoerd door een geautomatiseerd systeem waarbij er (persoons)gegevens verwerkt worden. Een actie wordt uitgevoerd als onderdeel van (een handeling van) een verwerking. In de praktijk zal het uitvoeren van een handeling al snel leiden tot meerdere verwerkingsactiviteiten in het verwerkingenlog die relatief snel achter elkaar uitgevoerd zijn. De actie kan helpen om te begrijpen waarom het log al deze verschillende verwerkingsactiviteiten bevat.
+Het gegevensmodel is opgebouwd uit verschillende begrippen: 
 
-### 3.2 Aanpasbaarheid
-Over de inhoud van een verwerkingenlog mag geen twijfel bestaan. We willen daarom dat iets dat in het verwerkingenlog is opgeslagen niet gewijzigd kan worden (het verwerkingenlog is immutable).
+- **Verwerkingsactiviteit - Verwerking - Handeling - Actie** 
 
-Er zijn echter gevallen waarin we het log toch zullen moeten wijzigen:
+Het hoogste niveau is de verwerkingsactiviteit, het laagste niveau de actie. Logging vindt plaats op het niveau van de actie. VNG heeft deze begrippen als volgt beschreven: 
 
-1. Het wijzigen van de vertrouwelijkheid van een verwerking. Bijvoorbeeld omdat deze wordt opgeheven. Zie hiervoor de [functie F2969: Wijzig vertrouwelijkheid van verwerking](https://github.com/VNG-Realisatie/gemma-verwerkingenlogging/blob/master/docs/_content/achtergronddocumentatie/ontwerp/artefacten/2969.md).
-2. Het wijzigen van de bewaartermijn van een verwerking. Bijvoorbeeld omdat deze pas op een later moment bepaald kan worden. Zie hiervoor de [functie F4415: Wijzig bewaartermijn van verwerking](https://github.com/VNG-Realisatie/gemma-verwerkingenlogging/blob/master/docs/_content/achtergronddocumentatie/ontwerp/artefacten/4415.md).
+#### VERWERKINGSACTIVITEIT 
+Een verwerkingsactiviteit is of een categorie van verwerkingen of een concreet soort verwerking. 
 
-## 4. API standaard
+#### VERWERKING 
+Een verwerking is een concrete taak die een gemeente uitvoert. De taak vormt vanuit het perspectief van de burger of medewerker een logisch geheel. 
 
-- De API voor bewerking van verwerkingen is [hier](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/VNG-Realisatie/gemma-verwerkingenlogging/develop/docs/_content/api-write/oas-specification/logging-verwerkingen-api/openapi.yaml#/) te vinden.
-- De API voor inzage van verwerkingen door betrokkenen en derden is [hier](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/VNG-Realisatie/gemma-verwerkingenlogging/master/docs/_content/api-read/oas-specification/logging-verwerkingen-api/openapi.yaml) te vinden.
+#### HANDELING 
+Een handeling is één stap in de uitvoering van een verwerking. Deze stap kan bij een zogenaamde ‘happy flow’ zonder onderbrekingen uitgevoerd worden. 
 
-## 5. Logging
+#### ACTIE 
+Een actie is een operatie die wordt uitgevoerd door een geautomatiseerd systeem waarbij er (persoons)gegevens verwerkt worden. Een actie wordt uitgevoerd als onderdeel van (een handeling van) een verwerking. 
+ 	 
+### SEMANTISCH MODEL (SIM) EN UITWISSELINGSGEGEVENSMODEL (UGM) 
+Op basis van de verschillende begrippen uit het gegevens model ontstaat het volgende semantische informatiemodel en uitwisselingsgegevensmodel: 
 
-Systemen of applicaties loggen (mininmaal) de volgende informatie:
+![figuur 5 sim](/docs/readme/sim.jpg)
+  
+Hierbij worden de volgende waarden gebruikt: 
+-	O = Optioneel 
+-	V = Verplicht 
+-	F = Functioneel verplicht (‘Should have’), maar technisch niet. 
+Binnen VNG Realisatie wordt ook gebruik gemaakt van Enterprise Architect (EA) voor de vastlegging van de semantische informatiemodellen. Deze is te gebruiken tijdens de technische implementatie. 
+ 	 
+### BIJZONDERHEDEN 
 
-![](docs/Minimaal_Consumer.png)
+#### B2042 - PSEUDONIMISERING BSN 
+**Situatie**
 
-Technisch gezien zijn maar weinig velden in het bericht verplicht (zie Logging API). De velden zijn optioneel gemaakt om te voorkomen dat er niet gelogd wordt op het moment dat bepaalde informatie echt niet voorhanden is. Operationeel gezien moet wel geprobeerd worden zoveel mogelijk informatie te verstrekken. De velden zijn namelijk direct afgeleid uit de vereisten die de AVG stelt en zijn daarmee functioneel gezien niet optioneel.
+ Er is binnen de Nederlandse overheid op het moment van schrijven geen gestandaardiseerde oplossing om BSN’s te pseudonimiseren. Vanuit het eID-stelsel is een manier bedacht. Deze is geïmplementeerd in het BSNkoppelpunt. Er is open source software beschikbaar voor de ontsleuteling. Er is echter geen software of service beschikbaar voor de versleuteling. Het pseudonimiseren is dus alleen mogelijk op basis van niet binnen de overheid gestandaardiseerde implementaties. 
+De AVG spreekt expliciet over pseudonimisering. Zonder pseudonimisering zijn verwerkingenlogs een potentiële privacy hotspot. Via het BSN is dan te achterhalen welke verwerkingen zijn uitgevoerd op de gegevens van een persoon. Verwerkingen over gezondheidsorganisaties, justitie of fraudeonderzoeken kunnen afhankelijk van de situatie afzonderlijk of gezamenlijk beschouwd worden als gevoelige informatie. 
 
-Aan een verwerkingsactie kunnen meerder 'verwerkt objecten' vastzitten. Bijvoorbeeld als er meerdere personen bij een verwerking betrokken zijn.
+**Besluit**
 
-Een volledige verwerkingsactiviteit komt er zo uit te zien:
-![](docs/Maximaal_Consumer_1.png)
+-	Het ontbreken van een standaard oplossing voor pseudonimisering ontslaan de gemeenten en haar leveranciers niet van de verplichting BSN’s bij opname in het verwerkingenlog te pseudonimiseren. 
+-	Deze pseudonimisering moet volledig achter de API van het koppelvlak plaatsvinden. Er wordt aan de API dus een gewoon BSN meegegeven. De implementatie van de API versleutelt vervolgens het BSN en kan dit vervolgens opnemen in het verwerkingenlog of vergelijken met gegevens in het verwerkingenlog 
+-	Omdat er geen gestandaardiseerde implementatie is voor de versleuteling moet het mogelijk zijn om een pseudoniem te kunnen herleiden naar een BSN. Deze functionaliteit is o.a. noodzakelijk om de inhoud van verwerkingenlogs te kunnen migreren. Bijvoorbeeld bij een gemeentelijke herindeling of bij een wisseling van leverancier. 
+#### B7571 - MEERDERE PERSONEN/OBJECTEN PER VERWERKING 
+**Besluit**
 
-.+ nog additionele 'vewerkt objecten' indien van toepassing:
-![](docs/Maximaal_Consumer_2.png)
+Bij een verwerking kunnen meerdere personen of objecten opgenomen worden.
 
-## 6. DB structuur (OUTDATED)
-```All items with the same partition key value are stored together, in sorted order by sort key value.```
+**Toelichting**
 
-Dit betekent dat als we objecttype#soortObjectId#objectId als partition key (pk) combinatie gebruiken we alle verwerkingen die gekoppeld zijn aan deze pk kunnen vinden. Dit betekent dat een verwerking (actieId) meerdere keren voor kan komen in de DB onder verschillende pk's.
+Vanuit technisch perspectief kan het wenselijk zijn deze structuur ‘platgeslagen’ (gedenormaliseerd) op te slaan. In het logisch gegevensmodel en de API is er echter sprake van een 1:n relatie tussen de verwerking en de bijbehorende objecten/personen. 
 
-Als sort key (sk) kunnen we het tijdstip gebruiken. Time range kan dan worden gerealiseerd met behulp van een "BETWEEN" ComparisonOperator op begindatum en eindDatum in de tabel. 
+#### B3891 - WIJZIGBAARHEID EN HISTORIE 
+**Besluit**
 
-Om een wijziging (PUT) door te voeren op een specifieke verwerking (actieID) dan gebruiken we een Global Secondary Index waarbij de actieID de pk is. (Omdat deze call speciefiek op actieId is [PUT /verwerkingsacties/{actieId}] is een sk niet nodig, ander kun je een mismatch krijgen van verwerkingen die gerelateerd zijn aan verschillende verwerkte-objecten/personen). Met deze GSI kunnen we ook direct een [GET /verwerkingsacties/{actieId}] en [DELETE /verwerkingsacties/{actieId}] doen.
+Het verwerkingenlog is fysiek onwijzigbaar (immutable). Er mogen geen record gewist of gemuteerd worden. Er mogen wel records toegevoegd worden. Het verwerkingenlog is logisch muteerbaar Wijzigingen moeten traceerbaar zijn. Van verwerkingenlogentries moet formele historie bijgehouden worden Op basis van een verwerkingenlog waarin alleen nieuwe records toegevoegd mogen worden zou dit op onderstaande wijze geïmplementeerd kunnen worden: 
+ 
+![figuur 6 historie](/docs/readme/historie.jpg)
+  
+De term 'vervallen' komt echter niet voor in de technische uitwerking van de API.  
+https://petstore.swagger.io/?url=https://raw.githubusercontent.com/VNG-Realisatie/gemmaverwerkingenlogging/master/docs/api-write/oas-specification/logging-verwerkingen-api/openapi.yaml  
+Toelichting is hier te vinden:  
+https://vng-realisatie.github.io/gemmaverwerkingenlogging/achtergronddocumentatie/ontwerp/artefacten/3891.html  
 
-POST:
-Verwerkingsactie{} -->
-    verwerkteObjecten[]
+#### AUTORISATIE SCOPES 
+De autorisatie-scopes zijn hier beschreven. Als de API-call niet voldoet aan de scope dan zal een HTTP 403 (Forbidden) foutmelding worden teruggegeven. 
+https://vng-realisatie.github.io/gemma-verwerkingenlogging/api-write/oas-specification/loggingverwerkingen-api/scopes.html  
+ 	 
+## SYSTEEMKENMERKEN EN -VEREISTEN 
+De standaard definieert twee API's. De 'Bewerking API' en de 'Inzage API'. De eerste implementatie zal die van de Bewerking API zijn. 
 
-GET:
-results[] -->
-    verwerkingsactie{}
+### FUNCTIONELE VEREISTEN 
+De functionele vereisten kunnen we het beste beschrijven aan de hand van de functionele view van de Bewerking API. Verschillende functies van de API per categorie:  
 
-PK: UUID(verwerkingId) --> SK: Gebruiker(verwerktObject) --> SSK: Tijdstip(tijdstipRegistratie)
+|     Categorie \   Functie                                                                     |
+|-----------------------------------------------------------------------------------------------|
+|     **Loggen**                                                                                    |
+|            F7446: Log   Verwerkingsactie                                                      |
+|            F6624: Log   Vertrouwelijke Verwerkingsactie                                       |
+|     **Opvragen**                                                                                  |
+|            F9787: Opvragen   Verwerkingsacties – Alle velden, niet vertrouwelijk              |
+|            F2525: Opvragen Verwerkingsacties – Alle velden,   vertrouwelijkheid opgeheven     |
+|            F0143: Opvragen   verwerkingsactie – Alle velden, vertrouwelijk                    |
+|     **Wijzigen vertrouwelijkheid & bewaartermijn**                                                |
+|            F2969: Wijzig   vertrouwelijkheid van Verwerking                                   |
+|            F4415: Wijzig   bewaartermijn van Verwerking                                       |
+|     **Bijzondere functies**                                                                       |
+|            F8316: Wijzig   Verwerkingsactie                                                   |
+|            F3835: Wijzig   Vertrouwelijke Verwerkingsactie                                    |
+|            F9906: Verwijder   Verwerkingsactie                                                |
+|            F2265: Verwijder   Vertrouwelijke Verwerkingsactie                                 |
+ 
+Technisch resulteert dit in de volgende API-calls: 
+-	POST/verwerkingsacties 
+-	GET/verwerkingsacties 
+-	PUT/verwerkingsacties/{actieId} 
+-	DELETE/verwerkingsacties/{actieId} 
+-	PATCH/verwerkingsacties 
 
-PK: Gebruiker --> SK: verwerking --> SSK: tijdstip
+Details per API-call zijn hier te vinden:  
+https://petstore.swagger.io/?url=https://raw.githubusercontent.com/VNG-Realisatie/gemmaverwerkingenlogging/master/docs/api-write/oas-specification/logging-verwerkingen-api/openapi.yaml#/  - Bij alle acties die persoonsgegevens verwerken wordt er gelogd (B7952). Hierbij gelden de volgende regels: 
+-	Alle verwerkingen hebben een eigen ID (B8157). 
+-	Als de verwerking overeenkomt met een proces uit de bedrijfsvoering (zoals een verzoek of zaak) en dit proces heeft een eigen UUID dan kan dit UUID gebruikt worden. 
+-	In alle andere gevallen moet een nieuw UUID toegewezen worden. 
+-	Het ID van de verwerking wordt gelogd en kan later gebruikt worden om acties die over deze verwerking gelogd zijn aan elkaar te relateren, eventuele vertrouwelijkheid te laten vervallen, een bewaartermijn op te geven of de acties in bijzondere situaties aan te passen of logisch te verwijderen. 
+-	Verwerkingsacties worden zodanig omschreven dat deze duidelijk zijn voor de burger. Hiertoe worden waar mogelijk en zinvol alle attributen van de actie ingezet (A5924). 
+-	Roept de applicatie/service een API aan waarbij die API persoonsgegevens verwerkt? Dan moet bij deze aanroep in de header de volgende informatie meegegeven worden (B7259, B9177): `OIN, Verwerkingsactiviteit ID, Verwerkingsactiviteit URL, Verwerking ID, Vertrouwelijkheid en Bewaartermijn`. Zie ‘Toevoeging aan de header van alle persoonsgegevens-verwerkende API’s’ hieronder voor meer informatie. 
+-	Wordt een service geboden waarbij persoonsgegevens verwerkt worden? Dan moet bij de uitvoering daarvan gekeken worden of in de header van de aanroep de volgende gegevens aanwezig zijn: `OIN, Verwerkingsactiviteit ID, Verwerkingsactiviteit URL, Verwerking ID, Vertrouwelijkheid en Bewaartermijn`. Deze gegevens dienen overgenomen te worden bij het loggen van de verwerking. Zie ‘Toevoeging aan de header van alle persoonsgegevens-verwerkende API’s’ hieronder voor meer informatie. 
+ 	 
+## SYSTEEMKENMERKEN (HUIDIGE VERSIE) 
+-	DynamoDB 
+-	S3 
+-	SQS 
+-	API Gateway 
+-	Lambda's 
+-	Bestaat uit 3 verschillende lambda's: 
+1.	GEN - verwerkt het binnenkomend bericht, en genereerd de nodige ID's. Stuurt bericht door naar de Queue. 
+2.	PROC - Haalt bericht(en) op van de queue en plaatst het in de DB. 
+3.	REC - Haalt berichten direct uit de DB. 
 
-PK: VerwerkingID (UUID) --> SK: GebruikerID (bsn#1209383) 
-
->- PRIMARY INDEX: PK: GebruikerID (bsn#2344324) --> SK: Tijdstip --> Attr: Verwerkingen
->- SECONDARY INDEX: PK: verwerktObjectId (UUID4) --> SK: verwerktObjectId (UUID4)
-
-### 6.1 GET
-
-Een applicatie moet per verwerkt object (persoon) de gerelateerde verwerkingen op kunnen vragen binnen een bepaald tijdsframe (begin- en einddatum). Verwerkte objecten kunnen opgevraagd worden dmv de juiste parameters mee te geven:
-- objecttype (persoon)
-- soortObjectId (BSN)
-- objectId (479000001)
-- beginDatum (2020-10-24)
-- eindDatum (2020-11-24)
-
-De response bestaat dan uit 1 of meerdere resultaten. Een resultaat bestaat uit een verwerking gelinkt aan het verwerkte object. Een applicatie ontvangt dus meerdere verwerkingen met dezelfde gelinkte verwerkt object.
-
-Er kan ook een specifiek verwerkt object worden opgevraagd mbv het verwerktObjectId (UUID4)
-
-### 6.2 POST
-
-Een applicatie kan een verwerkingsactie aanmaken. Deze actie moet een eigen actieId (UUID4) krijgen. (Deze wordt gegenereerd vanuit de lambda?). Dit is een post waarin de verwerkingsactie staat met daarin gerelateerde verwerkte objecten (personen). Een verwerkingsactie kan ook worden opgehaald (GET), gewijzigd (PUT) of vervallen (DELETE) mbv het actieId.
+Verzoeken komen vanuit de applicatie binnen op via de API Gateway. Achter de gateway hangt een integratie per route. Voor de POST, PUT en PATCH verzoeken wordt de GEN lambda getriggerd. Voor de GET en DELETE verzoeken wordt de REC lambda getriggerd. De verzoeken die op de GEN lambda komen worden doorgestuurd naar zowel een S3 Backup Bucket als de SQS-queue. In de backup bucket wordt het bericht opgeslagen als backup. De PROC lamdba haalt vervolgens de berichten uit de queue en plaats het bericht als een nieuwe record in de DynamoDB database. De verzoeken die op de REC lamdba komen worden gebruikt om records uit de database te halen. De DELETE route is momenteel niet geïmplementeerd zoals de standaard voorschrijft. 
+ 
+![Figuur 7 technische architectuur](/docs/readme/technische_architectuur.jpg)
+ 
