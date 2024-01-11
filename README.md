@@ -162,4 +162,4 @@ https://petstore.swagger.io/?url=https://raw.githubusercontent.com/VNG-Realisati
 Verzoeken komen vanuit de applicatie binnen op via de API Gateway. Achter de gateway hangt een integratie per route. Voor de POST, PUT en PATCH verzoeken wordt de GEN lambda getriggerd. Voor de GET en DELETE verzoeken wordt de REC lambda getriggerd. De verzoeken die op de GEN lambda komen worden doorgestuurd naar zowel een S3 Backup Bucket als de SQS-queue. In de backup bucket wordt het bericht opgeslagen als backup. De PROC lamdba haalt vervolgens de berichten uit de queue en plaats het bericht als een nieuwe record in de DynamoDB database. De verzoeken die op de REC lamdba komen worden gebruikt om records uit de database te halen. De DELETE route is momenteel niet geïmplementeerd zoals de standaard voorschrijft. 
  
 ![Figuur 7 technische architectuur](/docs/readme/technische_architectuur.jpg)
- 
+
