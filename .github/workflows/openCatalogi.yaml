@@ -22,4 +22,5 @@ jobs:
      uses: OpenCatalogi/publiccode-action@1.3.4
      with:
       federlize: ${{ contains('main', github.ref) && 'true' || 'false' }}
-      save: ${{ contains('acceptance', github.ref) && 'true' || 'false' }}
+      #save: ${{ contains('acceptance', github.ref) && 'true' || 'false' }}
+      save: true
