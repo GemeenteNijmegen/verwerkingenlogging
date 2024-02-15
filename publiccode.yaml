@@ -1,0 +1,48 @@
+categories:
+- it-development
+description:
+  en:
+    apiDocumentation: ''
+    awards: []
+    documentation: ''
+    features: []
+    genericName: https://vng-realisatie.github.io/gemma-verwerkingenlogging/
+    localisedName: ''
+    longDescription: ''
+    screenshots: []
+    shortDescription: ''
+    videos: []
+developmentStatus: development
+landingURL: ''
+legal:
+  authorsFile: ''
+  license: eupl-1.2
+  mainCopyrightOwner: ''
+  repoOwner: ''
+localisation:
+  availableLanguages:
+  - en
+  localisationReady: false
+maintenance:
+  contacts: []
+  contractors: []
+  type: none
+name: verwerkingenlogging
+nl:
+  vng:
+    commonground: []
+    gemma: []
+organisation:
+  description: Gemeente Nijmegen
+  logo: https://avatars.githubusercontent.com/u/29945117?v=4
+  name: GemeenteNijmegen
+  url: GemeenteNijmegen
+platforms:
+- web
+publiccodeYmlVersion: '0.2'
+releaseDate: '2024-02-15'
+roadmap: ''
+softwareType: standalone/web
+softwareVersion: ''
+url: https://github.com/GemeenteNijmegen/verwerkingenlogging
+usedBy: []

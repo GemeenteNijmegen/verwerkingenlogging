@@ -1,0 +1,23 @@
+# see: https://github.com/OpenCatalogi/.github?tab=readme-ov-file
+name: OpenCatalogi
+
+on:
+ workflow_dispatch:
+ push:
+  branches:
+   - main
+   - acceptance
+
+permissions:
+ contents: write
+
+jobs:
+ generatePublicCodeYaml:
+  name: Generate Publiccode Yaml
+  runs-on: ubuntu-latest
+  steps:
+   - name: Create or Update publiccode.yaml
+     uses: OpenCatalogi/publiccode-action@1.3.4
+     with:
+      federlize: ${{ github.ref_name == 'main' }}
+      save: ${{ github.ref_name == 'acceptance' }}
