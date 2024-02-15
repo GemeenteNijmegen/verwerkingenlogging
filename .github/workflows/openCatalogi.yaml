@@ -1,5 +1,5 @@
 # see: https://github.com/OpenCatalogi/.github?tab=readme-ov-file
-name: Mijn Open Catalogi Workflow
+name: OpenCatalogi
 
 on:
  workflow_dispatch:
@@ -15,6 +15,7 @@ permissions:
 
 jobs:
  generatePublicCodeYaml:
+  name: Generate Publiccode Yaml
   runs-on: ubuntu-latest
   steps:
    - name: Create or Update publiccode.yaml
