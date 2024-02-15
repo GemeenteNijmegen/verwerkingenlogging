@@ -14,13 +14,11 @@ permissions:
 
 
 jobs:
- build:
+ generatePublicCodeYaml:
   runs-on: ubuntu-latest
   steps:
    - name: Create or Update publiccode.yaml
-     uses: OpenCatalogi/publiccode-action@1.1.1
+     uses: OpenCatalogi/publiccode-action@1.3.4
      with:
       #opencatalogi: true
       federlize: false
-   - name: Create een Productpagina
-     uses: OpenCatalogi/productpage-action@1.0.0
