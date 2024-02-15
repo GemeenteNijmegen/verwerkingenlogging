@@ -1,0 +1,26 @@
+# see: https://github.com/OpenCatalogi/.github?tab=readme-ov-file
+name: Mijn Open Catalogi Workflow
+
+on:
+ workflow_dispatch:
+ push:
+  branches:
+   - main
+   - acceptance
+
+permissions:
+ contents: write
+
+
+
+jobs:
+ build:
+  runs-on: ubuntu-latest
+  steps:
+   - name: Create or Update publiccode.yaml
+     uses: OpenCatalogi/publiccode-action@1.1.1
+     with:
+      #opencatalogi: true
+      federlize: false
+   - name: Create een Productpagina
+     uses: OpenCatalogi/productpage-action@1.0.0
