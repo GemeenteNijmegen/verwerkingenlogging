@@ -19,13 +19,13 @@ jobs:
   runs-on: ubuntu-latest
   steps:
    - name: Create or Update publiccode.yaml (acceptance)
-     if: ${{ contains('acceptance', github.ref) }}
+     if: ${{ github.ref_name == 'acceptance' }}
      uses: OpenCatalogi/publiccode-action@1.3.4
      with:
       federlize: false
       save: true
    - name: Create or Update publiccode.yaml (main)
-     if: ${{ contains('main', github.ref) }}
+     if: ${{ github.ref_name == 'main' }}
      uses: OpenCatalogi/publiccode-action@1.3.4
      with:
       federlize: true
