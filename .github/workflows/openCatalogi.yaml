@@ -1,5 +1,5 @@
 # see: https://github.com/OpenCatalogi/.github?tab=readme-ov-file
-name: Mijn Open Catalogi Workflow
+name: OpenCatalogi
 
 on:
  workflow_dispatch:
@@ -14,13 +14,12 @@ permissions:
 
 
 jobs:
- build:
+ generatePublicCodeYaml:
+  name: Generate Publiccode Yaml
   runs-on: ubuntu-latest
   steps:
    - name: Create or Update publiccode.yaml
-     uses: OpenCatalogi/publiccode-action@1.1.1
+     uses: OpenCatalogi/publiccode-action@1.3.4
      with:
       #opencatalogi: true
       federlize: false
-   - name: Create een Productpagina
-     uses: OpenCatalogi/productpage-action@1.0.0
