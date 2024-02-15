@@ -11,22 +11,13 @@ on:
 permissions:
  contents: write
 
-
-
 jobs:
  generatePublicCodeYaml:
   name: Generate Publiccode Yaml
   runs-on: ubuntu-latest
   steps:
-   - name: Create or Update publiccode.yaml (acceptance)
-     if: ${{ github.ref_name == 'acceptance' }}
+   - name: Create or Update publiccode.yaml
      uses: OpenCatalogi/publiccode-action@1.3.4
      with:
       federlize: ${{ github.ref_name == 'main' }}
       save: ${{ github.ref_name == 'acceptance' }}
-   - name: Create or Update publiccode.yaml (main)
-     if: ${{ github.ref_name == 'main' }}
-     uses: OpenCatalogi/publiccode-action@1.3.4
-     with:
-      federlize: true
-      save: false
