@@ -1496,9 +1496,9 @@ case@1.6.3, case@^1.6.3:
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
 cdk-nag@^2.0.0:
-  version "2.28.58"
-  resolved "https://registry.yarnpkg.com/cdk-nag/-/cdk-nag-2.28.58.tgz#83edb1a36f45b8e0122c15f59711348457bfc794"
-  integrity sha512-LTxVxAChitnTVJ5Yde8oUs9DLOgNo984HN+fv1rEHects9bZ9bTiRbJ/vFsOE9Lh7xVsqUanRqX/5tKk4WSisA==
+  version "2.28.59"
+  resolved "https://registry.yarnpkg.com/cdk-nag/-/cdk-nag-2.28.59.tgz#bb40ce95774d3cf8fbdda0ffdc8b3f910f23783a"
+  integrity sha512-0+aUiox9xqILoN6cAVYCIHikrVRiplwlaDymJENlg0KO1Xo/c/BzY2bIpnVm9zA9PgIXQiPCm2MzfMr/58d0nQ==
 
 chalk@^2.4.2:
   version "2.4.2"
@@ -2757,9 +2757,9 @@ has-tostringtag@^1.0.0, has-tostringtag@^1.0.1, has-tostringtag@^1.0.2:
     has-symbols "^1.0.3"
 
 hasown@^2.0.0, hasown@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/hasown/-/hasown-2.0.1.tgz#26f48f039de2c0f8d3356c223fb8d50253519faa"
-  integrity sha512-1/th4MHjnwncwXsIW6QMzlvYL9kG5e/CpVvLRZe4XPa8TOUNbCELqmvhDmnkNsAjwaG4+I8gJJL0JBvTTLO9qA==
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/hasown/-/hasown-2.0.2.tgz#003eaf91be7adc372e84ec59dc37252cedb80003"
+  integrity sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ==
   dependencies:
     function-bind "^1.1.2"
 
