@@ -6,11 +6,11 @@ description:
     awards: []
     documentation: ''
     features: []
-    genericName: https://vng-realisatie.github.io/gemma-verwerkingenlogging/
+    genericName: verwerkingenlogging
     localisedName: ''
     longDescription: ''
     screenshots: []
-    shortDescription: ''
+    shortDescription: 'implementatie van verwerkingenlog standaard'
     videos: []
 developmentStatus: stable
 landingURL: ''
@@ -38,11 +38,11 @@ organisation:
   name: GemeenteNijmegen
   url: GemeenteNijmegen
 platforms:
-- web
+- aws
 publiccodeYmlVersion: '0.2'
 releaseDate: '2024-02-15'
 roadmap: ''
 softwareType: standalone/backend
-softwareVersion: ''
+softwareVersion: '1.0'
 url: https://github.com/GemeenteNijmegen/verwerkingenlogging
 usedBy: []
