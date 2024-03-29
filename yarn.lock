@@ -26,9 +26,9 @@
   integrity sha512-3M2tELJOxQv0apCIiuKQ4pAbncz9GuLwnKFqxifWfe77wuMxyTRPmxssYHs42ePqzap1LT6GDcPygGs+hHstLg==
 
 "@aws-cdk/asset-node-proxy-agent-v6@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.1.tgz#6dc9b7cdb22ff622a7176141197962360c33e9ac"
-  integrity sha512-DDt4SLdLOwWCjGtltH4VCST7hpOI5DzieuhGZsBpZ+AgJdSI2GCjklCXm0GCTwJG/SolkL5dtQXyUKgg9luBDg==
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/asset-node-proxy-agent-v6/-/asset-node-proxy-agent-v6-2.0.3.tgz#9b5d213b5ce5ad4461f6a4720195ff8de72e6523"
+  integrity sha512-twhuEG+JPOYCYPx/xy5uH2+VUsIEhPTzDY0F1KuB+ocjWWB/KEDiOVL19nHvbPCB6fhWnkykXEMJ4HHcKvjtvg==
 
 "@aws-cdk/aws-lambda-python-alpha@^2.134.0-alpha.0":
   version "2.134.0-alpha.0"
@@ -1311,10 +1311,10 @@ aws-cdk@^2.1.0:
   optionalDependencies:
     fsevents "2.3.2"
 
-axios@^0.28.0:
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.28.0.tgz#801a4d991d0404961bccef46800e1170f8278c89"
-  integrity sha512-Tu7NYoGY4Yoc7I+Npf9HhUMtEEpV7ZiLH9yndTCoNhcpBH0kwcvFbzYN9/u5QKI5A6uefjsNNWaz5olJVYS62Q==
+axios@^0.28.1:
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-0.28.1.tgz#2a7bcd34a3837b71ee1a5ca3762214b86b703e70"
+  integrity sha512-iUcGA5a7p0mVb4Gm/sy+FSECNkPFT4y7wt6OM/CDpO/OnNCvSs3PoMG8ibrC9jRoGYU0gUK5pXVC4NPXq6lHRQ==
   dependencies:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"
@@ -1488,9 +1488,9 @@ case@1.6.3, case@^1.6.3:
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
 cdk-nag@^2.0.0:
-  version "2.28.74"
-  resolved "https://registry.yarnpkg.com/cdk-nag/-/cdk-nag-2.28.74.tgz#4aab8238b78559abfa8018e30910dfea08f5659c"
-  integrity sha512-Ikm5Z4mrOX+faJT63CMxicYeSrQPMRiihWrU3a0u2WJ4vrpIZen9x9nz1cUxoe+PQZkoyBozFhBS5kToxhjoRg==
+  version "2.28.75"
+  resolved "https://registry.yarnpkg.com/cdk-nag/-/cdk-nag-2.28.75.tgz#981014a7e77c40a69ca49788554ebf7a6e5da8d3"
+  integrity sha512-28LDJnOXTH5WnPpbVtnfBkqGbtPq+pXa1dJbFoOH8Qrqz0elR884ampzCEH5f5vf6KSogbkLja0SdxvIev5Flg==
 
 chalk@^2.4.2:
   version "2.4.2"
@@ -2016,9 +2016,9 @@ dotgitignore@^2.1.0:
     minimatch "^3.0.4"
 
 electron-to-chromium@^1.4.668:
-  version "1.4.719"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.719.tgz#22a94ce7a5150511ba88e900836039e159efe22c"
-  integrity sha512-FbWy2Q2YgdFzkFUW/W5jBjE9dj+804+98E4Pup78JBPnbdb3pv6IneY2JCPKdeKLh3AOKHQeYf+KwLr7mxGh6Q==
+  version "1.4.720"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.720.tgz#7cbe32a4ceb0650d2fbc16886440949cf07610e8"
+  integrity sha512-5zwcKNkOj3GN0jBzpcpGonNPkn667VJpQwRYWdo/TiJEHTQswZyA/vALhZFiAXgL5NuK9UarX1tbdvXu3hG6Yw==
 
 emittery@^0.8.1:
   version "0.8.1"
