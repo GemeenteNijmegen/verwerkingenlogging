@@ -1,6 +1,6 @@
 # VERWERKINGENLOGGING INFORMATIEDOCUMENT 
 ## INTRODUCTIE 
-De VNG heeft een standaard ontwikkelt voor de vastlegging van verwerkingen. Door VNG-Realisatie is de Verwerkingenlogging API-standaard als onderdeel van de uitwerking van de informatiekundige visie Common Ground ontwikkeld en opgenomen in de GEMMA referentiearchitectuur. Deze API-standaard biedt leveranciers van informatiesystemen gestandaardiseerde API-specificaties voor het vastleggen en ontsluiten van metagegevens behorend bij vastgelegde (gelogde) verwerkingen. 
+De VNG heeft een standaard ontwikkeld voor de vastlegging van verwerkingen. Door VNG-Realisatie is de Verwerkingenlogging API-standaard als onderdeel van de uitwerking van de informatiekundige visie Common Ground ontwikkeld en opgenomen in de GEMMA referentiearchitectuur. Deze API-standaard biedt leveranciers van informatiesystemen gestandaardiseerde API-specificaties voor het vastleggen en ontsluiten van metagegevens behorend bij vastgelegde (gelogde) verwerkingen. 
 
 Organisaties die persoonsgegevens verwerken zijn conform de Algemene Verordening Gegevensbescherming (AVG) en de Uitvoeringswet AVG verplicht om aan te kunnen tonen dat een verwerking van persoonsgegevens aan de belangrijkste beginselen van verwerking voldoet, zoals rechtmatigheid, transparantie, doelbinding en juistheid. Om aan deze verantwoordingsplicht te kunnen voldoen is het van belang dat per verwerking de belangrijkste metagegevens van de verwerkingen worden vastgelegd.  
 
@@ -9,7 +9,7 @@ Aan de hand van de standaard wordt een API ontwikkeld door de Gemeente Nijmegen.
 ## DOEL 
 Gemeenten gebruiken binnen de uitvoering van de gemeentelijke taken grote hoeveelheden gegevens. Een deel van deze gegevens betreft persoonsgegevens. Vanuit de privacywetgeving zijn gemeenten verplicht dit gebruik van persoonsgegevens vast te leggen, en inzichtelijk te maken voor burgers. Door deze transparantie over het gebruik van persoonsgegevens heeft de burger de mogelijkheid om na te gaan of de gemeente zijn of haar gegevens rechtmatig gebruikt. Naast de gegevens van personen worden door gemeenten ook gegevens van andere ‘objecten’, zoals kadastrale percelen, verwerkt. Hoewel er geen wettelijke verplichting bestaat om van deze objecten verwerkingen vast te leggen kan het wel een toegevoegde waarde hebben. 
 
-Het doel van het product dat Gemeente Nijmegen gaat ontwikkelen is de implementatie van de standaard zoals beschreven door het VNG. Daarmee biedt de gemeente de mogelijkheid aan applicaties verwerkingen te loggen en burgers om verwerkte gegevens in te zien.  
+Het doel van het product dat Gemeente Nijmegen heeft ontwikkeld is de implementatie van de standaard zoals beschreven door het VNG. Daarmee biedt de gemeente de mogelijkheid aan applicaties verwerkingen te loggen en burgers om verwerkte gegevens in te zien.  
 
 ## DOELGROEP 
 Het verwerkingenlogging product is beschikbaar voor alle applicaties die persoons(gegevens) verwerken (binnen de scope van de gemeente).  
