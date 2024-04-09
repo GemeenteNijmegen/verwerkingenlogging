@@ -28,7 +28,7 @@
     "projen": "npx projen"
   },
   "devDependencies": {
-    "@gemeentenijmegen/projen-project-type": "^1.5.7",
+    "@gemeentenijmegen/projen-project-type": "^1.5.8",
     "@types/jest": "^27.5.2",
     "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "^6",
@@ -42,7 +42,7 @@
     "eslint-plugin-import": "^2.29.1",
     "jest": "^27",
     "jest-junit": "^15",
-    "projen": "^0.80.19",
+    "projen": "^0.80.20",
     "standard-version": "^9",
     "ts-jest": "^27.1.5",
     "ts-node": "^10.9.2",
