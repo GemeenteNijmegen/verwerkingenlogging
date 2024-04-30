@@ -28,7 +28,7 @@
     "projen": "npx projen"
   },
   "devDependencies": {
-    "@gemeentenijmegen/projen-project-type": "^1.5.8",
+    "@gemeentenijmegen/projen-project-type": "^1.6.0",
     "@types/jest": "^27.5.2",
     "@types/node": "^18",
     "@typescript-eslint/eslint-plugin": "^6",
