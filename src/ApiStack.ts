@@ -83,13 +83,14 @@ export class ApiStack extends Stack {
       },
     });
 
+    const inzageCertficate = this.inzageCertificate(hostedzone);
     // Create the Inzage API Gateway (REST)
     this.inzageAPI = new ApiGateway.RestApi(this, 'inzage-api', {
       restApiName: Statics.inzageApiName,
       description: 'Inzage API Gateway (REST)',
       apiKeySourceType: ApiKeySourceType.HEADER,
       domainName: {
-        certificate: certificate,
+        certificate: inzageCertficate,
         domainName: 'inzage-' + hostedzone.zoneName,
       },
     });
@@ -316,6 +317,14 @@ export class ApiStack extends Stack {
     const cert = new Certificate(this, 'cert', {
       domainName: hostedzone.zoneName,
       validation: CertificateValidation.fromDns(hostedzone),
+    });
+    return cert;
+  }
+
+  private inzageCertificate(hostedZone: IHostedZone) {
+    const cert = new Certificate(this, 'inzager-cert', {
+      domainName: 'inzage- ' + hostedZone.zoneName,
+      validation: CertificateValidation.fromDns(hostedZone),
     });
     return cert;
   }
