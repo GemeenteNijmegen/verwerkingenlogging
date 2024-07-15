@@ -83,16 +83,12 @@ export class ApiStack extends Stack {
       },
     });
 
-    const inzageCertficate = this.inzageCertificate(hostedzone);
+    //const inzageCertficate = this.inzageCertificate(hostedzone);
     // Create the Inzage API Gateway (REST)
     this.inzageAPI = new ApiGateway.RestApi(this, 'inzage-api', {
       restApiName: Statics.inzageApiName,
       description: 'Inzage API Gateway (REST)',
       apiKeySourceType: ApiKeySourceType.HEADER,
-      domainName: {
-        certificate: inzageCertficate,
-        domainName: 'inzage-' + hostedzone.zoneName,
-      },
     });
 
     this.setupDnsRecords(hostedzone);
@@ -321,13 +317,13 @@ export class ApiStack extends Stack {
     return cert;
   }
 
-  private inzageCertificate(hostedZone: IHostedZone) {
-    const cert = new Certificate(this, 'inzager-cert', {
-      domainName: 'inzage-' + hostedZone.zoneName,
-      validation: CertificateValidation.fromDns(hostedZone),
-    });
-    return cert;
-  }
+  // private inzageCertificate(hostedZone: IHostedZone) {
+  //   const cert = new Certificate(this, 'inzager-cert', {
+  //     domainName: 'inzage-' + hostedZone.zoneName,
+  //     validation: CertificateValidation.fromDns(hostedZone),
+  //   });
+  //   return cert;
+  // }
 
   private setupDnsRecords(hostedzone: IHostedZone) {
 
