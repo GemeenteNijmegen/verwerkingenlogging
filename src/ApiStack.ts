@@ -32,7 +32,7 @@ export class ApiStack extends Stack {
   declare verwerkingenAPI: ApiGateway.RestApi;
 
 
-  declare inzageAPI: ApiGateway.RestApi;
+  //declare inzageAPI: ApiGateway.RestApi;
 
   /**
    * Lambda function attached to routes within the verwerkingen API Gateway.
@@ -85,11 +85,11 @@ export class ApiStack extends Stack {
 
     //const inzageCertficate = this.inzageCertificate(hostedzone);
     // Create the Inzage API Gateway (REST)
-    this.inzageAPI = new ApiGateway.RestApi(this, 'inzage-api', {
-      restApiName: Statics.inzageApiName,
-      description: 'Inzage API Gateway (REST)',
-      apiKeySourceType: ApiKeySourceType.HEADER,
-    });
+    // this.inzageAPI = new ApiGateway.RestApi(this, 'inzage-api', {
+    //   restApiName: Statics.inzageApiName,
+    //   description: 'Inzage API Gateway (REST)',
+    //   apiKeySourceType: ApiKeySourceType.HEADER,
+    // });
 
     this.setupDnsRecords(hostedzone);
 
@@ -153,7 +153,7 @@ export class ApiStack extends Stack {
     this.inzageLambdaIntegration = new ApiGateway.LambdaIntegration(this.inzageLambdaFunction.lambda);
 
     // Route: /verwerkte-objecten
-    const verwerkteObjectenRoute = this.inzageAPI.root.addResource('verwerkte-objecten');
+    const verwerkteObjectenRoute = this.verwerkingenAPI.root.addResource('verwerkte-objecten');
     verwerkteObjectenRoute.addMethod('GET', this.inzageLambdaIntegration, { apiKeyRequired: true });
 
     // Route: /verwerkte-objecten/{verwerktObjectId}
@@ -337,18 +337,6 @@ export class ApiStack extends Stack {
       target: route53.RecordTarget.fromAlias(new targets.ApiGateway(this.verwerkingenAPI)),
       zone: hostedzone,
       comment: 'AAAA-record for API gateway',
-    });
-
-    new ARecord(this, 'a-record-inzage', {
-      target: route53.RecordTarget.fromAlias(new targets.ApiGateway(this.inzageAPI)),
-      zone: hostedzone,
-      comment: 'A-record for Inzage API gateway',
-    });
-
-    new AaaaRecord(this, 'aaaa-record-inzage', {
-      target: route53.RecordTarget.fromAlias(new targets.ApiGateway(this.inzageAPI)),
-      zone: hostedzone,
-      comment: 'AAAA-record for Inzage API gateway',
     });
   }
 
