@@ -323,7 +323,7 @@ export class ApiStack extends Stack {
 
   private inzageCertificate(hostedZone: IHostedZone) {
     const cert = new Certificate(this, 'inzager-cert', {
-      domainName: 'inzage- ' + hostedZone.zoneName,
+      domainName: 'inzage-' + hostedZone.zoneName,
       validation: CertificateValidation.fromDns(hostedZone),
     });
     return cert;
