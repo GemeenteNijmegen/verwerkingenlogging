@@ -90,7 +90,7 @@ export class ApiStack extends Stack {
       apiKeySourceType: ApiKeySourceType.HEADER,
       domainName: {
         certificate: certificate,
-        domainName: hostedzone.zoneName,
+        domainName: 'inzage-' + hostedzone.zoneName,
       },
     });
 
