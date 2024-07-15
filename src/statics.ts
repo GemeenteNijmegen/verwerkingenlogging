@@ -63,6 +63,11 @@ export abstract class Statics {
   static readonly verwerkingenApiName: 'verwerkingen-api';
 
   /**
+   * API Gateway name for verwerkingen inzage.
+   */
+  static readonly inzageApiName: 'inzage-api';
+
+  /**
    * IAM Account ID.
    */
   static readonly iamAccountId: string = '098799052470';
@@ -106,6 +111,11 @@ export abstract class Statics {
    * ARN of the log group for the Rec lambda
    */
   static readonly ssmName_recLambdaLogGroupArn = '/cdk/verwerkingenlogging/rec-lambda-loggroup-arn';
+
+  /**
+   * ARN of the log group for the Rec lambda
+   */
+  static readonly ssmName_inzageLambdaLogGroupArn = '/cdk/verwerkingenlogging/inzage-lambda-loggroup-arn';
 
   // DNS Hosted zone ssm
   static readonly accountRootHostedZoneId: string = '/gemeente-nijmegen/account/hostedzone/id';
