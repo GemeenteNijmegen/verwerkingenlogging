@@ -1,22 +1,14 @@
-import json
 import os
 from datetime import datetime
 from Shared.helpers import hashHelper, logApiCall
 from Shared.responses import badRequestResponse, notFoundResponse, successResponse
 from boto3.dynamodb.conditions import Key, Attr
 
-
-# from boto3.dynamodb.conditions import Key, Attr
-
 apiBaseUrl = os.getenv('API_BASE_URL', 'api.vwlog-prod.csp-nijmegen.nl')
 
 # Receives the event object and routes it to the correct function
 def handle_request(event, table):
     params = parse_event(event)
-    requestJson = json.loads(event.get('body'))
-
-    # Generate timestamp for tijdstipRegistratie.
-    tijdstipRegistratie = datetime.now().isoformat(timespec='seconds')
 
     if(params.get('method') == 'GET' and params.get('resource') == '/verwerkte-objecten'):
         logApiCall('GET', '/verwerkte-objecten')
