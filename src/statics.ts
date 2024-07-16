@@ -48,6 +48,12 @@ export abstract class Statics {
   static readonly verwerkingenTableIndex_verwerkingId: string = 'verwerkingId-index';
 
   /**
+   * DynamoDB index name for verwerkingId.
+   */
+  static readonly verwerkingenTableIndex_verwerktObjectId: string = 'verwerktObjectId-index';
+
+
+  /**
    * S3 Backup Bucket name for verwerkingen.
    */
   static readonly ssmName_verwerkingenS3BackupBucketName: string = '/cdk/verwerkingenlogging/verwerkingen-s3-backup-bucket-name';
