@@ -1,4 +1,5 @@
 import os
+import json
 from datetime import datetime
 from Shared.helpers import hashHelper, logApiCall
 from Shared.responses import badRequestResponse, notFoundResponse, successResponse
@@ -13,9 +14,14 @@ def handle_request(event, table):
     if(params.get('method') == 'GET' and params.get('resource') == '/verwerkte-objecten'):
         logApiCall('GET', '/verwerkte-objecten')
 
-        msg = get_verwerkings_acties()
+        msg = get_verwerkings_acties(event, table)
 
-        return successResponse(msg)
+        return {
+            'statusCode': 200,
+            'body': json.dumps(msg),
+            'headers': { 
+            "Content-Type": "application/json",
+            }}
 
     if(params.get('method') == 'GET' and params.get('resource') =='/verwerkte-objecten/{verwerktObjectId}'):
         logApiCall('GET', '/verwerkte-objecten/\{verwerkteObjectId\}')
@@ -47,7 +53,7 @@ def get_verwerkteobjecten_verwerktobjectid(event, table):
 
 # Get verwerkingsacties based on given filter parameters
 def get_verwerkings_acties(event, table):
-    hashedObjectId = hashHelper(event.get('queryStringParameters').get('objectId'))
+    hashedObjectId = event.get('queryStringParameters').get('objectId')
     object_key = event.get('queryStringParameters').get('objectType') + event.get(
         'queryStringParameters').get('soortObjectId') + hashedObjectId
 
