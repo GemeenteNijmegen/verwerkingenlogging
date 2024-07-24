@@ -49,7 +49,7 @@
     "typescript": "^4.9.5"
   },
   "dependencies": {
-    "@aws-cdk/aws-lambda-python-alpha": "^2.149.0-alpha.0",
+    "@aws-cdk/aws-lambda-python-alpha": "^2.150.0-alpha.0",
     "@gemeentenijmegen/aws-constructs": "^0.0.15",
     "aws-cdk-lib": "^2.1.0",
     "cdk-nag": "^2.0.0",
