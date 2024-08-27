@@ -31,6 +31,9 @@ export class ApiStack extends Stack {
    */
   declare verwerkingenAPI: ApiGateway.RestApi;
 
+
+  //declare inzageAPI: ApiGateway.RestApi;
+
   /**
    * Lambda function attached to routes within the verwerkingen API Gateway.
    * Generating the actieId, URL and verwerktObjectId on POST request.
@@ -53,20 +56,41 @@ export class ApiStack extends Stack {
  */
   declare verwerkingenRecLambdaIntegration: ApiGateway.LambdaIntegration;
 
+  /**
+ * Lambda function attached to GET /verwerkte-objecten route within the inzage API Gateway.
+ */
+  declare inzageLambdaFunction: ApiFunction;
+
+  /**
+   * Lambda integration to attach GET /verwerkte-objecten route within the inzage API Gateway.
+   */
+  declare inzageLambdaIntegration: ApiGateway.LambdaIntegration;
+
+
   constructor(scope: Construct, id: string, props: ApiStackProps) {
     super(scope, id, props);
 
     const hostedzone = this.hostedzone();
-    // Create the API Gateway (REST).
+    const certificate = this.certificate(hostedzone);
+    // Create the API Gateway (REST)
     this.verwerkingenAPI = new ApiGateway.RestApi(this, 'verwerkingen-api', {
       restApiName: Statics.verwerkingenApiName,
       description: 'Verwerkingen API Gateway (REST)',
       apiKeySourceType: ApiKeySourceType.HEADER,
       domainName: {
-        certificate: this.certificate(hostedzone),
+        certificate: certificate,
         domainName: hostedzone.zoneName,
       },
     });
+
+    //const inzageCertficate = this.inzageCertificate(hostedzone);
+    // Create the Inzage API Gateway (REST)
+    // this.inzageAPI = new ApiGateway.RestApi(this, 'inzage-api', {
+    //   restApiName: Statics.inzageApiName,
+    //   description: 'Inzage API Gateway (REST)',
+    //   apiKeySourceType: ApiKeySourceType.HEADER,
+    // });
+
     this.setupDnsRecords(hostedzone);
 
     // Allow the RestApi to access DynamoDb by assigning this role to the integration
@@ -78,6 +102,19 @@ export class ApiStack extends Stack {
     // Grant DynamoDB table Read-Write permissions to integration role
     const ddbTable = Table.fromTableArn(this, 'verwerkingen-api-dynamo-table-v4', SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_verwerkingenTableArn));
     ddbTable.grantReadWriteData(integrationRole);
+
+    // Verwerkingen API
+    this.initializeVerwerkingenLambdaIntegrations(props, ddbTable, hostedzone);
+
+    // Inzage API
+    this.initializeInzageLambdaIntegrations(props, ddbTable, hostedzone);
+
+    // Create API Key and add a new usage plan
+    this.addUsagePlan();
+
+  }
+
+  private initializeVerwerkingenLambdaIntegrations(props: ApiStackProps, ddbTable: ITable, hostedzone: route53.IHostedZone ) {
 
     // Setup lambdas
     const verboseLogs = props.configuration.enableVerboseAndSensitiveLogging;
@@ -102,9 +139,59 @@ export class ApiStack extends Stack {
     actieIdRoute.addMethod('DELETE', this.verwerkingenRecLambdaIntegration, { apiKeyRequired: true });
     actieIdRoute.addMethod('GET', this.verwerkingenRecLambdaIntegration, { apiKeyRequired: true });
 
-    // Create API Key and add a new usage plan
-    this.addUsagePlan();
+  }
 
+  private initializeInzageLambdaIntegrations(props: ApiStackProps, ddbTable: ITable, _hostedzone: route53.IHostedZone) {
+
+    // Setup lambdas
+    const verboseLogs = props.configuration.enableVerboseAndSensitiveLogging;
+    const keyArn = SSM.StringParameter.valueForStringParameter(this, Statics.ssmName_dynamodbKmsKeyArn);
+    const key = Key.fromKeyArn(this, 'key-inzage-lambda-integration', keyArn);
+    this.inzageLambdaFunction = this.setupInzageLambdaFunction(ddbTable, key, verboseLogs);
+
+    // Create Integrations
+    this.inzageLambdaIntegration = new ApiGateway.LambdaIntegration(this.inzageLambdaFunction.lambda);
+
+    // Route: /verwerkte-objecten
+    const verwerkteObjectenRoute = this.verwerkingenAPI.root.addResource('verwerkte-objecten');
+    verwerkteObjectenRoute.addMethod('GET', this.inzageLambdaIntegration, { apiKeyRequired: true });
+
+    // Route: /verwerkte-objecten/{verwerktObjectId}
+    const verwerktObjectIdRoute = verwerkteObjectenRoute.addResource('{verwerkteObjectId}');
+    verwerktObjectIdRoute.addMethod('GET', this.inzageLambdaIntegration, { apiKeyRequired: true });
+  }
+
+  private setupInzageLambdaFunction(table: ITable, key: IKey, enableVerboseAndSensitiveLogging?: boolean): ApiFunction {
+    const lambda = new ApiFunction(this, 'inzage-api-function', {
+      description: 'Responsible for providing verwerkingen on inzage request',
+      code: 'src/api/InzageLambdaFunction',
+      pythonLayerArn: StringParameter.valueForStringParameter(this, Statics.ssmName_pythonLambdaLayerArn),
+      environment: {
+        DYNAMO_TABLE_NAME: table.tableName,
+        ENABLE_VERBOSE_AND_SENSITIVE_LOGGING: enableVerboseAndSensitiveLogging ? 'true' : 'false',
+      },
+    });
+    key.grantEncryptDecrypt(lambda.lambda);
+    lambda.lambda.grantInvoke(new IAM.ServicePrincipal('apigateway.amazonaws.com'));
+    lambda.lambda.addToRolePolicy(new IAM.PolicyStatement({
+      effect: IAM.Effect.ALLOW,
+      actions: [
+        'dynamodb:DescribeTable',
+        'dynamodb:Query',
+        'dynamodb:GetItem',
+        'dynamodb:Scan',
+      ],
+      resources: [
+        table.tableArn,
+        table.tableArn + '/index/' + Statics.verwerkingenTableIndex_objectTypeSoortId, // Is equal to old verwerkingen static, no change required
+        table.tableArn + '/index/' + Statics.verwerkingenTableIndex_verwerkingId, // Is equal to old verwerkingen static, no change required
+      ],
+    }));
+    new StringParameter(this, 'inzage-log-group-arn-ssm', {
+      stringValue: lambda.lambda.logGroup.logGroupArn,
+      parameterName: Statics.ssmName_inzageLambdaLogGroupArn,
+    });
+    return lambda;
   }
 
   /**
@@ -229,6 +316,14 @@ export class ApiStack extends Stack {
     });
     return cert;
   }
+
+  // private inzageCertificate(hostedZone: IHostedZone) {
+  //   const cert = new Certificate(this, 'inzager-cert', {
+  //     domainName: 'inzage-' + hostedZone.zoneName,
+  //     validation: CertificateValidation.fromDns(hostedZone),
+  //   });
+  //   return cert;
+  // }
 
   private setupDnsRecords(hostedzone: IHostedZone) {
 

@@ -48,6 +48,12 @@ export abstract class Statics {
   static readonly verwerkingenTableIndex_verwerkingId: string = 'verwerkingId-index';
 
   /**
+   * DynamoDB index name for verwerkingId.
+   */
+  static readonly verwerkingenTableIndex_verwerktObjectId: string = 'verwerktObjectId-index';
+
+
+  /**
    * S3 Backup Bucket name for verwerkingen.
    */
   static readonly ssmName_verwerkingenS3BackupBucketName: string = '/cdk/verwerkingenlogging/verwerkingen-s3-backup-bucket-name';
@@ -61,6 +67,11 @@ export abstract class Statics {
    * API Gateway name for verwerkingen.
    */
   static readonly verwerkingenApiName: 'verwerkingen-api';
+
+  /**
+   * API Gateway name for verwerkingen inzage.
+   */
+  static readonly inzageApiName: 'inzage-api';
 
   /**
    * IAM Account ID.
@@ -106,6 +117,11 @@ export abstract class Statics {
    * ARN of the log group for the Rec lambda
    */
   static readonly ssmName_recLambdaLogGroupArn = '/cdk/verwerkingenlogging/rec-lambda-loggroup-arn';
+
+  /**
+   * ARN of the log group for the Rec lambda
+   */
+  static readonly ssmName_inzageLambdaLogGroupArn = '/cdk/verwerkingenlogging/inzage-lambda-loggroup-arn';
 
   // DNS Hosted zone ssm
   static readonly accountRootHostedZoneId: string = '/gemeente-nijmegen/account/hostedzone/id';

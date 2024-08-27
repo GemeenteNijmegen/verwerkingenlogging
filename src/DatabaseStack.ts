@@ -65,6 +65,11 @@ export class DatabaseStack extends Stack {
       partitionKey: { name: 'verwerkingId', type: DynamoDB.AttributeType.STRING },
     });
 
+    this.verwerkingenTable.addGlobalSecondaryIndex({
+      indexName: Statics.verwerkingenTableIndex_verwerktObjectId,
+      partitionKey: { name: 'verwerktObjectId', type: DynamoDB.AttributeType.STRING },
+    });
+
     // Create S3 Backup Bucket
     this.verwerkingenS3BackupBucket = new S3.Bucket(this, 'verwerkingen-s3-backup-bucket', {
       blockPublicAccess: S3.BlockPublicAccess.BLOCK_ALL,
