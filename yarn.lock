@@ -31,9 +31,9 @@
   integrity sha512-hYSS99c6vxltLTwweE0GSnwkJhxEGx46vGQO2J3TBYIN0T04U8/V4K/e3h4HuqJHL4xioSeOQvCgBYBNP/YBRg==
 
 "@aws-cdk/cloud-assembly-schema@^36.0.5":
-  version "36.0.21"
-  resolved "https://registry.yarnpkg.com/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-36.0.21.tgz#12cd81a30f14443bbf7e463cc8c6026edddf6f1c"
-  integrity sha512-MuuzRxWfrrIw2D2s5p5axwDiH7BrKsDBCKS8OCmVGe8yKAtF2Y9cNo1Z0q4wySMfbaa6hgqTXnigO6YTzLru1w==
+  version "36.0.22"
+  resolved "https://registry.yarnpkg.com/@aws-cdk/cloud-assembly-schema/-/cloud-assembly-schema-36.0.22.tgz#1aacad18861df5b001f5485a78b17d39cedc88aa"
+  integrity sha512-55RHuQ85+CXop8Qvpyb4gw8Uepkb+/0MdOOM4BHTbLERdDyse6fAYWgvIS8t0yopBdSQN00EBEkNTEYiX5GlWA==
   dependencies:
     jsonschema "^1.4.1"
     semver "^7.6.3"
@@ -1480,9 +1480,9 @@ case@1.6.3, case@^1.6.3:
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
 cdk-nag@^2.0.0:
-  version "2.28.193"
-  resolved "https://registry.yarnpkg.com/cdk-nag/-/cdk-nag-2.28.193.tgz#34baa0384313515101a1c4df6464931e8799525c"
-  integrity sha512-lVejAwOGq9XZTEoQEeD/8XKtRwRRr+P4e2gZ66FAPuG0b0D+f/6wjN+DtZGSmoFr+PwS5DkMH7Y07xDr0Pm82A==
+  version "2.28.194"
+  resolved "https://registry.yarnpkg.com/cdk-nag/-/cdk-nag-2.28.194.tgz#c743be4e1db0ab21027d997495bd82941c8936e7"
+  integrity sha512-MC4FNdn6GA2FKVueV4xUOEDgErTogZ1H3bV1v7k/MJjl0oMMIts9dsa2hCVbPFe8GZMLOFDVFHcvEE93gZmR0A==
 
 chalk@^2.4.2:
   version "2.4.2"
