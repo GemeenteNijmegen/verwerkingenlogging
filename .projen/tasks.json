@@ -32,14 +32,15 @@
         "CHANGELOG": "dist/changelog.md",
         "BUMPFILE": "dist/version.txt",
         "RELEASETAG": "dist/releasetag.txt",
-        "RELEASE_TAG_PREFIX": ""
+        "RELEASE_TAG_PREFIX": "",
+        "BUMP_PACKAGE": "commit-and-tag-version@^12"
       },
       "steps": [
         {
           "builtin": "release/bump-version"
         }
       ],
-      "condition": "! git log --oneline -1 | grep -q \"chore(release):\""
+      "condition": "git log --oneline -1 | grep -qv \"chore(release):\""
     },
     "bundle": {
       "name": "bundle",
@@ -169,7 +170,15 @@
     },
     "package": {
       "name": "package",
-      "description": "Creates the distribution package"
+      "description": "Creates the distribution package",
+      "steps": [
+        {
+          "exec": "mkdir -p dist/js"
+        },
+        {
+          "exec": "npm pack --pack-destination dist/js"
+        }
+      ]
     },
     "post-compile": {
       "name": "post-compile",
@@ -261,7 +270,8 @@
         "CHANGELOG": "dist/changelog.md",
         "BUMPFILE": "dist/version.txt",
         "RELEASETAG": "dist/releasetag.txt",
-        "RELEASE_TAG_PREFIX": ""
+        "RELEASE_TAG_PREFIX": "",
+        "BUMP_PACKAGE": "commit-and-tag-version@^12"
       },
       "steps": [
         {
@@ -277,13 +287,13 @@
       },
       "steps": [
         {
-          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@gemeentenijmegen/projen-project-type,@types/jest,axios,dotenv,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,projen,ts-jest,ts-node,typescript,@aws-cdk/aws-lambda-python-alpha,@gemeentenijmegen/aws-constructs"
+          "exec": "npx npm-check-updates@16 --upgrade --target=minor --peer --dep=dev,peer,prod,optional --filter=@gemeentenijmegen/projen-project-type,@types/jest,@types/node,axios,dotenv,esbuild,eslint-import-resolver-typescript,eslint-plugin-import,jest,projen,ts-jest,ts-node,typescript,@aws-cdk/aws-lambda-python-alpha,@gemeentenijmegen/aws-constructs"
         },
         {
           "exec": "yarn install --check-files"
         },
         {
-          "exec": "yarn upgrade @gemeentenijmegen/projen-project-type @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk axios dotenv esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit projen standard-version ts-jest ts-node typescript @aws-cdk/aws-lambda-python-alpha @gemeentenijmegen/aws-constructs aws-cdk-lib cdk-nag constructs"
+          "exec": "yarn upgrade @gemeentenijmegen/projen-project-type @types/jest @types/node @typescript-eslint/eslint-plugin @typescript-eslint/parser aws-cdk axios commit-and-tag-version dotenv esbuild eslint-import-resolver-typescript eslint-plugin-import eslint jest jest-junit projen ts-jest ts-node typescript @aws-cdk/aws-lambda-python-alpha @gemeentenijmegen/aws-constructs aws-cdk-lib cdk-nag constructs"
         },
         {
           "exec": "npx projen"
