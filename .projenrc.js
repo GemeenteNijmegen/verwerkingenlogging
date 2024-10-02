@@ -4,6 +4,11 @@ const project = new GemeenteNijmegenCdkApp({
   cdkVersion: '2.1.0',
   name: 'verwerkingenlogging',
   defaultReleaseBranch: 'main',
+  depsUpgradeOptions: {
+    workflowOptions: {
+      branches: ['development, acceptance'],
+    },
+  },
   majorVersion: 0,
   deps: [
     'cdk-nag@^2.0.0',

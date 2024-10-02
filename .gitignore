@@ -37,7 +37,6 @@ test/__snapshots__/*
 .DS_Store
 test/playwright/report
 test/playwright/screenshots
-!/.projenrc.js
 /test-reports/
 junit.xml
 /coverage/
@@ -45,7 +44,7 @@ junit.xml
 /dist/changelog.md
 /dist/version.txt
 !/.github/workflows/release.yml
-!/.github/workflows/upgrade-acceptance.yml
+!/.github/workflows/upgrade-development, acceptance.yml
 !/.github/pull_request_template.md
 !/test/
 !/tsconfig.json
@@ -61,3 +60,4 @@ junit.xml
 .parcel-cache/
 !/.github/workflows/emergency.yml
 !/.github/workflows/auto-merge.yml
+!/.projenrc.js

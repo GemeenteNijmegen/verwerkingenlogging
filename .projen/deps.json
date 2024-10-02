@@ -10,17 +10,16 @@
     },
     {
       "name": "@types/node",
-      "version": "^14",
       "type": "build"
     },
     {
       "name": "@typescript-eslint/eslint-plugin",
-      "version": "^5",
+      "version": "^7",
       "type": "build"
     },
     {
       "name": "@typescript-eslint/parser",
-      "version": "^5",
+      "version": "^7",
       "type": "build"
     },
     {
@@ -33,15 +32,16 @@
       "type": "build"
     },
     {
+      "name": "commit-and-tag-version",
+      "version": "^12",
+      "type": "build"
+    },
+    {
       "name": "dotenv",
       "type": "build"
     },
     {
       "name": "esbuild",
-      "type": "build"
-    },
-    {
-      "name": "eslint-import-resolver-node",
       "type": "build"
     },
     {
@@ -63,25 +63,11 @@
     },
     {
       "name": "jest-junit",
-      "version": "^13",
-      "type": "build"
-    },
-    {
-      "name": "json-schema",
-      "type": "build"
-    },
-    {
-      "name": "npm-check-updates",
       "version": "^15",
       "type": "build"
     },
     {
       "name": "projen",
-      "type": "build"
-    },
-    {
-      "name": "standard-version",
-      "version": "^9",
       "type": "build"
     },
     {
