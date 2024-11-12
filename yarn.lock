@@ -458,10 +458,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.1.tgz#de633db3ec2ef6a3c89e2f19038063e8a122e2c2"
   integrity sha512-d9zaMRSTIKDLhctzH12MtXvJKSSUhaHcjV+2Z+GK+EEY7XKpP5yR4x+N3TAcHTcu963nIr+TMcCb4DBCYX1z6Q==
 
-"@gemeentenijmegen/aws-constructs@^0.0.22":
-  version "0.0.22"
-  resolved "https://registry.yarnpkg.com/@gemeentenijmegen/aws-constructs/-/aws-constructs-0.0.22.tgz#5a73f759db5bdce3a5cef85a2d6c527832deecd3"
-  integrity sha512-UjiIWq46aY0IdnX8JGi+KAtzawLAh1LD070WHHA4bVg1En8jOQlKMClXNnqNEIN0vpA5WjOCPmZqf5xfxp23qw==
+"@gemeentenijmegen/aws-constructs@^0.0.23":
+  version "0.0.23"
+  resolved "https://registry.yarnpkg.com/@gemeentenijmegen/aws-constructs/-/aws-constructs-0.0.23.tgz#c2bc3b01f7b15192eb9eb9eb7b46a03217e616a5"
+  integrity sha512-svNtMJ1xG+eZs9jWsed1apY8rbRSrsyXWfwLYLw1YG5F/WUuOMNBm9/L32YwUbognZyqpazgIFYTENrRI8geyQ==
 
 "@gemeentenijmegen/projen-project-type@^1.8.1":
   version "1.8.1"
@@ -1474,9 +1474,9 @@ case@1.6.3, case@^1.6.3:
   integrity sha512-mzDSXIPaFwVDvZAHqZ9VlbyF4yyXRuX6IvB06WvPYkqJVO24kX1PPhv9bfpKNFZyxYFmmgo03HUiD8iklmJYRQ==
 
 cdk-nag@^2.0.0:
-  version "2.32.2"
-  resolved "https://registry.yarnpkg.com/cdk-nag/-/cdk-nag-2.32.2.tgz#f5030829640e4fe1f381e73a61b04a120db9aec6"
-  integrity sha512-QwHWjG1f49DGc7qkZwhx+h/gQ4VKJszRjpRNKXAcBUasATNpBeRHilicVSqnclQnjI+NhP1+NVZqux8zYxfV0g==
+  version "2.32.3"
+  resolved "https://registry.yarnpkg.com/cdk-nag/-/cdk-nag-2.32.3.tgz#4eb72850409ddcaca41702f9a4bcc55427b20c7b"
+  integrity sha512-zZoQAoxdTrZUHgZA1yUAEBuJ/8Kxt0kZspTl2JD4bKtd55eQbHsq30+qNSlq1yREqwgBBa9DsEACjoKJDVtRQQ==
 
 chalk@^2.4.2:
   version "2.4.2"
